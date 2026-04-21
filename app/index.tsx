@@ -1,5 +1,5 @@
 import * as DocumentPicker from "expo-document-picker";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
@@ -18,9 +18,14 @@ import {
   REQUIRED_PMTILES_FILENAME,
   setPmtilesConfig,
 } from "../src/storage/pmtilesConfig";
+import { AppHeaderMenu } from "../src/components/AppHeaderMenu";
+import { HeaderBackButton } from "../src/components/HeaderBackButton";
+import { useOngoingJourneyCandidate } from "../src/features/journey/useOngoingJourneyCandidate";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
+  const { ongoingJourneyId } = useOngoingJourneyCandidate();
   const [status, setStatus] = useState<string>("Checking map package...");
   const [ready, setReady] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -81,6 +86,19 @@ export default function HomeScreen() {
       router.replace(`/journey/${candidateJourney.id}`);
     }
   }, [candidateJourney, candidateLoading, ready, router]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => <HeaderBackButton isHomeScreen />,
+      headerRight: () => (
+        <AppHeaderMenu
+          showHome={false}
+          showHistory
+          ongoingJourneyId={ongoingJourneyId}
+        />
+      ),
+    });
+  }, [navigation, ongoingJourneyId]);
 
   async function pickPmtilesFile(): Promise<void> {
     if (submitting) {

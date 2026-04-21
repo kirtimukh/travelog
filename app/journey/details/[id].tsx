@@ -1,5 +1,5 @@
 import * as Location from "expo-location";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
@@ -20,10 +20,15 @@ import {
   getReplayTimeBounds,
 } from "../../../src/features/journey/replay";
 import { canEditInDetails } from "../../../src/features/journey/status";
+import { useOngoingJourneyCandidate } from "../../../src/features/journey/useOngoingJourneyCandidate";
+import { AppHeaderMenu } from "../../../src/components/AppHeaderMenu";
+import { HeaderBackButton } from "../../../src/components/HeaderBackButton";
 
 export default function JourneyDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const navigation = useNavigation();
   const journeyId = Number(id);
+  const { ongoingJourneyId } = useOngoingJourneyCandidate();
 
   const [journey, setJourney] = useState<JourneyRow | null>(null);
   const [points, setPoints] = useState<LocationPointRow[]>([]);
@@ -63,6 +68,20 @@ export default function JourneyDetailsScreen() {
     void requestPermission();
     void refresh();
   }, [refresh, requestPermission]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => <HeaderBackButton />,
+      headerRight: () => (
+        <AppHeaderMenu
+          showHome
+          showHistory
+          ongoingJourneyId={ongoingJourneyId}
+          hideOngoing={ongoingJourneyId === journeyId}
+        />
+      ),
+    });
+  }, [journeyId, navigation, ongoingJourneyId]);
 
   useEffect(() => {
     if (!replayBounds || replayTs != null) {

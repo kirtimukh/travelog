@@ -42,6 +42,9 @@ import { JourneyMapPanel } from "../../src/features/journey/components/JourneyMa
 import { JourneyMediaList } from "../../src/features/journey/components/JourneyMediaList";
 import { JourneyNotesList } from "../../src/features/journey/components/JourneyNotesList";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
+import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
+import { AppHeaderMenu } from "../../src/components/AppHeaderMenu";
+import { HeaderBackButton } from "../../src/components/HeaderBackButton";
 
 export default function JourneyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -66,37 +69,29 @@ export default function JourneyScreen() {
     null,
   );
   const [busy, setBusy] = useState<boolean>(false);
-  const [showHeaderMenu, setShowHeaderMenu] = useState<boolean>(false);
   const [needsBackgroundLocationSettings, setNeedsBackgroundLocationSettings] =
     useState<boolean>(false);
-
-  const handleBackPress = useCallback((): void => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-    router.replace("/");
-  }, [router]);
+  const { ongoingJourneyId, refreshOngoingJourney } = useOngoingJourneyCandidate();
 
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable className="px-2 py-1" onPress={handleBackPress}>
-          <Text className="text-xl font-semibold text-blue-600">←</Text>
-        </Pressable>
+        <HeaderBackButton />
       ),
       headerRight: () => (
-        <Pressable
-          className="px-2 py-1"
-          onPress={() => {
-            setShowHeaderMenu((prev) => !prev);
+        <AppHeaderMenu
+          showHome
+          showHistory
+          ongoingJourneyId={ongoingJourneyId}
+          hideOngoing={ongoingJourneyId === journeyId}
+          onEndJourney={() => {
+            void endJourney();
           }}
-        >
-          <Text className="text-xl font-semibold text-neutral-700">⋯</Text>
-        </Pressable>
+          endJourneyDisabled={statusLabel === "completed" || busy}
+        />
       ),
     });
-  }, [handleBackPress, navigation]);
+  }, [busy, journeyId, navigation, ongoingJourneyId, statusLabel]);
 
   const loadJourneyBundle = useCallback(async (): Promise<void> => {
     if (!Number.isFinite(journeyId)) {
@@ -231,16 +226,15 @@ export default function JourneyScreen() {
 
   async function endJourney(): Promise<void> {
     if (!statusLabel || busy || statusLabel === "completed") {
-      setShowHeaderMenu(false);
       return;
     }
     setBusy(true);
     setScreenError(null);
-    setShowHeaderMenu(false);
     try {
       const db = await openAppDatabase();
       await updateJourneyStatus(db, journeyId, "completed");
       await refreshJourneyData();
+      await refreshOngoingJourney();
     } catch (error) {
       setScreenError(
         error instanceof Error ? error.message : "Could not end journey.",
@@ -462,23 +456,6 @@ export default function JourneyScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      {showHeaderMenu ? (
-        <View className="absolute right-6 top-4 z-20 w-44 rounded-md border border-neutral-200 bg-white p-2 shadow">
-          <Pressable
-            className={`rounded-md px-3 py-2 ${statusLabel === "completed" || busy ? "bg-neutral-100" : "bg-white"}`}
-            disabled={statusLabel === "completed" || busy}
-            onPress={() => {
-              void endJourney();
-            }}
-          >
-            <Text
-              className={`font-medium ${statusLabel === "completed" || busy ? "text-neutral-400" : "text-red-700"}`}
-            >
-              End Journey
-            </Text>
-          </Pressable>
-        </View>
-      ) : null}
       <ScrollView className="flex-1 px-6 pt-12">
       <Text className="text-xl font-bold">{name}</Text>
       <Text className="mt-2 text-neutral-600">Status: {statusLabel || "—"}</Text>

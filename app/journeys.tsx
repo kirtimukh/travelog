@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
   Alert,
@@ -15,6 +15,9 @@ import {
   listJourneysWithFilters,
 } from "../src/db/journeys";
 import type { JourneyRow, JourneyStatus } from "../src/db/schema";
+import { AppHeaderMenu } from "../src/components/AppHeaderMenu";
+import { HeaderBackButton } from "../src/components/HeaderBackButton";
+import { useOngoingJourneyCandidate } from "../src/features/journey/useOngoingJourneyCandidate";
 
 type StatusFilter = JourneyStatus | "all";
 
@@ -45,6 +48,8 @@ function formatTimestamp(ts: number | null): string {
 
 export default function JourneysScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
+  const { ongoingJourneyId } = useOngoingJourneyCandidate();
   const [journeys, setJourneys] = useState<JourneyRow[]>([]);
   const [nameFilter, setNameFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -87,6 +92,21 @@ export default function JourneysScreen() {
     useCallback(() => {
       void refreshJourneys();
     }, [refreshJourneys]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.setOptions({
+        headerLeft: () => <HeaderBackButton />,
+        headerRight: () => (
+          <AppHeaderMenu
+            showHome
+            showHistory={false}
+            ongoingJourneyId={ongoingJourneyId}
+          />
+        ),
+      });
+    }, [navigation, ongoingJourneyId]),
   );
 
   const onDeleteJourney = useCallback(
