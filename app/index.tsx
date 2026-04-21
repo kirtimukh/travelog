@@ -76,18 +76,6 @@ export default function HomeScreen() {
   );
 
   useEffect(() => {
-    if (!ready || candidateLoading || !candidateJourney) {
-      return;
-    }
-    if (
-      candidateJourney.status === "ongoing" ||
-      candidateJourney.status === "paused"
-    ) {
-      router.replace(`/journey/${candidateJourney.id}`);
-    }
-  }, [candidateJourney, candidateLoading, ready, router]);
-
-  useEffect(() => {
     navigation.setOptions({
       headerLeft: () => <HeaderBackButton isHomeScreen />,
       headerRight: () => (

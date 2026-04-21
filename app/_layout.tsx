@@ -42,51 +42,6 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (!navState?.key) {
-      return;
-    }
-    let cancelled = false;
-    void (async () => {
-      try {
-        await openAppDatabase();
-        const hasValidPmtiles = await hasValidPmtilesPackage();
-        if (!hasValidPmtiles) {
-          if (pathname?.startsWith("/journey/")) {
-            router.replace("/");
-          }
-        }
-        const id = getActiveJourneyId();
-        if (id != null && hasValidPmtiles) {
-          const db = await openAppDatabase();
-          const journey = await getJourneyById(db, id);
-          if (cancelled) {
-            return;
-          }
-          if (!journey) {
-            clearActiveJourneyId();
-          } else if (
-            journey.status === "ongoing" ||
-            journey.status === "paused"
-          ) {
-            router.replace(`/journey/${id}`);
-          } else {
-            clearActiveJourneyId();
-          }
-        }
-      } catch {
-        // MMKV/SQLite may fail in unsupported environments; still show UI.
-      } finally {
-        if (!cancelled) {
-          await SplashScreen.hideAsync();
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [navState?.key, pathname, router]);
-
-  useEffect(() => {
     const sub = AppState.addEventListener("change", (state) => {
       if (state !== "active") {
         return;

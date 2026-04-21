@@ -176,4 +176,52 @@ describe("locationTask", () => {
     await runTask([location(2_000, 3, 4)]);
     expect(mockInsertLocationPoint).not.toHaveBeenCalled();
   });
+
+  it("logs warning and does not throw when db operations fail", async () => {
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    mockGetActiveJourneyId.mockReturnValue(42);
+    mockOpenAppDatabase.mockRejectedValue(new Error("db unavailable"));
+
+    await expect(runTask([location(1_000, 10, 20, 5)])).resolves.toBeUndefined();
+    expect(mockInsertLocationPoint).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("[MAP_MY_TRIP_BG_LOCATION] failed to persist locations:"),
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  it("ignores malformed locations with non-finite coordinates or timestamp", async () => {
+    const db = {};
+    mockGetActiveJourneyId.mockReturnValue(42);
+    mockOpenAppDatabase.mockResolvedValue(db);
+    mockGetJourneyById.mockResolvedValue({ id: 42, status: "ongoing" });
+    mockGetLastLocationPointForJourney.mockResolvedValue(null);
+
+    await runTask([
+      {
+        timestamp: Number.NaN,
+        coords: { latitude: 1, longitude: 2, accuracy: 5, speed: null },
+      },
+      {
+        timestamp: 2_000,
+        coords: { latitude: Number.NaN, longitude: 2, accuracy: 5, speed: null },
+      },
+      {
+        timestamp: 3_000,
+        coords: { latitude: 1, longitude: Number.POSITIVE_INFINITY, accuracy: 5, speed: null },
+      },
+      location(4_000, 11.11, 22.22, 5),
+    ]);
+
+    expect(mockInsertLocationPoint).toHaveBeenCalledTimes(1);
+    expect(mockInsertLocationPoint).toHaveBeenCalledWith(db, {
+      journeyId: 42,
+      lat: 11.11,
+      lng: 22.22,
+      timestamp: 4_000,
+      speed: null,
+      metadata: null,
+    });
+  });
 });

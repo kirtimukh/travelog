@@ -31,72 +31,88 @@ function filterLocations(locations: LocationObject[]): LocationObject[] {
   });
 }
 
+function hasFiniteCoordinates(
+  loc: LocationObject,
+): loc is LocationObject & { timestamp: number } {
+  return (
+    Number.isFinite(loc.coords.latitude) &&
+    Number.isFinite(loc.coords.longitude) &&
+    Number.isFinite(loc.timestamp)
+  );
+}
+
 TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
-  if (error) {
-    return;
-  }
-  if (!data || typeof data !== "object") {
-    return;
-  }
-  const locations = (data as { locations?: LocationObject[] }).locations;
-  if (!locations?.length) {
-    return;
-  }
-  const kept = filterLocations(locations);
-  if (!kept.length) {
-    return;
-  }
-
-  const activeId = getActiveJourneyId();
-  if (activeId == null) {
-    return;
-  }
-
-  const db = await openAppDatabase();
-  const journey = await getJourneyById(db, activeId);
-  if (!journey || journey.status !== "ongoing") {
-    return;
-  }
-
-  const sorted = [...kept].sort((a, b) => a.timestamp - b.timestamp);
-  const lastRow = await getLastLocationPointForJourney(db, activeId);
-  let last:
-    | { lat: number; lng: number; timestamp: number }
-    | null = lastRow
-    ? { lat: lastRow.lat, lng: lastRow.lng, timestamp: lastRow.timestamp }
-    : null;
-
-  for (const loc of sorted) {
-    const lat = loc.coords.latitude;
-    const lng = loc.coords.longitude;
-    const ts = loc.timestamp;
-    const speed = loc.coords.speed;
-
-    if (last == null) {
-      await insertLocationPoint(db, {
-        journeyId: activeId,
-        lat,
-        lng,
-        timestamp: ts,
-        speed,
-        metadata: null,
-      });
-      last = { lat, lng, timestamp: ts };
-      continue;
+  try {
+    if (error) {
+      return;
+    }
+    if (!data || typeof data !== "object") {
+      return;
+    }
+    const locations = (data as { locations?: LocationObject[] }).locations;
+    if (!locations?.length) {
+      return;
+    }
+    const kept = filterLocations(locations).filter(hasFiniteCoordinates);
+    if (!kept.length) {
+      return;
     }
 
-    const dist = distanceMeters(last.lat, last.lng, lat, lng);
-    const dt = ts - last.timestamp;
-    if (dist >= MIN_MOVEMENT_METERS || dt >= MIN_TIME_BETWEEN_COMMITS_MS) {
-      await insertLocationPoint(db, {
-        journeyId: activeId,
-        lat,
-        lng,
-        timestamp: ts,
-        speed,
-        metadata: null,
-      });
-      last = { lat, lng, timestamp: ts };
+    const activeId = getActiveJourneyId();
+    if (activeId == null) {
+      return;
     }
+
+    const db = await openAppDatabase();
+    const journey = await getJourneyById(db, activeId);
+    if (!journey || journey.status !== "ongoing") {
+      return;
+    }
+
+    const sorted = [...kept].sort((a, b) => a.timestamp - b.timestamp);
+    const lastRow = await getLastLocationPointForJourney(db, activeId);
+    let last:
+      | { lat: number; lng: number; timestamp: number }
+      | null = lastRow
+      ? { lat: lastRow.lat, lng: lastRow.lng, timestamp: lastRow.timestamp }
+      : null;
+
+    for (const loc of sorted) {
+      const lat = loc.coords.latitude;
+      const lng = loc.coords.longitude;
+      const ts = loc.timestamp;
+      const speed = loc.coords.speed;
+
+      if (last == null) {
+        await insertLocationPoint(db, {
+          journeyId: activeId,
+          lat,
+          lng,
+          timestamp: ts,
+          speed,
+          metadata: null,
+        });
+        last = { lat, lng, timestamp: ts };
+        continue;
+      }
+
+      const dist = distanceMeters(last.lat, last.lng, lat, lng);
+      const dt = ts - last.timestamp;
+      if (dist >= MIN_MOVEMENT_METERS || dt >= MIN_TIME_BETWEEN_COMMITS_MS) {
+        await insertLocationPoint(db, {
+          journeyId: activeId,
+          lat,
+          lng,
+          timestamp: ts,
+          speed,
+          metadata: null,
+        });
+        last = { lat, lng, timestamp: ts };
+      }
+    }
+  } catch (taskError) {
+    const message =
+      taskError instanceof Error ? taskError.message : String(taskError);
+    console.warn(`[${LOCATION_TASK_NAME}] failed to persist locations: ${message}`);
   }
 });
