@@ -206,7 +206,11 @@ export default function JourneyDetailsScreen() {
   const speed = replayPoint?.speed ?? null;
 
   return (
-    <ScrollView className="flex-1 bg-white px-6 pt-12">
+    <ScrollView
+      className="flex-1 bg-white px-6 pt-12"
+      contentContainerStyle={{ paddingBottom: 24 }}
+      keyboardShouldPersistTaps="handled"
+    >
       <Text className="text-xl font-bold">{journey?.name ?? "Journey details"}</Text>
       <Text className="mt-2 text-neutral-600">Status: {journey?.status ?? "—"}</Text>
       {screenError ? <Text className="mt-2 text-sm text-red-700">{screenError}</Text> : null}
@@ -268,7 +272,12 @@ export default function JourneyDetailsScreen() {
 
       <View className="mt-4 rounded-xl border border-neutral-200 p-3">
         <Text className="text-sm font-semibold text-neutral-800">Replay events</Text>
-        <ScrollView ref={eventScrollRef} className="mt-2 max-h-24">
+        <ScrollView
+          ref={eventScrollRef}
+          className="mt-2 max-h-24"
+          nestedScrollEnabled
+          keyboardShouldPersistTaps="handled"
+        >
           {eventFeed.length === 0 ? (
             <Text className="text-xs text-neutral-500">No event at current replay time.</Text>
           ) : (

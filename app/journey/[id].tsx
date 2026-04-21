@@ -456,159 +456,163 @@ export default function JourneyScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-12">
-      <Text className="text-xl font-bold">{name}</Text>
-      <Text className="mt-2 text-neutral-600">Status: {statusLabel || "—"}</Text>
-      {screenError ? (
-        <Text className="mt-2 text-sm text-red-700">{screenError}</Text>
-      ) : null}
-      {needsBackgroundLocationSettings ? (
-        <Pressable
-          className="mt-3 self-start rounded-md bg-neutral-700 px-4 py-2"
-          onPress={() => {
-            void Linking.openSettings();
-          }}
-        >
-          <Text className="font-semibold text-white">Open location settings</Text>
-        </Pressable>
-      ) : null}
-      <View className="mt-4">
-        <JourneyMapPanel
-          points={points}
-          hasLocationPermission={locationPermission === "granted"}
-          onGrantLocation={() => {
-            void requestMapPermission();
-          }}
-        />
-      </View>
-      {actionLabel ? (
-        <Pressable
-          className={`mt-4 rounded-md px-4 py-3 ${busy ? "bg-neutral-300" : "bg-emerald-600"}`}
-          disabled={busy}
-          onPress={() => {
-            void onJourneyActionPress();
-          }}
-        >
-          <Text className="text-center font-semibold text-white">
-            {busy ? "Working..." : actionLabel}
-          </Text>
-        </Pressable>
-      ) : null}
-      <Text className="mt-2 font-mono text-sm text-neutral-500">
-        id={id} | points={points.length}
-      </Text>
-
-      <View className="mt-6 rounded-xl border border-neutral-200 p-4">
-        <Text className="text-base font-semibold text-neutral-900">Add note</Text>
-        <TextInput
-          className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-          placeholder="Note text"
-          value={newNoteText}
-          onChangeText={setNewNoteText}
-        />
-        <Pressable
-          className="mt-3 rounded-md bg-blue-600 px-4 py-2"
-          onPress={() => {
-            void addTextNote();
-          }}
-        >
-          <Text className="text-center font-semibold text-white">Save text note</Text>
-        </Pressable>
-        {newAudioRecorder ? (
-          <Pressable
-            className="mt-3 rounded-md bg-red-600 px-4 py-2"
-            onPress={() => {
-              void stopNewVoiceNoteRecordingAndSave();
-            }}
-          >
-            <Text className="text-center font-semibold text-white">
-              Stop recording
-            </Text>
-          </Pressable>
-        ) : (
-          <Pressable
-            className={`mt-3 rounded-md px-4 py-2 ${newAudioPendingFile ? "bg-neutral-300" : "bg-emerald-600"}`}
-            disabled={Boolean(newAudioPendingFile)}
-            onPress={() => {
-              void startNewVoiceNoteRecording();
-            }}
-          >
-            <Text className="text-center font-semibold text-white">
-              Start voice recording
-            </Text>
-          </Pressable>
-        )}
-        {newAudioPendingFile ? (
-          <View className="mt-3 gap-2">
-            <Pressable
-              className="rounded-md bg-emerald-700 px-4 py-2"
-              onPress={() => {
-                void saveNewVoiceNote();
-              }}
-            >
-              <Text className="text-center font-semibold text-white">
-                Save voice note
-              </Text>
-            </Pressable>
-            <Pressable
-              className="rounded-md bg-neutral-600 px-4 py-2"
-              onPress={() => {
-                void discardPendingVoiceRecording();
-              }}
-            >
-              <Text className="text-center font-semibold text-white">
-                Discard recording
-              </Text>
-            </Pressable>
-          </View>
+      <ScrollView
+        className="flex-1 px-6 pt-12"
+        contentContainerStyle={{ paddingBottom: 24 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text className="text-xl font-bold">{name}</Text>
+        <Text className="mt-2 text-neutral-600">Status: {statusLabel || "—"}</Text>
+        {screenError ? (
+          <Text className="mt-2 text-sm text-red-700">{screenError}</Text>
         ) : null}
-      </View>
+        {needsBackgroundLocationSettings ? (
+          <Pressable
+            className="mt-3 self-start rounded-md bg-neutral-700 px-4 py-2"
+            onPress={() => {
+              void Linking.openSettings();
+            }}
+          >
+            <Text className="font-semibold text-white">Open location settings</Text>
+          </Pressable>
+        ) : null}
+        <View className="mt-4">
+          <JourneyMapPanel
+            points={points}
+            hasLocationPermission={locationPermission === "granted"}
+            onGrantLocation={() => {
+              void requestMapPermission();
+            }}
+          />
+        </View>
+        {actionLabel ? (
+          <Pressable
+            className={`mt-4 rounded-md px-4 py-3 ${busy ? "bg-neutral-300" : "bg-emerald-600"}`}
+            disabled={busy}
+            onPress={() => {
+              void onJourneyActionPress();
+            }}
+          >
+            <Text className="text-center font-semibold text-white">
+              {busy ? "Working..." : actionLabel}
+            </Text>
+          </Pressable>
+        ) : null}
+        <Text className="mt-2 font-mono text-sm text-neutral-500">
+          id={id} | points={points.length}
+        </Text>
 
-      <View className="mt-6 rounded-xl border border-neutral-200 p-4">
-        <Text className="text-base font-semibold text-neutral-900">Add image</Text>
-        <TextInput
-          className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-          placeholder="media.text"
-          value={newMediaText}
-          onChangeText={setNewMediaText}
-        />
-        <Pressable
-          className="mt-3 rounded-md bg-blue-600 px-4 py-2"
-          onPress={() => {
-            void addImageMedia();
+        <View className="mt-6 rounded-xl border border-neutral-200 p-4">
+          <Text className="text-base font-semibold text-neutral-900">Add note</Text>
+          <TextInput
+            className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            placeholder="Note text"
+            value={newNoteText}
+            onChangeText={setNewNoteText}
+          />
+          <Pressable
+            className="mt-3 rounded-md bg-blue-600 px-4 py-2"
+            onPress={() => {
+              void addTextNote();
+            }}
+          >
+            <Text className="text-center font-semibold text-white">Save text note</Text>
+          </Pressable>
+          {newAudioRecorder ? (
+            <Pressable
+              className="mt-3 rounded-md bg-red-600 px-4 py-2"
+              onPress={() => {
+                void stopNewVoiceNoteRecordingAndSave();
+              }}
+            >
+              <Text className="text-center font-semibold text-white">
+                Stop recording
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              className={`mt-3 rounded-md px-4 py-2 ${newAudioPendingFile ? "bg-neutral-300" : "bg-emerald-600"}`}
+              disabled={Boolean(newAudioPendingFile)}
+              onPress={() => {
+                void startNewVoiceNoteRecording();
+              }}
+            >
+              <Text className="text-center font-semibold text-white">
+                Start voice recording
+              </Text>
+            </Pressable>
+          )}
+          {newAudioPendingFile ? (
+            <View className="mt-3 gap-2">
+              <Pressable
+                className="rounded-md bg-emerald-700 px-4 py-2"
+                onPress={() => {
+                  void saveNewVoiceNote();
+                }}
+              >
+                <Text className="text-center font-semibold text-white">
+                  Save voice note
+                </Text>
+              </Pressable>
+              <Pressable
+                className="rounded-md bg-neutral-600 px-4 py-2"
+                onPress={() => {
+                  void discardPendingVoiceRecording();
+                }}
+              >
+                <Text className="text-center font-semibold text-white">
+                  Discard recording
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
+        </View>
+
+        <View className="mt-6 rounded-xl border border-neutral-200 p-4">
+          <Text className="text-base font-semibold text-neutral-900">Add image</Text>
+          <TextInput
+            className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            placeholder="media.text"
+            value={newMediaText}
+            onChangeText={setNewMediaText}
+          />
+          <Pressable
+            className="mt-3 rounded-md bg-blue-600 px-4 py-2"
+            onPress={() => {
+              void addImageMedia();
+            }}
+          >
+            <Text className="text-center font-semibold text-white">Pick image</Text>
+          </Pressable>
+        </View>
+
+        <JourneyNotesList
+          notes={notes}
+          editable
+          onUpdateText={(note, text) => {
+            void updateNoteTextById(note, text);
           }}
-        >
-          <Text className="text-center font-semibold text-white">Pick image</Text>
-        </Pressable>
-      </View>
+          onDiscardAudio={(note) => {
+            void discardNoteAudio(note);
+          }}
+          onRerecordAudio={(note) => {
+            void rerecordNoteAudio(note);
+          }}
+          onDelete={(note) => {
+            void deleteNote(note);
+          }}
+        />
 
-      <JourneyNotesList
-        notes={notes}
-        editable
-        onUpdateText={(note, text) => {
-          void updateNoteTextById(note, text);
-        }}
-        onDiscardAudio={(note) => {
-          void discardNoteAudio(note);
-        }}
-        onRerecordAudio={(note) => {
-          void rerecordNoteAudio(note);
-        }}
-        onDelete={(note) => {
-          void deleteNote(note);
-        }}
-      />
-
-      <JourneyMediaList
-        media={media}
-        editable
-        onUpdateText={(item, text) => {
-          void updateMediaTextById(item, text);
-        }}
-        onDelete={(item) => {
-          void deleteMedia(item);
-        }}
-      />
+        <JourneyMediaList
+          media={media}
+          editable
+          onUpdateText={(item, text) => {
+            void updateMediaTextById(item, text);
+          }}
+          onDelete={(item) => {
+            void deleteMedia(item);
+          }}
+        />
       </ScrollView>
     </View>
   );

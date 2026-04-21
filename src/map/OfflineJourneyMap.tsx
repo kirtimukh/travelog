@@ -144,7 +144,7 @@ export function OfflineJourneyMap({ points }: Props) {
   );
 
   return (
-    <View className="h-[70%] overflow-hidden rounded-xl border border-neutral-200">
+    <View className="h-64 overflow-hidden rounded-xl border border-neutral-200">
       <Map style={{ flex: 1 }} mapStyle={mapStyle}>
         <Camera
           initialViewState={{

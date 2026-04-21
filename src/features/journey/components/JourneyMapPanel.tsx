@@ -19,7 +19,7 @@ export function JourneyMapPanel({
   }
 
   return (
-    <View className="h-[70%] items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50 px-4">
+    <View className="h-64 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50 px-4">
       <Text className="text-center text-sm text-neutral-700">
         Location permission is required to render the map.
       </Text>
