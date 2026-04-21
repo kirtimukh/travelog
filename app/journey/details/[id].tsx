@@ -18,7 +18,7 @@ import {
 import { openAppDatabase } from "../../../src/db/client";
 import { deleteJourneyWithFileGc } from "../../../src/db/journeys";
 import { deleteMediaById, updateMediaText } from "../../../src/db/media";
-import { deleteNoteById, updateNoteAudio, updateNoteText } from "../../../src/db/notes";
+import { deleteNoteById, updateNoteText } from "../../../src/db/notes";
 import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../src/db/schema";
 import { unlinkIfExists } from "../../../src/files/fsCleanup";
 import { loadJourneyBundle } from "../../../src/features/journey/bundle";
@@ -250,21 +250,6 @@ export default function JourneyDetailsScreen() {
     }
   }
 
-  async function discardNoteAudio(note: NoteRow): Promise<void> {
-    if (!note.audio_file || busy) {
-      return;
-    }
-    setBusy(true);
-    try {
-      await unlinkIfExists(note.audio_file);
-      const db = await openAppDatabase();
-      await updateNoteAudio(db, note.id, null, null);
-      await refresh();
-    } finally {
-      setBusy(false);
-    }
-  }
-
   async function updateMediaTextById(item: MediaRow, text: string): Promise<void> {
     const db = await openAppDatabase();
     await updateMediaText(db, item.id, text.trim() || null);
@@ -436,7 +421,7 @@ export default function JourneyDetailsScreen() {
           setNoteEditTarget(null);
         }}
         onSave={() => {
-          if (!noteEditTarget) {
+          if (!noteEditTarget || noteEditTarget.type !== "text") {
             return;
           }
           void updateNoteTextById(noteEditTarget, noteEditText).then(() => {
@@ -448,14 +433,6 @@ export default function JourneyDetailsScreen() {
             return;
           }
           void deleteNote(noteEditTarget).then(() => {
-            setNoteEditTarget(null);
-          });
-        }}
-        onDiscardAudio={() => {
-          if (!noteEditTarget) {
-            return;
-          }
-          void discardNoteAudio(noteEditTarget).then(() => {
             setNoteEditTarget(null);
           });
         }}

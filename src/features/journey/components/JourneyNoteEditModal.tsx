@@ -1,3 +1,5 @@
+import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
+import { useCallback, useEffect } from "react";
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
 
 import type { NoteRow } from "../../../db/schema";
@@ -12,7 +14,6 @@ export type JourneyNoteEditModalProps = {
   onRequestClose: () => void;
   onSave: () => void;
   onDelete: () => void;
-  onDiscardAudio: () => void;
   onRerecordAudio: () => void;
 };
 
@@ -26,9 +27,45 @@ export function JourneyNoteEditModal({
   onRequestClose,
   onSave,
   onDelete,
-  onDiscardAudio,
   onRerecordAudio,
 }: JourneyNoteEditModalProps) {
+  const isText = note?.type === "text";
+  const isVoice = note?.type === "voice";
+  const audioSource = note?.type === "voice" && note.audio_file ? note.audio_file : null;
+  const player = useAudioPlayer(audioSource);
+  const status = useAudioPlayerStatus(player);
+
+  useEffect(() => {
+    if (!visible) {
+      player.pause();
+    }
+  }, [visible, player]);
+
+  const togglePlayback = useCallback(async () => {
+    if (!audioSource) {
+      return;
+    }
+    if (status.playing) {
+      player.pause();
+      return;
+    }
+    const nearEnd =
+      status.didJustFinish ||
+      (status.duration > 0 && status.currentTime >= status.duration - 0.05);
+    if (nearEnd) {
+      await player.seekTo(0);
+    }
+    await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
+    player.play();
+  }, [
+    audioSource,
+    player,
+    status.currentTime,
+    status.didJustFinish,
+    status.duration,
+    status.playing,
+  ]);
+
   return (
     <Modal
       transparent
@@ -52,21 +89,30 @@ export function JourneyNoteEditModal({
             }}
           >
             <Text className="text-base font-semibold text-neutral-900">Edit note</Text>
-            <TextInput
-              className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-              placeholder="Note text"
-              value={text}
-              onChangeText={onChangeText}
-            />
-            {note?.type === "voice" ? (
+            {isText ? (
+              <TextInput
+                className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
+                placeholder="Note text"
+                value={text}
+                onChangeText={onChangeText}
+              />
+            ) : null}
+            {isVoice ? (
+              <Text className="mt-3 text-sm text-neutral-600">Voice note</Text>
+            ) : null}
+            {isVoice ? (
               <>
-                {note.audio_file ? (
+                {note?.audio_file ? (
                   <Pressable
-                    className={`mt-3 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-neutral-700"}`}
-                    disabled={busy}
-                    onPress={onDiscardAudio}
+                    className={`mt-3 rounded-md px-3 py-2 ${busy || !status.isLoaded ? "bg-neutral-300" : "bg-neutral-700"}`}
+                    disabled={busy || !status.isLoaded}
+                    onPress={() => {
+                      void togglePlayback();
+                    }}
                   >
-                    <Text className="text-center font-semibold text-white">Discard audio</Text>
+                    <Text className="text-center font-semibold text-white">
+                      {status.playing ? "Pause" : "Play"}
+                    </Text>
                   </Pressable>
                 ) : (
                   <Pressable
@@ -93,13 +139,25 @@ export function JourneyNoteEditModal({
               >
                 <Text className="text-center font-semibold text-neutral-900">Cancel</Text>
               </Pressable>
-              <Pressable
-                className={`flex-1 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-blue-600"}`}
-                disabled={busy}
-                onPress={onSave}
-              >
-                <Text className="text-center font-semibold text-white">Save</Text>
-              </Pressable>
+              {isText ? (
+                <Pressable
+                  className={`flex-1 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-blue-600"}`}
+                  disabled={busy}
+                  onPress={onSave}
+                >
+                  <Text className="text-center font-semibold text-white">Save</Text>
+                </Pressable>
+              ) : isVoice ? (
+                <Pressable
+                  className="flex-1 rounded-md bg-blue-600 px-3 py-2"
+                  onPress={() => {
+                    Keyboard.dismiss();
+                    onRequestClose();
+                  }}
+                >
+                  <Text className="text-center font-semibold text-white">Done</Text>
+                </Pressable>
+              ) : null}
             </View>
           </View>
         </View>

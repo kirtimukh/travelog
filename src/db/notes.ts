@@ -47,7 +47,10 @@ export async function updateNoteText(
   noteId: number,
   text: string | null,
 ): Promise<void> {
-  await db.runAsync(`UPDATE note SET text = ? WHERE id = ?`, [text, noteId]);
+  await db.runAsync(`UPDATE note SET text = ? WHERE id = ? AND type = 'text'`, [
+    text,
+    noteId,
+  ]);
 }
 
 export async function updateNoteAudio(

@@ -32,6 +32,7 @@ import type {
   LocationPointRow,
   MediaRow,
   NoteRow,
+  NoteType,
 } from "../../src/db/schema";
 import { unlinkIfExists } from "../../src/files/fsCleanup";
 import { copyImageToAppDocuments } from "../../src/files/imageCopy";
@@ -69,6 +70,7 @@ export default function JourneyScreen() {
     "unknown" | "granted" | "denied"
   >("unknown");
   const [newNoteText, setNewNoteText] = useState<string>("");
+  const [newNoteMode, setNewNoteMode] = useState<NoteType>("text");
   const [newMediaText, setNewMediaText] = useState<string>("");
   const [newAudioRecorder, setNewAudioRecorder] = useState<VoiceRecorder | null>(
     null,
@@ -114,6 +116,7 @@ export default function JourneyScreen() {
       return;
     }
     setNewNoteText("");
+    setNewNoteMode("text");
     setNewAudioPendingFile((prev) => {
       if (prev) {
         void unlinkIfExists(prev);
@@ -127,6 +130,26 @@ export default function JourneyScreen() {
       return null;
     });
   }, [noteModalVisible]);
+
+  function switchAddNoteMode(next: NoteType): void {
+    if (next === "text") {
+      setNewAudioPendingFile((prev) => {
+        if (prev) {
+          void unlinkIfExists(prev);
+        }
+        return null;
+      });
+      setNewAudioRecorder((rec) => {
+        if (rec) {
+          void rec.stop().catch(() => {});
+        }
+        return null;
+      });
+    } else {
+      setNewNoteText("");
+    }
+    setNewNoteMode(next);
+  }
 
   useEffect(() => {
     if (!mediaModalVisible) {
@@ -289,6 +312,9 @@ export default function JourneyScreen() {
     if (!newNoteText.trim() || busy) {
       return;
     }
+    if (newAudioRecorder || newAudioPendingFile) {
+      return;
+    }
     setBusy(true);
     try {
       const db = await openAppDatabase();
@@ -343,7 +369,7 @@ export default function JourneyScreen() {
       await createNote(db, {
         journeyId,
         type: "voice",
-        text: newNoteText.trim() || null,
+        text: null,
         audioFile: newAudioPendingFile,
       });
       setNewNoteText("");
@@ -379,9 +405,7 @@ export default function JourneyScreen() {
       return;
     }
     if (note.audio_file) {
-      setScreenError(
-        "Discard the existing audio recording before recording a new one.",
-      );
+      setScreenError("This note already has audio. Delete the note to record again.");
       return;
     }
     setBusy(true);
@@ -403,21 +427,6 @@ export default function JourneyScreen() {
     } catch {
       setBusy(false);
       setScreenError("Could not start voice recording.");
-    }
-  }
-
-  async function discardNoteAudio(note: NoteRow): Promise<void> {
-    if (!note.audio_file || busy) {
-      return;
-    }
-    setBusy(true);
-    try {
-      await unlinkIfExists(note.audio_file);
-      const db = await openAppDatabase();
-      await updateNoteAudio(db, note.id, null, null);
-      await refreshJourneyData();
-    } finally {
-      setBusy(false);
     }
   }
 
@@ -617,68 +626,105 @@ export default function JourneyScreen() {
               }}
             >
               <Text className="text-base font-semibold text-neutral-900">Add note</Text>
-              <TextInput
-                className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-                placeholder="Note text"
-                value={newNoteText}
-                onChangeText={setNewNoteText}
-              />
-              <Pressable
-                className="mt-3 rounded-md bg-blue-600 px-4 py-2"
-                onPress={() => {
-                  void addTextNote();
-                }}
-              >
-                <Text className="text-center font-semibold text-white">Save text note</Text>
-              </Pressable>
-              {newAudioRecorder ? (
+              <View className="mt-3 flex-row rounded-lg border border-neutral-300 p-0.5">
                 <Pressable
-                  className="mt-3 rounded-md bg-red-600 px-4 py-2"
+                  className={`flex-1 rounded-md py-2 ${newNoteMode === "text" ? "bg-blue-600" : "bg-transparent"}`}
                   onPress={() => {
-                    void stopNewVoiceNoteRecordingAndSave();
+                    switchAddNoteMode("text");
                   }}
                 >
-                  <Text className="text-center font-semibold text-white">
-                    Stop recording
+                  <Text
+                    className={`text-center text-sm font-semibold ${newNoteMode === "text" ? "text-white" : "text-neutral-700"}`}
+                  >
+                    Text
                   </Text>
                 </Pressable>
+                <Pressable
+                  className={`flex-1 rounded-md py-2 ${newNoteMode === "voice" ? "bg-emerald-600" : "bg-transparent"}`}
+                  onPress={() => {
+                    switchAddNoteMode("voice");
+                  }}
+                >
+                  <Text
+                    className={`text-center text-sm font-semibold ${newNoteMode === "voice" ? "text-white" : "text-neutral-700"}`}
+                  >
+                    Voice
+                  </Text>
+                </Pressable>
+              </View>
+              {newNoteMode === "text" ? (
+                <>
+                  <TextInput
+                    className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
+                    placeholder="Note text"
+                    value={newNoteText}
+                    onChangeText={setNewNoteText}
+                  />
+                  <Pressable
+                    className="mt-3 rounded-md bg-blue-600 px-4 py-2"
+                    disabled={busy}
+                    onPress={() => {
+                      void addTextNote();
+                    }}
+                  >
+                    <Text className="text-center font-semibold text-white">Save text note</Text>
+                  </Pressable>
+                </>
               ) : (
-                <Pressable
-                  className={`mt-3 rounded-md px-4 py-2 ${newAudioPendingFile ? "bg-neutral-300" : "bg-emerald-600"}`}
-                  disabled={Boolean(newAudioPendingFile)}
-                  onPress={() => {
-                    void startNewVoiceNoteRecording();
-                  }}
-                >
-                  <Text className="text-center font-semibold text-white">
-                    Start voice recording
-                  </Text>
-                </Pressable>
+                <>
+                  {newAudioRecorder ? (
+                    <Pressable
+                      className="mt-3 rounded-md bg-red-600 px-4 py-2"
+                      disabled={busy}
+                      onPress={() => {
+                        void stopNewVoiceNoteRecordingAndSave();
+                      }}
+                    >
+                      <Text className="text-center font-semibold text-white">
+                        Stop recording
+                      </Text>
+                    </Pressable>
+                  ) : (
+                    <Pressable
+                      className={`mt-3 rounded-md px-4 py-2 ${newAudioPendingFile ? "bg-neutral-300" : "bg-emerald-600"}`}
+                      disabled={Boolean(newAudioPendingFile) || busy}
+                      onPress={() => {
+                        void startNewVoiceNoteRecording();
+                      }}
+                    >
+                      <Text className="text-center font-semibold text-white">
+                        Start voice recording
+                      </Text>
+                    </Pressable>
+                  )}
+                  {newAudioPendingFile ? (
+                    <View className="mt-3 gap-2">
+                      <Pressable
+                        className="rounded-md bg-emerald-700 px-4 py-2"
+                        disabled={busy}
+                        onPress={() => {
+                          void saveNewVoiceNote();
+                        }}
+                      >
+                        <Text className="text-center font-semibold text-white">
+                          Save voice note
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        className="rounded-md bg-neutral-600 px-4 py-2"
+                        disabled={busy}
+                        onPress={() => {
+                          void discardPendingVoiceRecording();
+                        }}
+                      >
+                        <Text className="text-center font-semibold text-white">
+                          Discard recording
+                        </Text>
+                      </Pressable>
+                    </View>
+                  ) : null}
+                </>
               )}
-              {newAudioPendingFile ? (
-                <View className="mt-3 gap-2">
-                  <Pressable
-                    className="rounded-md bg-emerald-700 px-4 py-2"
-                    onPress={() => {
-                      void saveNewVoiceNote();
-                    }}
-                  >
-                    <Text className="text-center font-semibold text-white">
-                      Save voice note
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    className="rounded-md bg-neutral-600 px-4 py-2"
-                    onPress={() => {
-                      void discardPendingVoiceRecording();
-                    }}
-                  >
-                    <Text className="text-center font-semibold text-white">
-                      Discard recording
-                    </Text>
-                  </Pressable>
-                </View>
-              ) : null}
             </View>
           </View>
         </View>
@@ -738,7 +784,7 @@ export default function JourneyScreen() {
           setNoteEditTarget(null);
         }}
         onSave={() => {
-          if (!noteEditTarget) {
+          if (!noteEditTarget || noteEditTarget.type !== "text") {
             return;
           }
           void updateNoteTextById(noteEditTarget, noteEditText).then(() => {
@@ -750,14 +796,6 @@ export default function JourneyScreen() {
             return;
           }
           void deleteNote(noteEditTarget).then(() => {
-            setNoteEditTarget(null);
-          });
-        }}
-        onDiscardAudio={() => {
-          if (!noteEditTarget) {
-            return;
-          }
-          void discardNoteAudio(noteEditTarget).then(() => {
             setNoteEditTarget(null);
           });
         }}
