@@ -1,3 +1,5 @@
+import "react-native-gesture-handler";
+
 import "../global.css";
 import "../src/tracking/locationTask";
 
@@ -11,6 +13,7 @@ import {
 } from "expo-router";
 import { useEffect } from "react";
 import { AppState } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { openAppDatabase } from "../src/db/client";
 import { getJourneyById } from "../src/db/journeys";
@@ -60,11 +63,13 @@ export default function RootLayout() {
   }, [pathname, router]);
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: true,
-        headerTitle: "MapMyTrip",
-      }}
-    />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack
+        screenOptions={{
+          headerShown: true,
+          headerTitle: "MapMyTrip",
+        }}
+      />
+    </GestureHandlerRootView>
   );
 }

@@ -1,8 +1,14 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-import { useCallback, useEffect, useState } from "react";
-import { Linking, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Linking, Pressable, Text, TextInput, View } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  ScrollView,
+  type GestureType,
+} from "react-native-gesture-handler";
 
 import { openAppDatabase } from "../../src/db/client";
 import { updateJourneyStatus } from "../../src/db/journeys";
@@ -453,6 +459,14 @@ export default function JourneyScreen() {
   }
 
   const actionLabel = getJourneyActionLabel(statusLabel);
+  const mapGestureRef = useRef<GestureType | undefined>(undefined);
+  const mapNativeGesture = useMemo(
+    () =>
+      Gesture.Native()
+        .disallowInterruption(true)
+        .withRef(mapGestureRef),
+    [],
+  );
 
   return (
     <View className="flex-1 bg-white">
@@ -460,6 +474,8 @@ export default function JourneyScreen() {
         className="flex-1 px-6 pt-12"
         contentContainerStyle={{ paddingBottom: 24 }}
         keyboardShouldPersistTaps="handled"
+        nestedScrollEnabled
+        waitFor={mapGestureRef}
       >
         <Text className="text-xl font-bold">{name}</Text>
         <Text className="mt-2 text-neutral-600">Status: {statusLabel || "—"}</Text>
@@ -477,13 +493,17 @@ export default function JourneyScreen() {
           </Pressable>
         ) : null}
         <View className="mt-4">
-          <JourneyMapPanel
-            points={points}
-            hasLocationPermission={locationPermission === "granted"}
-            onGrantLocation={() => {
-              void requestMapPermission();
-            }}
-          />
+          <GestureDetector gesture={mapNativeGesture}>
+            <View collapsable={false}>
+              <JourneyMapPanel
+                points={points}
+                hasLocationPermission={locationPermission === "granted"}
+                onGrantLocation={() => {
+                  void requestMapPermission();
+                }}
+              />
+            </View>
+          </GestureDetector>
         </View>
         {actionLabel ? (
           <Pressable
