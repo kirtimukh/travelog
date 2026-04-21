@@ -5,7 +5,21 @@
 import type { LocationObject } from "expo-location";
 import * as TaskManager from "expo-task-manager";
 
-import { LOCATION_TASK_NAME, MAX_LOCATION_ACCURACY_METERS } from "./constants";
+import { openAppDatabase } from "../db/client";
+import { getJourneyById } from "../db/journeys";
+import {
+  getLastLocationPointForJourney,
+  insertLocationPoint,
+} from "../db/locationPoints";
+import { getActiveJourneyId } from "../storage/activeJourney";
+import { distanceMeters } from "../geo/distance";
+
+import {
+  LOCATION_TASK_NAME,
+  MAX_LOCATION_ACCURACY_METERS,
+  MIN_MOVEMENT_METERS,
+  MIN_TIME_BETWEEN_COMMITS_MS,
+} from "./constants";
 
 function filterLocations(locations: LocationObject[]): LocationObject[] {
   return locations.filter((loc) => {
@@ -32,5 +46,57 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   if (!kept.length) {
     return;
   }
-  // Step 6: persist `kept` to `location_points` for active journey (activeJourneyId in MMKV).
+
+  const activeId = getActiveJourneyId();
+  if (activeId == null) {
+    return;
+  }
+
+  const db = await openAppDatabase();
+  const journey = await getJourneyById(db, activeId);
+  if (!journey || journey.status !== "ongoing") {
+    return;
+  }
+
+  const sorted = [...kept].sort((a, b) => a.timestamp - b.timestamp);
+  const lastRow = await getLastLocationPointForJourney(db, activeId);
+  let last:
+    | { lat: number; lng: number; timestamp: number }
+    | null = lastRow
+    ? { lat: lastRow.lat, lng: lastRow.lng, timestamp: lastRow.timestamp }
+    : null;
+
+  for (const loc of sorted) {
+    const lat = loc.coords.latitude;
+    const lng = loc.coords.longitude;
+    const ts = loc.timestamp;
+    const speed = loc.coords.speed;
+
+    if (last == null) {
+      await insertLocationPoint(db, {
+        journeyId: activeId,
+        lat,
+        lng,
+        timestamp: ts,
+        speed,
+        metadata: null,
+      });
+      last = { lat, lng, timestamp: ts };
+      continue;
+    }
+
+    const dist = distanceMeters(last.lat, last.lng, lat, lng);
+    const dt = ts - last.timestamp;
+    if (dist >= MIN_MOVEMENT_METERS || dt >= MIN_TIME_BETWEEN_COMMITS_MS) {
+      await insertLocationPoint(db, {
+        journeyId: activeId,
+        lat,
+        lng,
+        timestamp: ts,
+        speed,
+        metadata: null,
+      });
+      last = { lat, lng, timestamp: ts };
+    }
+  }
 });

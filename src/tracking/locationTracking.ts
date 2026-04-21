@@ -7,6 +7,8 @@ import {
   BATTERY_RECOVERY_FRACTION,
   LOCATION_TASK_NAME,
   LOW_BATTERY_FRACTION,
+  MIN_MOVEMENT_METERS,
+  MIN_TIME_BETWEEN_COMMITS_MS,
 } from "./constants";
 
 type AccuracyMode = "high" | "reduced";
@@ -42,8 +44,8 @@ function buildTaskOptions(mode: AccuracyMode): Location.LocationTaskOptions {
 
   return {
     accuracy: highAccuracy,
-    distanceInterval: 10,
-    timeInterval: 5000,
+    distanceInterval: MIN_MOVEMENT_METERS,
+    timeInterval: MIN_TIME_BETWEEN_COMMITS_MS,
     activityType: Location.LocationActivityType.Fitness,
     foregroundService: {
       notificationTitle: "MapMyTrip",

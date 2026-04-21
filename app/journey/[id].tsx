@@ -4,6 +4,7 @@ import { Text, View } from "react-native";
 
 import { openAppDatabase } from "../../src/db/client";
 import { getJourneyById } from "../../src/db/journeys";
+import { syncActiveJourneySession } from "../../src/storage/activeJourney";
 import { syncBackgroundTrackingForJourneyStatus } from "../../src/tracking/locationTracking";
 
 export default function JourneyScreen() {
@@ -25,6 +26,7 @@ export default function JourneyScreen() {
       }
       setName(journey.name);
       setStatusLabel(journey.status);
+      syncActiveJourneySession(journey.id, journey.status);
       await syncBackgroundTrackingForJourneyStatus(journey.status);
     })();
     return () => {
