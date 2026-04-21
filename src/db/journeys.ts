@@ -27,6 +27,24 @@ export async function getJourneyById(
   return row ?? null;
 }
 
+export async function getMainScreenJourneyCandidate(
+  db: SQLite.SQLiteDatabase,
+): Promise<JourneyRow | null> {
+  const row = await db.getFirstAsync<JourneyRow>(
+    `SELECT id, name, description, start_ts, end_ts, status
+     FROM journey
+     WHERE status IN ('ongoing', 'paused', 'scheduled')
+     ORDER BY CASE status
+       WHEN 'ongoing' THEN 1
+       WHEN 'paused' THEN 2
+       WHEN 'scheduled' THEN 3
+       ELSE 4
+     END, id DESC
+     LIMIT 1`,
+  );
+  return row ?? null;
+}
+
 export async function createJourney(
   db: SQLite.SQLiteDatabase,
   input: {

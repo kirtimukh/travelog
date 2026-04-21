@@ -12,6 +12,17 @@ import {
 } from "./constants";
 
 type AccuracyMode = "high" | "reduced";
+type PermissionOutcome =
+  | "granted"
+  | "foreground-denied"
+  | "background-denied"
+  | "background-error";
+
+export type TrackingSyncResult = {
+  started: boolean;
+  permissionOutcome: PermissionOutcome;
+  message?: string;
+};
 
 let currentAccuracyMode: AccuracyMode | null = null;
 
@@ -59,13 +70,35 @@ function buildTaskOptions(mode: AccuracyMode): Location.LocationTaskOptions {
 /**
  * Request foreground + background location permissions needed for ongoing tracking.
  */
-export async function requestLocationPermissionsForTracking(): Promise<boolean> {
+export async function requestLocationPermissionsForTracking(): Promise<TrackingSyncResult> {
   const fg = await Location.requestForegroundPermissionsAsync();
   if (fg.status !== Location.PermissionStatus.GRANTED) {
-    return false;
+    return {
+      started: false,
+      permissionOutcome: "foreground-denied",
+      message: "Foreground location permission is required to start tracking.",
+    };
   }
-  const bg = await Location.requestBackgroundPermissionsAsync();
-  return bg.status === Location.PermissionStatus.GRANTED;
+
+  try {
+    const bg = await Location.requestBackgroundPermissionsAsync();
+    if (bg.status === Location.PermissionStatus.GRANTED) {
+      return { started: true, permissionOutcome: "granted" };
+    }
+    return {
+      started: false,
+      permissionOutcome: "background-denied",
+      message:
+        "Background location is not enabled. Please allow 'Always' or 'Allow all the time' in app settings.",
+    };
+  } catch {
+    return {
+      started: false,
+      permissionOutcome: "background-error",
+      message:
+        "Background location request was rejected by the OS. Open app settings and allow background location.",
+    };
+  }
 }
 
 /**
@@ -109,16 +142,17 @@ export async function stopOngoingLocationTracking(): Promise<void> {
  */
 export async function syncBackgroundTrackingForJourneyStatus(
   status: JourneyStatus,
-): Promise<void> {
+): Promise<TrackingSyncResult> {
   if (status === "ongoing") {
-    const ok = await requestLocationPermissionsForTracking();
-    if (!ok) {
-      return;
+    const permissionResult = await requestLocationPermissionsForTracking();
+    if (!permissionResult.started) {
+      return permissionResult;
     }
     await startOngoingLocationTracking();
-    return;
+    return { started: true, permissionOutcome: "granted" };
   }
   await stopOngoingLocationTracking();
+  return { started: false, permissionOutcome: "granted" };
 }
 
 export async function refreshLocationTrackingAccuracyIfRunning(): Promise<void> {

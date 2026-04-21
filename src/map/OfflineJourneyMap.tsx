@@ -129,7 +129,10 @@ function buildOfflineStyle(pmtilesPath: string | undefined): StyleSpecification 
 
 export function OfflineJourneyMap({ points }: Props) {
   const lastPoint = points[points.length - 1] ?? null;
-  const lineFeature = useMemo(() => toLineFeature(points), [points]);
+  const lineFeature = useMemo(
+    () => (points.length > 1 ? toLineFeature(points) : null),
+    [points],
+  );
   const pointFeature = useMemo(
     () => (lastPoint ? toPointFeature(lastPoint) : null),
     [lastPoint],
@@ -146,16 +149,18 @@ export function OfflineJourneyMap({ points }: Props) {
         <Camera
           initialViewState={{
             zoom: 12,
-            center: lastPoint ? [lastPoint.lng, lastPoint.lat] : [95, 27],
+            center: lastPoint ? [lastPoint.lng, lastPoint.lat] : [91.750605, 26.129195],
           }}
         />
-        <GeoJSONSource id="journey-line" data={lineFeature}>
-          <Layer
-            id="journey-line-layer"
-            type="line"
-            style={{ lineColor: "#1D4ED8", lineWidth: 3 }}
-          />
-        </GeoJSONSource>
+        {lineFeature ? (
+          <GeoJSONSource id="journey-line" data={lineFeature}>
+            <Layer
+              id="journey-line-layer"
+              type="line"
+              style={{ lineColor: "#1D4ED8", lineWidth: 3 }}
+            />
+          </GeoJSONSource>
+        ) : null}
         {pointFeature ? (
           <GeoJSONSource id="journey-point" data={pointFeature}>
             <Layer

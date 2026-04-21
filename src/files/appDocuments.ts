@@ -2,7 +2,7 @@ import * as FileSystem from "expo-file-system/legacy";
 
 import { randomUuid } from "./uuid";
 
-export type AppMediaExtension = ".jpg" | ".m4a";
+export type AppMediaExtension = ".jpg" | ".jpeg" | ".png" | ".m4a";
 
 /**
  * Copies a file into the app document directory with a UUID filename (PRD).
@@ -15,7 +15,12 @@ export async function copyIntoAppDocumentsWithUuid(
   if (base == null || base === "") {
     throw new Error("App document directory is not available");
   }
-  const ext = extension === ".jpg" ? ".jpg" : ".m4a";
+  const ext =
+    extension === ".jpg" ||
+    extension === ".jpeg" ||
+    extension === ".png"
+      ? extension
+      : ".m4a";
   const dest = `${base}${randomUuid()}${ext}`;
   await FileSystem.copyAsync({ from: sourceUri, to: dest });
   return dest;
