@@ -5,10 +5,12 @@ import {
   Map,
   type CameraRef,
   type LngLatBounds,
+  type MapRef,
   type StyleSpecification,
+  type ViewStateChangeEvent,
 } from "@maplibre/maplibre-react-native";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, Text, View, type NativeSyntheticEvent } from "react-native";
 
 import type { LocationPointRow } from "../db/schema";
 import { getPmtilesConfig } from "../storage/pmtilesConfig";
@@ -19,6 +21,13 @@ type Props = {
 
 const DEFAULT_CENTER: [number, number] = [91.750605, 26.129195];
 const FIT_PADDING = { top: 28, right: 28, bottom: 28, left: 28 };
+const MIN_ZOOM = 2;
+const MAX_ZOOM = 22;
+const ZOOM_STEP = 1;
+const INITIAL_ZOOM = 12;
+const ZOOM_ANIM_MS = 180;
+/** Ignore userInteraction on region events shortly after programmatic route fits. */
+const PROGRAMMATIC_FIT_SUPPRESS_MS = 550;
 
 function toLineFeature(points: LocationPointRow[]) {
   return {
@@ -175,7 +184,13 @@ export function OfflineJourneyMap({ points }: Props) {
   );
 
   const cameraRef = useRef<CameraRef>(null);
+  const mapRef = useRef<MapRef>(null);
   const mapReadyRef = useRef(false);
+  const ignoreUserViewportUntilRef = useRef(0);
+  const userInteractionRef = useRef(false);
+  const [currentZoom, setCurrentZoom] = useState(INITIAL_ZOOM);
+  /** When true, new points (live or replay path) trigger auto fit. Cleared on user pan/zoom; restored by recenter. */
+  const [autoFollowRoute, setAutoFollowRoute] = useState(true);
 
   const initialCenter = useMemo((): [number, number] => {
     if (lastPoint) {
@@ -184,7 +199,7 @@ export function OfflineJourneyMap({ points }: Props) {
     return DEFAULT_CENTER;
   }, [lastPoint]);
 
-  const applyCameraToPoints = useCallback(() => {
+  const fitCameraToRoute = useCallback(() => {
     if (!mapReadyRef.current) {
       return;
     }
@@ -192,6 +207,7 @@ export function OfflineJourneyMap({ points }: Props) {
     if (!cam || points.length === 0) {
       return;
     }
+    ignoreUserViewportUntilRef.current = Date.now() + PROGRAMMATIC_FIT_SUPPRESS_MS;
     try {
       if (points.length === 1) {
         cam.easeTo({
@@ -213,36 +229,99 @@ export function OfflineJourneyMap({ points }: Props) {
     }
   }, [points]);
 
+  const syncZoomFromMap = useCallback(() => {
+    void mapRef.current?.getZoom().then((z) => {
+      if (typeof z === "number" && !Number.isNaN(z)) {
+        setCurrentZoom(z);
+      }
+    });
+  }, []);
+
   useEffect(() => {
-    applyCameraToPoints();
-  }, [applyCameraToPoints]);
+    if (!autoFollowRoute) {
+      return;
+    }
+    if (!userInteractionRef.current) {
+      fitCameraToRoute();
+    }
+  }, [autoFollowRoute, fitCameraToRoute]);
+
+  const onRegionDidChange = useCallback(
+    (event: NativeSyntheticEvent<ViewStateChangeEvent>) => {
+      const { zoom: z, userInteraction } = event.nativeEvent;
+      if (typeof z === "number" && !Number.isNaN(z)) {
+        setCurrentZoom(z);
+      }
+      userInteractionRef.current = userInteraction;
+      if (
+        userInteraction &&
+        Date.now() > ignoreUserViewportUntilRef.current
+      ) {
+        setAutoFollowRoute(false);
+      }
+    },
+    [],
+  );
+
+  const zoomByStep = useCallback((delta: number) => {
+    const cam = cameraRef.current;
+    const map = mapRef.current;
+    if (!cam || !map) {
+      return;
+    }
+    void map.getZoom().then((z) => {
+      if (typeof z !== "number" || Number.isNaN(z)) {
+        return;
+      }
+      const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z + delta));
+      if (Math.abs(next - z) < 1e-6) {
+        return;
+      }
+      try {
+        cam.zoomTo(next, { duration: ZOOM_ANIM_MS });
+      } catch {
+        // Camera not attached yet
+      }
+    });
+  }, []);
+
+  const canZoomIn = currentZoom < MAX_ZOOM - 1e-3;
+  const canZoomOut = currentZoom > MIN_ZOOM + 1e-3;
 
   return (
     <View className="h-64 overflow-hidden rounded-xl border border-neutral-200">
       <Map
+        ref={mapRef}
         style={{ flex: 1 }}
         mapStyle={mapStyle}
         dragPan
         touchZoom
         doubleTapZoom
         doubleTapHoldZoom
+        onRegionDidChange={onRegionDidChange}
         onDidFinishLoadingMap={() => {
           mapReadyRef.current = true;
-          applyCameraToPoints();
+          if (autoFollowRoute && !userInteractionRef.current) {
+            fitCameraToRoute();
+            syncZoomFromMap();
+          }
         }}
         onDidFinishLoadingStyle={() => {
           mapReadyRef.current = true;
-          applyCameraToPoints();
+          if (autoFollowRoute && !userInteractionRef.current) {
+            fitCameraToRoute();
+            syncZoomFromMap();
+          }
         }}
       >
         <Camera
           ref={cameraRef}
           initialViewState={{
-            zoom: 12,
+            zoom: INITIAL_ZOOM,
             center: initialCenter,
           }}
-          minZoom={2}
-          maxZoom={22}
+          minZoom={MIN_ZOOM}
+          maxZoom={MAX_ZOOM}
         />
         {lineFeature ? (
           <GeoJSONSource id="journey-line" data={lineFeature}>
@@ -263,6 +342,51 @@ export function OfflineJourneyMap({ points }: Props) {
           </GeoJSONSource>
         ) : null}
       </Map>
+      <View className="absolute right-2 top-2 gap-2">
+        <Pressable
+          accessibilityLabel="Zoom in"
+          accessibilityRole="button"
+          accessibilityState={{ disabled: !canZoomIn }}
+          className={`min-h-11 min-w-11 items-center justify-center rounded-lg border border-neutral-200 bg-white/90 ${!canZoomIn ? "opacity-40" : ""}`}
+          disabled={!canZoomIn}
+          onPress={() => {
+            zoomByStep(ZOOM_STEP);
+          }}
+        >
+          <Text className="text-lg font-semibold text-neutral-800">+</Text>
+        </Pressable>
+        <Pressable
+          accessibilityLabel="Zoom out"
+          accessibilityRole="button"
+          accessibilityState={{ disabled: !canZoomOut }}
+          className={`min-h-11 min-w-11 items-center justify-center rounded-lg border border-neutral-200 bg-white/90 ${!canZoomOut ? "opacity-40" : ""}`}
+          disabled={!canZoomOut}
+          onPress={() => {
+            zoomByStep(-ZOOM_STEP);
+          }}
+        >
+          <Text className="text-lg font-semibold text-neutral-800">−</Text>
+        </Pressable>
+        <Pressable
+          accessibilityLabel="Recenter map on route"
+          accessibilityRole="button"
+          accessibilityState={{ disabled: points.length < 1 }}
+          className={`min-h-11 min-w-11 items-center justify-center rounded-lg border border-neutral-200 bg-white/90 ${points.length < 1 ? "opacity-40" : ""}`}
+          disabled={points.length < 1}
+          onPress={() => {
+            const wasFollowing = autoFollowRoute;
+            setAutoFollowRoute(true);
+            if (wasFollowing) {
+              fitCameraToRoute();
+              syncZoomFromMap();
+            }
+          }}
+        >
+          <Text className="text-lg text-neutral-800" importantForAccessibility="no">
+            ⌖
+          </Text>
+        </Pressable>
+      </View>
       <View className="absolute bottom-2 left-2 rounded bg-white/90 px-2 py-1">
         <Text className="font-mono text-xs text-neutral-700">
           PMTiles: {pmtilesConfig?.pmtilesFileName ?? "missing"}

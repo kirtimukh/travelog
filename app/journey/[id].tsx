@@ -591,6 +591,7 @@ export default function JourneyScreen() {
         <JourneyNotesFeed
           notes={notes}
           media={media}
+          locationPoints={points}
           onLongPressNote={(note) => {
             setNoteEditTarget(note);
             setNoteEditText(note.text ?? "");

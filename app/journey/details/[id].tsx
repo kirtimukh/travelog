@@ -393,6 +393,7 @@ export default function JourneyDetailsScreen() {
       <JourneyNotesFeed
         notes={notes}
         media={media}
+        locationPoints={points}
         editable={editable}
         onLongPressNote={(note) => {
           if (!editable) {
