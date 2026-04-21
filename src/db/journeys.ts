@@ -9,6 +9,12 @@ import { unlinkIfExists } from "../files/fsCleanup";
 
 import type { JourneyRow, JourneyStatus } from "./schema";
 
+export type JourneyListFilters = {
+  name?: string;
+  status?: JourneyStatus | "all";
+  inputDateTs?: number | null;
+};
+
 export async function getJourneyById(
   db: SQLite.SQLiteDatabase,
   id: number,
@@ -64,6 +70,44 @@ export async function createJourney(
     await syncBackgroundTrackingForJourneyStatus(status);
   }
   return id;
+}
+
+export async function listJourneysWithFilters(
+  db: SQLite.SQLiteDatabase,
+  filters: JourneyListFilters = {},
+): Promise<JourneyRow[]> {
+  const whereClauses: string[] = [];
+  const params: Array<string | number> = [];
+
+  const trimmedName = filters.name?.trim();
+  if (trimmedName) {
+    whereClauses.push("LOWER(name) LIKE ?");
+    params.push(`%${trimmedName.toLowerCase()}%`);
+  }
+
+  if (filters.status && filters.status !== "all") {
+    whereClauses.push("status = ?");
+    params.push(filters.status);
+  }
+
+  if (filters.inputDateTs != null) {
+    whereClauses.push("start_ts IS NOT NULL");
+    whereClauses.push("start_ts <= ?");
+    whereClauses.push("(end_ts IS NULL OR end_ts >= ?)");
+    params.push(filters.inputDateTs, filters.inputDateTs);
+  }
+
+  const whereSql =
+    whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+
+  const rows = await db.getAllAsync<JourneyRow>(
+    `SELECT id, name, description, start_ts, end_ts, status
+     FROM journey
+     ${whereSql}
+     ORDER BY id DESC`,
+    params,
+  );
+  return rows;
 }
 
 export async function updateJourneyStatus(

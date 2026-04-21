@@ -195,6 +195,16 @@ export default function HomeScreen() {
       <Text className="mt-2 text-sm text-neutral-700">
         Upload {REQUIRED_PMTILES_FILENAME} to unlock map-enabled journeys.
       </Text>
+      {ready ? (
+        <Pressable
+          className="mt-4 self-start rounded-md bg-neutral-800 px-4 py-2"
+          onPress={() => {
+            router.push("/journeys");
+          }}
+        >
+          <Text className="font-semibold text-white">View all journeys</Text>
+        </Pressable>
+      ) : null}
       <View className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
         <Text className="text-base font-semibold text-neutral-900">
           PMTiles package form

@@ -1,11 +1,11 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useCallback, useEffect, useState } from "react";
 import { Linking, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import { openAppDatabase } from "../../src/db/client";
-import { getJourneyById, updateJourneyStatus } from "../../src/db/journeys";
+import { updateJourneyStatus } from "../../src/db/journeys";
 import {
   insertLocationPoint,
   listLocationPointsForJourney,
@@ -13,13 +13,11 @@ import {
 import {
   createMedia,
   deleteMediaById,
-  listMediaForJourney,
   updateMediaText,
 } from "../../src/db/media";
 import {
   createNote,
   deleteNoteById,
-  listNotesForJourney,
   updateNoteAudio,
   updateNoteText,
 } from "../../src/db/notes";
@@ -36,14 +34,19 @@ import {
   stopRecordingAndCopyToAppDocuments,
   type VoiceRecorder,
 } from "../../src/files/voiceRecording";
-import { OfflineJourneyMap } from "../../src/map/OfflineJourneyMap";
 import { syncActiveJourneySession } from "../../src/storage/activeJourney";
 import { hasValidPmtilesPackage } from "../../src/storage/pmtilesGuard";
 import { syncBackgroundTrackingForJourneyStatus } from "../../src/tracking/locationTracking";
+import { loadJourneyBundle as loadJourneyBundleData } from "../../src/features/journey/bundle";
+import { JourneyMapPanel } from "../../src/features/journey/components/JourneyMapPanel";
+import { JourneyMediaList } from "../../src/features/journey/components/JourneyMediaList";
+import { JourneyNotesList } from "../../src/features/journey/components/JourneyNotesList";
+import { getJourneyActionLabel } from "../../src/features/journey/status";
 
 export default function JourneyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const navigation = useNavigation();
   const journeyId = Number(id);
   const [name, setName] = useState<string>("Journey");
   const [statusLabel, setStatusLabel] = useState<JourneyStatus | "">("");
@@ -63,23 +66,52 @@ export default function JourneyScreen() {
     null,
   );
   const [busy, setBusy] = useState<boolean>(false);
+  const [showHeaderMenu, setShowHeaderMenu] = useState<boolean>(false);
   const [needsBackgroundLocationSettings, setNeedsBackgroundLocationSettings] =
     useState<boolean>(false);
+
+  const handleBackPress = useCallback((): void => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace("/");
+  }, [router]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable className="px-2 py-1" onPress={handleBackPress}>
+          <Text className="text-xl font-semibold text-blue-600">←</Text>
+        </Pressable>
+      ),
+      headerRight: () => (
+        <Pressable
+          className="px-2 py-1"
+          onPress={() => {
+            setShowHeaderMenu((prev) => !prev);
+          }}
+        >
+          <Text className="text-xl font-semibold text-neutral-700">⋯</Text>
+        </Pressable>
+      ),
+    });
+  }, [handleBackPress, navigation]);
 
   const loadJourneyBundle = useCallback(async (): Promise<void> => {
     if (!Number.isFinite(journeyId)) {
       return;
     }
-    const db = await openAppDatabase();
-    const journey = await getJourneyById(db, journeyId);
-    if (!journey) {
+    const bundle = await loadJourneyBundleData(journeyId);
+    if (!bundle) {
       return;
     }
+    const { journey, points: loadedPoints, notes: loadedNotes, media: loadedMedia } = bundle;
     setName(journey.name);
     setStatusLabel(journey.status);
-    setPoints(await listLocationPointsForJourney(db, journeyId));
-    setNotes(await listNotesForJourney(db, journeyId));
-    setMedia(await listMediaForJourney(db, journeyId));
+    setPoints(loadedPoints);
+    setNotes(loadedNotes);
+    setMedia(loadedMedia);
     syncActiveJourneySession(journey.id, journey.status);
     const trackingSync = await syncBackgroundTrackingForJourneyStatus(journey.status);
     if (journey.status === "ongoing" && !trackingSync.started) {
@@ -192,6 +224,27 @@ export default function JourneyScreen() {
       await refreshJourneyData();
     } catch (error) {
       setScreenError(error instanceof Error ? error.message : "Action failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function endJourney(): Promise<void> {
+    if (!statusLabel || busy || statusLabel === "completed") {
+      setShowHeaderMenu(false);
+      return;
+    }
+    setBusy(true);
+    setScreenError(null);
+    setShowHeaderMenu(false);
+    try {
+      const db = await openAppDatabase();
+      await updateJourneyStatus(db, journeyId, "completed");
+      await refreshJourneyData();
+    } catch (error) {
+      setScreenError(
+        error instanceof Error ? error.message : "Could not end journey.",
+      );
     } finally {
       setBusy(false);
     }
@@ -405,17 +458,28 @@ export default function JourneyScreen() {
     }
   }
 
-  const actionLabel =
-    statusLabel === "scheduled"
-      ? "Start"
-      : statusLabel === "ongoing"
-        ? "Pause"
-        : statusLabel === "paused"
-          ? "Continue"
-          : null;
+  const actionLabel = getJourneyActionLabel(statusLabel);
 
   return (
-    <ScrollView className="flex-1 bg-white px-6 pt-12">
+    <View className="flex-1 bg-white">
+      {showHeaderMenu ? (
+        <View className="absolute right-6 top-4 z-20 w-44 rounded-md border border-neutral-200 bg-white p-2 shadow">
+          <Pressable
+            className={`rounded-md px-3 py-2 ${statusLabel === "completed" || busy ? "bg-neutral-100" : "bg-white"}`}
+            disabled={statusLabel === "completed" || busy}
+            onPress={() => {
+              void endJourney();
+            }}
+          >
+            <Text
+              className={`font-medium ${statusLabel === "completed" || busy ? "text-neutral-400" : "text-red-700"}`}
+            >
+              End Journey
+            </Text>
+          </Pressable>
+        </View>
+      ) : null}
+      <ScrollView className="flex-1 px-6 pt-12">
       <Text className="text-xl font-bold">{name}</Text>
       <Text className="mt-2 text-neutral-600">Status: {statusLabel || "—"}</Text>
       {screenError ? (
@@ -432,23 +496,13 @@ export default function JourneyScreen() {
         </Pressable>
       ) : null}
       <View className="mt-4">
-        {locationPermission === "granted" ? (
-          <OfflineJourneyMap points={points} />
-        ) : (
-          <View className="h-[70%] items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50 px-4">
-            <Text className="text-center text-sm text-neutral-700">
-              Location permission is required to render the map.
-            </Text>
-            <Pressable
-              className="mt-4 rounded-md bg-blue-600 px-4 py-2"
-              onPress={() => {
-                void requestMapPermission();
-              }}
-            >
-              <Text className="font-semibold text-white">Grant location</Text>
-            </Pressable>
-          </View>
-        )}
+        <JourneyMapPanel
+          points={points}
+          hasLocationPermission={locationPermission === "granted"}
+          onGrantLocation={() => {
+            void requestMapPermission();
+          }}
+        />
       </View>
       {actionLabel ? (
         <Pressable
@@ -551,88 +605,34 @@ export default function JourneyScreen() {
         </Pressable>
       </View>
 
-      <View className="mt-6 rounded-xl border border-neutral-200 p-4">
-        <Text className="text-base font-semibold text-neutral-900">
-          Notes ({notes.length})
-        </Text>
-        {notes.map((note) => (
-          <View key={note.id} className="mt-3 rounded-md border border-neutral-200 p-3">
-            <Text className="text-xs text-neutral-600">
-              {note.type} | {new Date(note.timestamp).toLocaleString()}
-            </Text>
-            <TextInput
-              className="mt-2 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-              placeholder="Edit note text"
-              defaultValue={note.text ?? ""}
-              onEndEditing={(e) => {
-                void updateNoteTextById(note, e.nativeEvent.text);
-              }}
-            />
-            {note.audio_file ? (
-              <Pressable
-                className="mt-2 rounded-md bg-neutral-700 px-3 py-2"
-                onPress={() => {
-                  void discardNoteAudio(note);
-                }}
-              >
-                <Text className="text-center font-semibold text-white">
-                  Discard audio
-                </Text>
-              </Pressable>
-            ) : (
-              <Pressable
-                className="mt-2 rounded-md bg-emerald-700 px-3 py-2"
-                onPress={() => {
-                  void rerecordNoteAudio(note);
-                }}
-              >
-                <Text className="text-center font-semibold text-white">
-                  Re-record audio
-                </Text>
-              </Pressable>
-            )}
-            <Pressable
-              className="mt-2 rounded-md bg-red-700 px-3 py-2"
-              onPress={() => {
-                void deleteNote(note);
-              }}
-            >
-              <Text className="text-center font-semibold text-white">
-                Delete note
-              </Text>
-            </Pressable>
-          </View>
-        ))}
-      </View>
+      <JourneyNotesList
+        notes={notes}
+        editable
+        onUpdateText={(note, text) => {
+          void updateNoteTextById(note, text);
+        }}
+        onDiscardAudio={(note) => {
+          void discardNoteAudio(note);
+        }}
+        onRerecordAudio={(note) => {
+          void rerecordNoteAudio(note);
+        }}
+        onDelete={(note) => {
+          void deleteNote(note);
+        }}
+      />
 
-      <View className="mb-10 mt-6 rounded-xl border border-neutral-200 p-4">
-        <Text className="text-base font-semibold text-neutral-900">
-          Media ({media.length})
-        </Text>
-        {media.map((item) => (
-          <View key={item.id} className="mt-3 rounded-md border border-neutral-200 p-3">
-            <Text className="text-xs text-neutral-600">{item.file}</Text>
-            <TextInput
-              className="mt-2 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-              placeholder="Edit media.text"
-              defaultValue={item.text ?? ""}
-              onEndEditing={(e) => {
-                void updateMediaTextById(item, e.nativeEvent.text);
-              }}
-            />
-            <Pressable
-              className="mt-2 rounded-md bg-red-700 px-3 py-2"
-              onPress={() => {
-                void deleteMedia(item);
-              }}
-            >
-              <Text className="text-center font-semibold text-white">
-                Delete media
-              </Text>
-            </Pressable>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+      <JourneyMediaList
+        media={media}
+        editable
+        onUpdateText={(item, text) => {
+          void updateMediaTextById(item, text);
+        }}
+        onDelete={(item) => {
+          void deleteMedia(item);
+        }}
+      />
+      </ScrollView>
+    </View>
   );
 }
