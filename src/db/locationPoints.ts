@@ -61,3 +61,33 @@ export async function getLastLocationPointForJourney(
     speed: row.speed,
   };
 }
+
+export async function listLocationPointsForJourney(
+  db: SQLite.SQLiteDatabase,
+  journeyId: number,
+): Promise<LocationPointRow[]> {
+  const rows = await db.getAllAsync<{
+    id: number;
+    journey_id: number;
+    lat: number;
+    lng: number;
+    timestamp: number;
+    metadata: string | null;
+    speed: number | null;
+  }>(
+    `SELECT id, journey_id, lat, lng, timestamp, metadata, speed
+     FROM location_points
+     WHERE journey_id = ?
+     ORDER BY timestamp ASC`,
+    [journeyId],
+  );
+  return rows.map((row) => ({
+    id: row.id,
+    journey_id: row.journey_id,
+    lat: row.lat,
+    lng: row.lng,
+    timestamp: row.timestamp,
+    metadata: row.metadata,
+    speed: row.speed,
+  }));
+}
