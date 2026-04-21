@@ -2,7 +2,7 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Linking, Pressable, Text, TextInput, View } from "react-native";
+import { Keyboard, Linking, Modal, Pressable, Text, TextInput, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -45,8 +45,10 @@ import { hasValidPmtilesPackage } from "../../src/storage/pmtilesGuard";
 import { syncBackgroundTrackingForJourneyStatus } from "../../src/tracking/locationTracking";
 import { loadJourneyBundle as loadJourneyBundleData } from "../../src/features/journey/bundle";
 import { JourneyMapPanel } from "../../src/features/journey/components/JourneyMapPanel";
-import { JourneyMediaList } from "../../src/features/journey/components/JourneyMediaList";
-import { JourneyNotesList } from "../../src/features/journey/components/JourneyNotesList";
+import { JourneyMediaEditModal } from "../../src/features/journey/components/JourneyMediaEditModal";
+import { JourneyNoteEditModal } from "../../src/features/journey/components/JourneyNoteEditModal";
+import { JourneyNotesFeed } from "../../src/features/journey/components/JourneyNotesFeed";
+import { useModalKeyboardInset } from "../../src/features/journey/hooks/useModalKeyboardInset";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
 import { AppHeaderMenu } from "../../src/components/AppHeaderMenu";
@@ -77,10 +79,18 @@ export default function JourneyScreen() {
   const [busy, setBusy] = useState<boolean>(false);
   const [needsBackgroundLocationSettings, setNeedsBackgroundLocationSettings] =
     useState<boolean>(false);
+  const [noteModalVisible, setNoteModalVisible] = useState<boolean>(false);
+  const [mediaModalVisible, setMediaModalVisible] = useState<boolean>(false);
+  const [noteEditTarget, setNoteEditTarget] = useState<NoteRow | null>(null);
+  const [noteEditText, setNoteEditText] = useState<string>("");
+  const [mediaEditTarget, setMediaEditTarget] = useState<MediaRow | null>(null);
+  const [mediaEditText, setMediaEditText] = useState<string>("");
   const { ongoingJourneyId, refreshOngoingJourney } = useOngoingJourneyCandidate();
+  const modalKeyboardInset = useModalKeyboardInset();
 
   useEffect(() => {
     navigation.setOptions({
+      title: name,
       headerLeft: () => (
         <HeaderBackButton />
       ),
@@ -97,7 +107,32 @@ export default function JourneyScreen() {
         />
       ),
     });
-  }, [busy, journeyId, navigation, ongoingJourneyId, statusLabel]);
+  }, [busy, journeyId, name, navigation, ongoingJourneyId, statusLabel]);
+
+  useEffect(() => {
+    if (noteModalVisible) {
+      return;
+    }
+    setNewNoteText("");
+    setNewAudioPendingFile((prev) => {
+      if (prev) {
+        void unlinkIfExists(prev);
+      }
+      return null;
+    });
+    setNewAudioRecorder((rec) => {
+      if (rec) {
+        void rec.stop().catch(() => {});
+      }
+      return null;
+    });
+  }, [noteModalVisible]);
+
+  useEffect(() => {
+    if (!mediaModalVisible) {
+      setNewMediaText("");
+    }
+  }, [mediaModalVisible]);
 
   const loadJourneyBundle = useCallback(async (): Promise<void> => {
     if (!Number.isFinite(journeyId)) {
@@ -264,6 +299,7 @@ export default function JourneyScreen() {
       });
       setNewNoteText("");
       await refreshJourneyData();
+      setNoteModalVisible(false);
     } finally {
       setBusy(false);
     }
@@ -313,6 +349,7 @@ export default function JourneyScreen() {
       setNewNoteText("");
       setNewAudioPendingFile(null);
       await refreshJourneyData();
+      setNoteModalVisible(false);
     } finally {
       setBusy(false);
     }
@@ -428,6 +465,7 @@ export default function JourneyScreen() {
       });
       setNewMediaText("");
       await refreshJourneyData();
+      setMediaModalVisible(false);
     } catch (error) {
       setScreenError(
         error instanceof Error ? error.message : "Could not add image.",
@@ -522,118 +560,242 @@ export default function JourneyScreen() {
           id={id} | points={points.length}
         </Text>
 
-        <View className="mt-6 rounded-xl border border-neutral-200 p-4">
-          <Text className="text-base font-semibold text-neutral-900">Add note</Text>
-          <TextInput
-            className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-            placeholder="Note text"
-            value={newNoteText}
-            onChangeText={setNewNoteText}
-          />
+        <View className="mt-6 flex-row gap-3">
           <Pressable
-            className="mt-3 rounded-md bg-blue-600 px-4 py-2"
+            className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3"
             onPress={() => {
-              void addTextNote();
+              setNoteModalVisible(true);
             }}
           >
-            <Text className="text-center font-semibold text-white">Save text note</Text>
+            <Text className="text-center font-semibold text-neutral-900">Add note</Text>
           </Pressable>
-          {newAudioRecorder ? (
-            <Pressable
-              className="mt-3 rounded-md bg-red-600 px-4 py-2"
-              onPress={() => {
-                void stopNewVoiceNoteRecordingAndSave();
-              }}
-            >
-              <Text className="text-center font-semibold text-white">
-                Stop recording
-              </Text>
-            </Pressable>
-          ) : (
-            <Pressable
-              className={`mt-3 rounded-md px-4 py-2 ${newAudioPendingFile ? "bg-neutral-300" : "bg-emerald-600"}`}
-              disabled={Boolean(newAudioPendingFile)}
-              onPress={() => {
-                void startNewVoiceNoteRecording();
-              }}
-            >
-              <Text className="text-center font-semibold text-white">
-                Start voice recording
-              </Text>
-            </Pressable>
-          )}
-          {newAudioPendingFile ? (
-            <View className="mt-3 gap-2">
-              <Pressable
-                className="rounded-md bg-emerald-700 px-4 py-2"
-                onPress={() => {
-                  void saveNewVoiceNote();
-                }}
-              >
-                <Text className="text-center font-semibold text-white">
-                  Save voice note
-                </Text>
-              </Pressable>
-              <Pressable
-                className="rounded-md bg-neutral-600 px-4 py-2"
-                onPress={() => {
-                  void discardPendingVoiceRecording();
-                }}
-              >
-                <Text className="text-center font-semibold text-white">
-                  Discard recording
-                </Text>
-              </Pressable>
-            </View>
-          ) : null}
-        </View>
-
-        <View className="mt-6 rounded-xl border border-neutral-200 p-4">
-          <Text className="text-base font-semibold text-neutral-900">Add image</Text>
-          <TextInput
-            className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-            placeholder="media.text"
-            value={newMediaText}
-            onChangeText={setNewMediaText}
-          />
           <Pressable
-            className="mt-3 rounded-md bg-blue-600 px-4 py-2"
+            className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3"
             onPress={() => {
-              void addImageMedia();
+              setMediaModalVisible(true);
             }}
           >
-            <Text className="text-center font-semibold text-white">Pick image</Text>
+            <Text className="text-center font-semibold text-neutral-900">Add media</Text>
           </Pressable>
         </View>
 
-        <JourneyNotesList
+        <JourneyNotesFeed
           notes={notes}
-          editable
-          onUpdateText={(note, text) => {
-            void updateNoteTextById(note, text);
-          }}
-          onDiscardAudio={(note) => {
-            void discardNoteAudio(note);
-          }}
-          onRerecordAudio={(note) => {
-            void rerecordNoteAudio(note);
-          }}
-          onDelete={(note) => {
-            void deleteNote(note);
-          }}
-        />
-
-        <JourneyMediaList
           media={media}
-          editable
-          onUpdateText={(item, text) => {
-            void updateMediaTextById(item, text);
+          onLongPressNote={(note) => {
+            setNoteEditTarget(note);
+            setNoteEditText(note.text ?? "");
           }}
-          onDelete={(item) => {
-            void deleteMedia(item);
+          onLongPressMedia={(item) => {
+            setMediaEditTarget(item);
+            setMediaEditText(item.text ?? "");
           }}
         />
       </ScrollView>
+
+      <Modal
+        transparent
+        visible={noteModalVisible}
+        animationType="slide"
+        onRequestClose={() => {
+          setNoteModalVisible(false);
+        }}
+      >
+        <View className="flex-1">
+          <View className="flex-1 justify-end">
+            <Pressable
+              className="absolute inset-0 bg-black/50"
+              onPress={() => {
+                Keyboard.dismiss();
+                setNoteModalVisible(false);
+              }}
+            />
+            <View
+              className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pb-8 pt-4"
+              style={{
+                transform: [{ translateY: -modalKeyboardInset }],
+              }}
+            >
+              <Text className="text-base font-semibold text-neutral-900">Add note</Text>
+              <TextInput
+                className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
+                placeholder="Note text"
+                value={newNoteText}
+                onChangeText={setNewNoteText}
+              />
+              <Pressable
+                className="mt-3 rounded-md bg-blue-600 px-4 py-2"
+                onPress={() => {
+                  void addTextNote();
+                }}
+              >
+                <Text className="text-center font-semibold text-white">Save text note</Text>
+              </Pressable>
+              {newAudioRecorder ? (
+                <Pressable
+                  className="mt-3 rounded-md bg-red-600 px-4 py-2"
+                  onPress={() => {
+                    void stopNewVoiceNoteRecordingAndSave();
+                  }}
+                >
+                  <Text className="text-center font-semibold text-white">
+                    Stop recording
+                  </Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  className={`mt-3 rounded-md px-4 py-2 ${newAudioPendingFile ? "bg-neutral-300" : "bg-emerald-600"}`}
+                  disabled={Boolean(newAudioPendingFile)}
+                  onPress={() => {
+                    void startNewVoiceNoteRecording();
+                  }}
+                >
+                  <Text className="text-center font-semibold text-white">
+                    Start voice recording
+                  </Text>
+                </Pressable>
+              )}
+              {newAudioPendingFile ? (
+                <View className="mt-3 gap-2">
+                  <Pressable
+                    className="rounded-md bg-emerald-700 px-4 py-2"
+                    onPress={() => {
+                      void saveNewVoiceNote();
+                    }}
+                  >
+                    <Text className="text-center font-semibold text-white">
+                      Save voice note
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    className="rounded-md bg-neutral-600 px-4 py-2"
+                    onPress={() => {
+                      void discardPendingVoiceRecording();
+                    }}
+                  >
+                    <Text className="text-center font-semibold text-white">
+                      Discard recording
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : null}
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        transparent
+        visible={mediaModalVisible}
+        animationType="slide"
+        onRequestClose={() => {
+          setMediaModalVisible(false);
+        }}
+      >
+        <View className="flex-1">
+          <View className="flex-1 justify-end">
+            <Pressable
+              className="absolute inset-0 bg-black/50"
+              onPress={() => {
+                Keyboard.dismiss();
+                setMediaModalVisible(false);
+              }}
+            />
+            <View
+              className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pb-8 pt-4"
+              style={{
+                transform: [{ translateY: -modalKeyboardInset }],
+              }}
+            >
+              <Text className="text-base font-semibold text-neutral-900">Add media</Text>
+              <TextInput
+                className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
+                placeholder="Caption (optional)"
+                value={newMediaText}
+                onChangeText={setNewMediaText}
+              />
+              <Pressable
+                className="mt-3 rounded-md bg-blue-600 px-4 py-2"
+                onPress={() => {
+                  void addImageMedia();
+                }}
+              >
+                <Text className="text-center font-semibold text-white">Pick image</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <JourneyNoteEditModal
+        visible={noteEditTarget !== null}
+        note={noteEditTarget}
+        text={noteEditText}
+        onChangeText={setNoteEditText}
+        busy={busy}
+        keyboardInset={modalKeyboardInset}
+        onRequestClose={() => {
+          setNoteEditTarget(null);
+        }}
+        onSave={() => {
+          if (!noteEditTarget) {
+            return;
+          }
+          void updateNoteTextById(noteEditTarget, noteEditText).then(() => {
+            setNoteEditTarget(null);
+          });
+        }}
+        onDelete={() => {
+          if (!noteEditTarget) {
+            return;
+          }
+          void deleteNote(noteEditTarget).then(() => {
+            setNoteEditTarget(null);
+          });
+        }}
+        onDiscardAudio={() => {
+          if (!noteEditTarget) {
+            return;
+          }
+          void discardNoteAudio(noteEditTarget).then(() => {
+            setNoteEditTarget(null);
+          });
+        }}
+        onRerecordAudio={() => {
+          if (!noteEditTarget) {
+            return;
+          }
+          void rerecordNoteAudio(noteEditTarget);
+          setNoteEditTarget(null);
+        }}
+      />
+
+      <JourneyMediaEditModal
+        visible={mediaEditTarget !== null}
+        text={mediaEditText}
+        onChangeText={setMediaEditText}
+        busy={busy}
+        keyboardInset={modalKeyboardInset}
+        onRequestClose={() => {
+          setMediaEditTarget(null);
+        }}
+        onSave={() => {
+          if (!mediaEditTarget) {
+            return;
+          }
+          void updateMediaTextById(mediaEditTarget, mediaEditText).then(() => {
+            setMediaEditTarget(null);
+          });
+        }}
+        onDelete={() => {
+          if (!mediaEditTarget) {
+            return;
+          }
+          void deleteMedia(mediaEditTarget).then(() => {
+            setMediaEditTarget(null);
+          });
+        }}
+      />
     </View>
   );
 }

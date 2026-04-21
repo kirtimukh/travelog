@@ -10,8 +10,10 @@ import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../s
 import { unlinkIfExists } from "../../../src/files/fsCleanup";
 import { loadJourneyBundle } from "../../../src/features/journey/bundle";
 import { JourneyMapPanel } from "../../../src/features/journey/components/JourneyMapPanel";
-import { JourneyMediaList } from "../../../src/features/journey/components/JourneyMediaList";
-import { JourneyNotesList } from "../../../src/features/journey/components/JourneyNotesList";
+import { JourneyMediaEditModal } from "../../../src/features/journey/components/JourneyMediaEditModal";
+import { JourneyNoteEditModal } from "../../../src/features/journey/components/JourneyNoteEditModal";
+import { JourneyNotesFeed } from "../../../src/features/journey/components/JourneyNotesFeed";
+import { useModalKeyboardInset } from "../../../src/features/journey/hooks/useModalKeyboardInset";
 import {
   buildReplayEvents,
   getLatestReplayEvent,
@@ -41,6 +43,11 @@ export default function JourneyDetailsScreen() {
   const [replayTs, setReplayTs] = useState<number | null>(null);
   const [eventFeed, setEventFeed] = useState<string[]>([]);
   const eventScrollRef = useRef<ScrollView | null>(null);
+  const [noteEditTarget, setNoteEditTarget] = useState<NoteRow | null>(null);
+  const [noteEditText, setNoteEditText] = useState<string>("");
+  const [mediaEditTarget, setMediaEditTarget] = useState<MediaRow | null>(null);
+  const [mediaEditText, setMediaEditText] = useState<string>("");
+  const modalKeyboardInset = useModalKeyboardInset();
 
   const replayBounds = useMemo(() => getReplayTimeBounds(journey, Date.now()), [journey]);
   const replayEvents = useMemo(() => buildReplayEvents(notes, media), [media, notes]);
@@ -71,6 +78,22 @@ export default function JourneyDetailsScreen() {
 
   useEffect(() => {
     navigation.setOptions({
+      headerTitle: () => (
+        <View className="max-w-[72%] flex-row items-center gap-2">
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            className="shrink text-base font-semibold text-neutral-900"
+          >
+            {journey?.name ?? "Journey"}
+          </Text>
+          <View className="rounded-full bg-emerald-100 px-2 py-0.5">
+            <Text className="text-xs font-semibold uppercase text-emerald-800">
+              Complete
+            </Text>
+          </View>
+        </View>
+      ),
       headerLeft: () => <HeaderBackButton />,
       headerRight: () => (
         <AppHeaderMenu
@@ -81,7 +104,7 @@ export default function JourneyDetailsScreen() {
         />
       ),
     });
-  }, [journeyId, navigation, ongoingJourneyId]);
+  }, [journey, journeyId, navigation, ongoingJourneyId]);
 
   useEffect(() => {
     if (!replayBounds || replayTs != null) {
@@ -296,31 +319,90 @@ export default function JourneyDetailsScreen() {
         </Text>
       ) : null}
 
-      <JourneyNotesList
+      <JourneyNotesFeed
         notes={notes}
+        media={media}
         editable={editable}
-        onUpdateText={(note, text) => {
-          void updateNoteTextById(note, text);
+        onLongPressNote={(note) => {
+          if (!editable) {
+            return;
+          }
+          setNoteEditTarget(note);
+          setNoteEditText(note.text ?? "");
         }}
-        onDiscardAudio={(note) => {
-          void discardNoteAudio(note);
-        }}
-        onRerecordAudio={() => {
-          setScreenError("Re-recording is only available on the live journey screen.");
-        }}
-        onDelete={(note) => {
-          void deleteNote(note);
+        onLongPressMedia={(item) => {
+          if (!editable) {
+            return;
+          }
+          setMediaEditTarget(item);
+          setMediaEditText(item.text ?? "");
         }}
       />
 
-      <JourneyMediaList
-        media={media}
-        editable={editable}
-        onUpdateText={(item, text) => {
-          void updateMediaTextById(item, text);
+      <JourneyNoteEditModal
+        visible={noteEditTarget !== null}
+        note={noteEditTarget}
+        text={noteEditText}
+        onChangeText={setNoteEditText}
+        busy={busy}
+        keyboardInset={modalKeyboardInset}
+        onRequestClose={() => {
+          setNoteEditTarget(null);
         }}
-        onDelete={(item) => {
-          void deleteMedia(item);
+        onSave={() => {
+          if (!noteEditTarget) {
+            return;
+          }
+          void updateNoteTextById(noteEditTarget, noteEditText).then(() => {
+            setNoteEditTarget(null);
+          });
+        }}
+        onDelete={() => {
+          if (!noteEditTarget) {
+            return;
+          }
+          void deleteNote(noteEditTarget).then(() => {
+            setNoteEditTarget(null);
+          });
+        }}
+        onDiscardAudio={() => {
+          if (!noteEditTarget) {
+            return;
+          }
+          void discardNoteAudio(noteEditTarget).then(() => {
+            setNoteEditTarget(null);
+          });
+        }}
+        onRerecordAudio={() => {
+          setScreenError("Re-recording is only available on the live journey screen.");
+          setNoteEditTarget(null);
+        }}
+      />
+
+      <JourneyMediaEditModal
+        visible={mediaEditTarget !== null}
+        text={mediaEditText}
+        onChangeText={setMediaEditText}
+        busy={busy}
+        keyboardInset={modalKeyboardInset}
+        onRequestClose={() => {
+          setMediaEditTarget(null);
+        }}
+        onSave={() => {
+          if (!mediaEditTarget) {
+            return;
+          }
+          void updateMediaTextById(mediaEditTarget, mediaEditText).then(() => {
+            setMediaEditTarget(null);
+          });
+        }}
+        onDelete={() => {
+          if (!mediaEditTarget) {
+            return;
+          }
+          void deleteMedia(mediaEditTarget).then(() => {
+            setMediaEditTarget(null);
+          });
         }}
       />
     </ScrollView>

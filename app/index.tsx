@@ -77,6 +77,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     navigation.setOptions({
+      title: "Journey",
       headerLeft: () => <HeaderBackButton isHomeScreen />,
       headerRight: () => (
         <AppHeaderMenu

@@ -97,6 +97,7 @@ export default function JourneysScreen() {
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({
+        title: "Past trips",
         headerLeft: () => <HeaderBackButton />,
         headerRight: () => (
           <AppHeaderMenu
@@ -265,16 +266,6 @@ export default function JourneysScreen() {
               ) : null}
 
               <View className="mt-3 flex-row gap-2">
-                <Pressable
-                  className="flex-1 rounded-md bg-emerald-600 px-3 py-2"
-                  onPress={() => {
-                    router.push(`/journey/${journey.id}`);
-                  }}
-                >
-                  <Text className="text-center font-semibold text-white">
-                    Open journey
-                  </Text>
-                </Pressable>
                 <Pressable
                   className="flex-1 rounded-md bg-blue-600 px-3 py-2"
                   onPress={() => {
