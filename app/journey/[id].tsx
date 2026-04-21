@@ -501,7 +501,7 @@ export default function JourneyScreen() {
   const mapNativeGesture = useMemo(
     () =>
       Gesture.Native()
-        .disallowInterruption(true)
+        .disallowInterruption(false)
         .withRef(mapGestureRef),
     [],
   );

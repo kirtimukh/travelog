@@ -1,19 +1,9 @@
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import { openAppDatabase } from "../src/db/client";
-import {
-  deleteJourneyWithFileGc,
-  listJourneysWithFilters,
-} from "../src/db/journeys";
+import { listJourneysWithFilters } from "../src/db/journeys";
 import type { JourneyRow, JourneyStatus } from "../src/db/schema";
 import { AppHeaderMenu } from "../src/components/AppHeaderMenu";
 import { HeaderBackButton } from "../src/components/HeaderBackButton";
@@ -56,7 +46,6 @@ export default function JourneysScreen() {
   const [inputDateText, setInputDateText] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const parsedInputDate = useMemo(
     () => parseInputDate(inputDateText),
@@ -108,54 +97,6 @@ export default function JourneysScreen() {
         ),
       });
     }, [navigation, ongoingJourneyId]),
-  );
-
-  const onDeleteJourney = useCallback(
-    (journey: JourneyRow): void => {
-      if (deletingId != null) {
-        return;
-      }
-      Alert.alert(
-        "Delete journey?",
-        `This will remove "${journey.name}" and all associated notes, media, and location points.`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Continue",
-            style: "destructive",
-            onPress: () => {
-              Alert.alert(
-                "Final confirmation",
-                "This action is permanent and cannot be undone. Delete this journey now?",
-                [
-                  { text: "Cancel", style: "cancel" },
-                  {
-                    text: "Delete permanently",
-                    style: "destructive",
-                    onPress: () => {
-                      void (async () => {
-                        setDeletingId(journey.id);
-                        setError(null);
-                        try {
-                          const db = await openAppDatabase();
-                          await deleteJourneyWithFileGc(db, journey.id);
-                          await refreshJourneys();
-                        } catch {
-                          setError("Failed to delete journey.");
-                        } finally {
-                          setDeletingId(null);
-                        }
-                      })();
-                    },
-                  },
-                ],
-              );
-            },
-          },
-        ],
-      );
-    },
-    [deletingId, refreshJourneys],
   );
 
   return (
@@ -239,60 +180,34 @@ export default function JourneysScreen() {
         {journeys.length === 0 && !loading ? (
           <Text className="text-sm text-neutral-600">No journeys found.</Text>
         ) : null}
-        {journeys.map((journey) => {
-          const deleting = deletingId === journey.id;
-          return (
-            <View
-              key={journey.id}
-              className="mb-3 rounded-xl border border-neutral-200 bg-white p-4"
-            >
-              <Text className="text-base font-semibold text-neutral-900">
-                {journey.name}
-              </Text>
-              <Text className="mt-1 text-xs text-neutral-600">
-                Status: {journey.status}
-              </Text>
-              <Text className="mt-1 text-xs text-neutral-600">
-                Start: {formatTimestamp(journey.start_ts)}
-              </Text>
-              <Text className="mt-1 text-xs text-neutral-600">
-                End: {formatTimestamp(journey.end_ts)}
-              </Text>
+        {journeys.map((journey) => (
+          <Pressable
+            key={journey.id}
+            className="mb-3 rounded-xl border border-neutral-200 bg-white p-4"
+            onPress={() => {
+              router.push(`/journey/details/${journey.id}`);
+            }}
+          >
+            <Text className="text-base font-semibold text-neutral-900">
+              {journey.name}
+            </Text>
+            <Text className="mt-1 text-xs text-neutral-600">
+              Status: {journey.status}
+            </Text>
+            <Text className="mt-1 text-xs text-neutral-600">
+              Start: {formatTimestamp(journey.start_ts)}
+            </Text>
+            <Text className="mt-1 text-xs text-neutral-600">
+              End: {formatTimestamp(journey.end_ts)}
+            </Text>
 
-              {journey.description ? (
-                <Text className="mt-2 text-sm text-neutral-700">
-                  {journey.description}
-                </Text>
-              ) : null}
-
-              <View className="mt-3 flex-row gap-2">
-                <Pressable
-                  className="flex-1 rounded-md bg-blue-600 px-3 py-2"
-                  onPress={() => {
-                    router.push(`/journey/details/${journey.id}`);
-                  }}
-                >
-                  <Text className="text-center font-semibold text-white">
-                    Open details
-                  </Text>
-                </Pressable>
-              </View>
-              <View className="mt-2 flex-row gap-2">
-                <Pressable
-                  className={`flex-1 rounded-md px-3 py-2 ${deleting ? "bg-neutral-300" : "bg-red-700"}`}
-                  disabled={deleting}
-                  onPress={() => {
-                    onDeleteJourney(journey);
-                  }}
-                >
-                  <Text className="text-center font-semibold text-white">
-                    {deleting ? "Deleting..." : "Delete"}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          );
-        })}
+            {journey.description ? (
+              <Text className="mt-2 text-sm text-neutral-700">
+                {journey.description}
+              </Text>
+            ) : null}
+          </Pressable>
+        ))}
         </View>
       </ScrollView>
     </View>

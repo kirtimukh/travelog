@@ -3,9 +3,11 @@ import {
   GeoJSONSource,
   Layer,
   Map,
+  type CameraRef,
+  type LngLatBounds,
   type StyleSpecification,
 } from "@maplibre/maplibre-react-native";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Text, View } from "react-native";
 
 import type { LocationPointRow } from "../db/schema";
@@ -14,6 +16,9 @@ import { getPmtilesConfig } from "../storage/pmtilesConfig";
 type Props = {
   points: LocationPointRow[];
 };
+
+const DEFAULT_CENTER: [number, number] = [91.750605, 26.129195];
+const FIT_PADDING = { top: 28, right: 28, bottom: 28, left: 28 };
 
 function toLineFeature(points: LocationPointRow[]) {
   return {
@@ -35,6 +40,32 @@ function toPointFeature(point: LocationPointRow) {
       coordinates: [point.lng, point.lat],
     },
   };
+}
+
+function boundsFromPoints(points: LocationPointRow[]): LngLatBounds | null {
+  if (points.length === 0) {
+    return null;
+  }
+  let west = points[0].lng;
+  let east = points[0].lng;
+  let south = points[0].lat;
+  let north = points[0].lat;
+  for (const p of points) {
+    west = Math.min(west, p.lng);
+    east = Math.max(east, p.lng);
+    south = Math.min(south, p.lat);
+    north = Math.max(north, p.lat);
+  }
+  const pad = 0.00015;
+  if (east - west < pad) {
+    west -= pad;
+    east += pad;
+  }
+  if (north - south < pad) {
+    south -= pad;
+    north += pad;
+  }
+  return [west, south, east, north];
 }
 
 const offlineFallbackStyle: StyleSpecification = {
@@ -143,21 +174,82 @@ export function OfflineJourneyMap({ points }: Props) {
     [pmtilesConfig?.pmtilesPath],
   );
 
+  const cameraRef = useRef<CameraRef>(null);
+  const mapReadyRef = useRef(false);
+
+  const initialCenter = useMemo((): [number, number] => {
+    if (lastPoint) {
+      return [lastPoint.lng, lastPoint.lat];
+    }
+    return DEFAULT_CENTER;
+  }, [lastPoint]);
+
+  const applyCameraToPoints = useCallback(() => {
+    if (!mapReadyRef.current) {
+      return;
+    }
+    const cam = cameraRef.current;
+    if (!cam || points.length === 0) {
+      return;
+    }
+    try {
+      if (points.length === 1) {
+        cam.easeTo({
+          center: [points[0].lng, points[0].lat],
+          zoom: 14,
+          duration: 320,
+        });
+        return;
+      }
+      const bounds = boundsFromPoints(points);
+      if (bounds) {
+        cam.fitBounds(bounds, {
+          padding: FIT_PADDING,
+          duration: 420,
+        });
+      }
+    } catch {
+      // Camera not attached yet
+    }
+  }, [points]);
+
+  useEffect(() => {
+    applyCameraToPoints();
+  }, [applyCameraToPoints]);
+
   return (
     <View className="h-64 overflow-hidden rounded-xl border border-neutral-200">
-      <Map style={{ flex: 1 }} mapStyle={mapStyle}>
+      <Map
+        style={{ flex: 1 }}
+        mapStyle={mapStyle}
+        dragPan
+        touchZoom
+        doubleTapZoom
+        doubleTapHoldZoom
+        onDidFinishLoadingMap={() => {
+          mapReadyRef.current = true;
+          applyCameraToPoints();
+        }}
+        onDidFinishLoadingStyle={() => {
+          mapReadyRef.current = true;
+          applyCameraToPoints();
+        }}
+      >
         <Camera
+          ref={cameraRef}
           initialViewState={{
             zoom: 12,
-            center: lastPoint ? [lastPoint.lng, lastPoint.lat] : [91.750605, 26.129195],
+            center: initialCenter,
           }}
+          minZoom={2}
+          maxZoom={22}
         />
         {lineFeature ? (
           <GeoJSONSource id="journey-line" data={lineFeature}>
             <Layer
               id="journey-line-layer"
               type="line"
-              style={{ lineColor: "#1D4ED8", lineWidth: 3 }}
+              paint={{ "line-color": "#1D4ED8", "line-width": 3 }}
             />
           </GeoJSONSource>
         ) : null}
@@ -166,7 +258,7 @@ export function OfflineJourneyMap({ points }: Props) {
             <Layer
               id="journey-point-layer"
               type="circle"
-              style={{ circleColor: "#DC2626", circleRadius: 5 }}
+              paint={{ "circle-color": "#DC2626", "circle-radius": 5 }}
             />
           </GeoJSONSource>
         ) : null}

@@ -15,12 +15,6 @@ import { useEffect } from "react";
 import { AppState } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { openAppDatabase } from "../src/db/client";
-import { getJourneyById } from "../src/db/journeys";
-import {
-  clearActiveJourneyId,
-  getActiveJourneyId,
-} from "../src/storage/activeJourney";
 import { hasValidPmtilesPackage } from "../src/storage/pmtilesGuard";
 import { refreshLocationTrackingAccuracyIfRunning } from "../src/tracking/locationTracking";
 
@@ -67,7 +61,8 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: true,
-          headerTitle: "MapMyTrip",
+          // Default `title` (not string `headerTitle`) so screens can override via setOptions({ title }).
+          title: "MapMyTrip",
         }}
       />
     </GestureHandlerRootView>

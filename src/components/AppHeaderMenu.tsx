@@ -9,6 +9,8 @@ type AppHeaderMenuProps = {
   hideOngoing?: boolean;
   onEndJourney?: () => void;
   endJourneyDisabled?: boolean;
+  onDeleteJourney?: () => void;
+  deleteJourneyDisabled?: boolean;
 };
 
 export function AppHeaderMenu({
@@ -18,6 +20,8 @@ export function AppHeaderMenu({
   hideOngoing = false,
   onEndJourney,
   endJourneyDisabled = false,
+  onDeleteJourney,
+  deleteJourneyDisabled = false,
 }: AppHeaderMenuProps) {
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
@@ -69,22 +73,40 @@ export function AppHeaderMenu({
                 <Text className="font-medium text-neutral-900">Ongoing</Text>
               </Pressable>
             ) : null}
-            {onEndJourney ? (
-              <View className="mt-2 border-t border-neutral-200 pt-2">
-                <Pressable
-                  className={`rounded-md px-3 py-2 ${endJourneyDisabled ? "bg-neutral-100" : "bg-white"}`}
-                  disabled={endJourneyDisabled}
-                  onPress={() => {
-                    setOpen(false);
-                    onEndJourney();
-                  }}
-                >
-                  <Text
-                    className={`font-medium ${endJourneyDisabled ? "text-neutral-400" : "text-red-700"}`}
+            {onEndJourney != null || onDeleteJourney != null ? (
+              <View className="mt-2 gap-2 border-t border-neutral-200 pt-2">
+                {onEndJourney ? (
+                  <Pressable
+                    className={`rounded-md px-3 py-2 ${endJourneyDisabled ? "bg-neutral-100" : "bg-white"}`}
+                    disabled={endJourneyDisabled}
+                    onPress={() => {
+                      setOpen(false);
+                      onEndJourney();
+                    }}
                   >
-                    End Journey
-                  </Text>
-                </Pressable>
+                    <Text
+                      className={`font-medium ${endJourneyDisabled ? "text-neutral-400" : "text-red-700"}`}
+                    >
+                      End Journey
+                    </Text>
+                  </Pressable>
+                ) : null}
+                {onDeleteJourney ? (
+                  <Pressable
+                    className={`rounded-md px-3 py-2 ${deleteJourneyDisabled ? "bg-neutral-100" : "bg-white"}`}
+                    disabled={deleteJourneyDisabled}
+                    onPress={() => {
+                      setOpen(false);
+                      onDeleteJourney();
+                    }}
+                  >
+                    <Text
+                      className={`font-medium ${deleteJourneyDisabled ? "text-neutral-400" : "text-red-700"}`}
+                    >
+                      Delete journey
+                    </Text>
+                  </Pressable>
+                ) : null}
               </View>
             ) : null}
           </View>

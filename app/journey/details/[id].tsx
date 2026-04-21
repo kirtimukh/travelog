@@ -1,9 +1,22 @@
 import * as Location from "expo-location";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  ScrollView as RNScrollView,
+  Text,
+  View,
+} from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  ScrollView,
+  type GestureType,
+} from "react-native-gesture-handler";
 
 import { openAppDatabase } from "../../../src/db/client";
+import { deleteJourneyWithFileGc } from "../../../src/db/journeys";
 import { deleteMediaById, updateMediaText } from "../../../src/db/media";
 import { deleteNoteById, updateNoteAudio, updateNoteText } from "../../../src/db/notes";
 import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../src/db/schema";
@@ -29,8 +42,9 @@ import { HeaderBackButton } from "../../../src/components/HeaderBackButton";
 export default function JourneyDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
+  const router = useRouter();
   const journeyId = Number(id);
-  const { ongoingJourneyId } = useOngoingJourneyCandidate();
+  const { ongoingJourneyId, refreshOngoingJourney } = useOngoingJourneyCandidate();
 
   const [journey, setJourney] = useState<JourneyRow | null>(null);
   const [points, setPoints] = useState<LocationPointRow[]>([]);
@@ -39,10 +53,11 @@ export default function JourneyDetailsScreen() {
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
   const [screenError, setScreenError] = useState<string | null>(null);
   const [busy, setBusy] = useState<boolean>(false);
+  const [deleteJourneyBusy, setDeleteJourneyBusy] = useState<boolean>(false);
   const [isReplaying, setIsReplaying] = useState<boolean>(false);
   const [replayTs, setReplayTs] = useState<number | null>(null);
   const [eventFeed, setEventFeed] = useState<string[]>([]);
-  const eventScrollRef = useRef<ScrollView | null>(null);
+  const eventScrollRef = useRef<RNScrollView | null>(null);
   const [noteEditTarget, setNoteEditTarget] = useState<NoteRow | null>(null);
   const [noteEditText, setNoteEditText] = useState<string>("");
   const [mediaEditTarget, setMediaEditTarget] = useState<MediaRow | null>(null);
@@ -65,6 +80,52 @@ export default function JourneyDetailsScreen() {
     setNotes(bundle.notes);
     setMedia(bundle.media);
   }, [journeyId]);
+
+  const requestDeleteJourney = useCallback((): void => {
+    if (!journey || deleteJourneyBusy || !Number.isFinite(journeyId)) {
+      return;
+    }
+    Alert.alert(
+      "Delete journey?",
+      `This will remove "${journey.name}" and all associated notes, media, and location points.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Continue",
+          style: "destructive",
+          onPress: () => {
+            Alert.alert(
+              "Final confirmation",
+              "This action is permanent and cannot be undone. Delete this journey now?",
+              [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Delete permanently",
+                  style: "destructive",
+                  onPress: () => {
+                    void (async () => {
+                      setDeleteJourneyBusy(true);
+                      setScreenError(null);
+                      try {
+                        const db = await openAppDatabase();
+                        await deleteJourneyWithFileGc(db, journeyId);
+                        await refreshOngoingJourney();
+                        router.replace("/journeys");
+                      } catch {
+                        setScreenError("Failed to delete journey.");
+                      } finally {
+                        setDeleteJourneyBusy(false);
+                      }
+                    })();
+                  },
+                },
+              ],
+            );
+          },
+        },
+      ],
+    );
+  }, [deleteJourneyBusy, journey, journeyId, refreshOngoingJourney, router]);
 
   const requestPermission = useCallback(async (): Promise<void> => {
     const res = await Location.requestForegroundPermissionsAsync();
@@ -101,10 +162,20 @@ export default function JourneyDetailsScreen() {
           showHistory
           ongoingJourneyId={ongoingJourneyId}
           hideOngoing={ongoingJourneyId === journeyId}
+          onDeleteJourney={requestDeleteJourney}
+          deleteJourneyDisabled={busy || deleteJourneyBusy}
         />
       ),
     });
-  }, [journey, journeyId, navigation, ongoingJourneyId]);
+  }, [
+    busy,
+    deleteJourneyBusy,
+    journey,
+    journeyId,
+    navigation,
+    ongoingJourneyId,
+    requestDeleteJourney,
+  ]);
 
   useEffect(() => {
     if (!replayBounds || replayTs != null) {
@@ -228,24 +299,39 @@ export default function JourneyDetailsScreen() {
   const heading = getReplayHeading(replayPoint);
   const speed = replayPoint?.speed ?? null;
 
+  const mapGestureRef = useRef<GestureType | undefined>(undefined);
+  const mapNativeGesture = useMemo(
+    () =>
+      Gesture.Native()
+        .disallowInterruption(false)
+        .withRef(mapGestureRef),
+    [],
+  );
+
   return (
     <ScrollView
       className="flex-1 bg-white px-6 pt-12"
       contentContainerStyle={{ paddingBottom: 24 }}
       keyboardShouldPersistTaps="handled"
+      nestedScrollEnabled
+      waitFor={mapGestureRef}
     >
       <Text className="text-xl font-bold">{journey?.name ?? "Journey details"}</Text>
       <Text className="mt-2 text-neutral-600">Status: {journey?.status ?? "—"}</Text>
       {screenError ? <Text className="mt-2 text-sm text-red-700">{screenError}</Text> : null}
 
       <View className="mt-4">
-        <JourneyMapPanel
-          points={replayPath}
-          hasLocationPermission={locationPermission}
-          onGrantLocation={() => {
-            void requestPermission();
-          }}
-        />
+        <GestureDetector gesture={mapNativeGesture}>
+          <View collapsable={false}>
+            <JourneyMapPanel
+              points={replayPath}
+              hasLocationPermission={locationPermission}
+              onGrantLocation={() => {
+                void requestPermission();
+              }}
+            />
+          </View>
+        </GestureDetector>
       </View>
 
       {!canReplay ? (
@@ -295,7 +381,7 @@ export default function JourneyDetailsScreen() {
 
       <View className="mt-4 rounded-xl border border-neutral-200 p-3">
         <Text className="text-sm font-semibold text-neutral-800">Replay events</Text>
-        <ScrollView
+        <RNScrollView
           ref={eventScrollRef}
           className="mt-2 max-h-24"
           nestedScrollEnabled
@@ -310,7 +396,7 @@ export default function JourneyDetailsScreen() {
               </Text>
             ))
           )}
-        </ScrollView>
+        </RNScrollView>
       </View>
 
       {!editable ? (
