@@ -1,4 +1,5 @@
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type JourneyMediaEditModalProps = {
   visible: boolean;
@@ -21,6 +22,9 @@ export function JourneyMediaEditModal({
   onSave,
   onDelete,
 }: JourneyMediaEditModalProps) {
+  const insets = useSafeAreaInsets();
+  const modalPaddingBottom = Math.max(insets.bottom + 16, 32);
+
   return (
     <Modal
       transparent
@@ -38,8 +42,9 @@ export function JourneyMediaEditModal({
             }}
           />
           <View
-            className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pb-8 pt-4"
+            className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pt-4"
             style={{
+              paddingBottom: modalPaddingBottom,
               transform: [{ translateY: -keyboardInset }],
             }}
           >

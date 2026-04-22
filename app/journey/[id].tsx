@@ -48,12 +48,15 @@ import { loadJourneyBundle as loadJourneyBundleData } from "../../src/features/j
 import { JourneyMapPanel } from "../../src/features/journey/components/JourneyMapPanel";
 import { JourneyMediaEditModal } from "../../src/features/journey/components/JourneyMediaEditModal";
 import { JourneyNoteEditModal } from "../../src/features/journey/components/JourneyNoteEditModal";
+import { VoiceNoteDraftPlayback } from "../../src/features/journey/components/VoiceNoteDraftPlayback";
+import { VoiceNoteRecorderElapsed } from "../../src/features/journey/components/VoiceNoteRecorderElapsed";
 import { JourneyNotesFeed } from "../../src/features/journey/components/JourneyNotesFeed";
 import { useModalKeyboardInset } from "../../src/features/journey/hooks/useModalKeyboardInset";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
 import { AppHeaderMenu } from "../../src/components/AppHeaderMenu";
 import { HeaderBackButton } from "../../src/components/HeaderBackButton";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function JourneyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -89,6 +92,8 @@ export default function JourneyScreen() {
   const [mediaEditText, setMediaEditText] = useState<string>("");
   const { ongoingJourneyId, refreshOngoingJourney } = useOngoingJourneyCandidate();
   const modalKeyboardInset = useModalKeyboardInset();
+  const insets = useSafeAreaInsets();
+  const modalPaddingBottom = Math.max(insets.bottom + 16, 32);
 
   useEffect(() => {
     navigation.setOptions({
@@ -621,8 +626,9 @@ export default function JourneyScreen() {
               }}
             />
             <View
-              className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pb-8 pt-4"
+              className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pt-4"
               style={{
+                paddingBottom: modalPaddingBottom,
                 transform: [{ translateY: -modalKeyboardInset }],
               }}
             >
@@ -674,17 +680,20 @@ export default function JourneyScreen() {
               ) : (
                 <>
                   {newAudioRecorder ? (
-                    <Pressable
-                      className="mt-3 rounded-md bg-red-600 px-4 py-2"
-                      disabled={busy}
-                      onPress={() => {
-                        void stopNewVoiceNoteRecordingAndSave();
-                      }}
-                    >
-                      <Text className="text-center font-semibold text-white">
-                        Stop recording
-                      </Text>
-                    </Pressable>
+                    <>
+                      <Pressable
+                        className="mt-3 rounded-md bg-red-600 px-4 py-2"
+                        disabled={busy}
+                        onPress={() => {
+                          void stopNewVoiceNoteRecordingAndSave();
+                        }}
+                      >
+                        <Text className="text-center font-semibold text-white">
+                          Stop recording
+                        </Text>
+                      </Pressable>
+                      <VoiceNoteRecorderElapsed recorder={newAudioRecorder} />
+                    </>
                   ) : (
                     <Pressable
                       className={`mt-3 rounded-md px-4 py-2 ${newAudioPendingFile ? "bg-neutral-300" : "bg-emerald-600"}`}
@@ -700,6 +709,7 @@ export default function JourneyScreen() {
                   )}
                   {newAudioPendingFile ? (
                     <View className="mt-3 gap-2">
+                      <VoiceNoteDraftPlayback uri={newAudioPendingFile} busy={busy} />
                       <Pressable
                         className="rounded-md bg-emerald-700 px-4 py-2"
                         disabled={busy}
@@ -749,8 +759,9 @@ export default function JourneyScreen() {
               }}
             />
             <View
-              className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pb-8 pt-4"
+              className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pt-4"
               style={{
+                paddingBottom: modalPaddingBottom,
                 transform: [{ translateY: -modalKeyboardInset }],
               }}
             >

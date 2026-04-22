@@ -1,8 +1,10 @@
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useCallback, useEffect } from "react";
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { NoteRow } from "../../../db/schema";
+import { formatDurationSeconds } from "../formatDuration";
 
 export type JourneyNoteEditModalProps = {
   visible: boolean;
@@ -34,6 +36,8 @@ export function JourneyNoteEditModal({
   const audioSource = note?.type === "voice" && note.audio_file ? note.audio_file : null;
   const player = useAudioPlayer(audioSource);
   const status = useAudioPlayerStatus(player);
+  const insets = useSafeAreaInsets();
+  const modalPaddingBottom = Math.max(insets.bottom + 16, 32);
 
   useEffect(() => {
     if (!visible) {
@@ -83,8 +87,9 @@ export function JourneyNoteEditModal({
             }}
           />
           <View
-            className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pb-8 pt-4"
+            className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pt-4"
             style={{
+              paddingBottom: modalPaddingBottom,
               transform: [{ translateY: -keyboardInset }],
             }}
           >
@@ -103,17 +108,23 @@ export function JourneyNoteEditModal({
             {isVoice ? (
               <>
                 {note?.audio_file ? (
-                  <Pressable
-                    className={`mt-3 rounded-md px-3 py-2 ${busy || !status.isLoaded ? "bg-neutral-300" : "bg-neutral-700"}`}
-                    disabled={busy || !status.isLoaded}
-                    onPress={() => {
-                      void togglePlayback();
-                    }}
-                  >
-                    <Text className="text-center font-semibold text-white">
-                      {status.playing ? "Pause" : "Play"}
+                  <View className="mt-3">
+                    <Text className="mb-2 text-center text-sm tabular-nums text-neutral-700">
+                      {formatDurationSeconds(status.currentTime)} /{" "}
+                      {status.duration > 0 ? formatDurationSeconds(status.duration) : "—:—"}
                     </Text>
-                  </Pressable>
+                    <Pressable
+                      className={`rounded-md px-3 py-2 ${busy || !status.isLoaded ? "bg-neutral-300" : "bg-neutral-700"}`}
+                      disabled={busy || !status.isLoaded}
+                      onPress={() => {
+                        void togglePlayback();
+                      }}
+                    >
+                      <Text className="text-center font-semibold text-white">
+                        {status.playing ? "Pause" : "Play"}
+                      </Text>
+                    </Pressable>
+                  </View>
                 ) : (
                   <Pressable
                     className={`mt-3 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-emerald-700"}`}
