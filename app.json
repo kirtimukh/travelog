@@ -12,13 +12,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.mobile",
-      "infoPlist": {
-        "UIBackgroundModes": ["location", "audio"]
-      }
-    },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
@@ -65,7 +58,16 @@
           "cameraPermission": "MapMyTrip can use the camera to capture images for a journey."
         }
       ],
-      "expo-file-system"
+      "expo-file-system",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true
+          }
+        }
+      ],
+      "./plugins/withAndroidAbiSplits.js"
     ]
   }
 }

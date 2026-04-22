@@ -7,7 +7,14 @@ module.exports = {
   ],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      // NativeWind preset maps Android `mono` → "mono", which RN treats as a custom font
+      // (fonts/mono.ttf). Use platform-generic families instead.
+      fontFamily: {
+        sans: "sans-serif",
+        mono: "monospace",
+      },
+    },
   },
   plugins: [],
 };

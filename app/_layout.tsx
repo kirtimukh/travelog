@@ -5,6 +5,7 @@ import "../src/tracking/locationTask";
 
 import * as Battery from "expo-battery";
 import * as SplashScreen from "expo-splash-screen";
+import { ThemeProvider } from "@react-navigation/native";
 import {
   Stack,
   usePathname,
@@ -15,6 +16,7 @@ import { useEffect } from "react";
 import { AppState } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
+import { appNavigationTheme } from "../src/theme/navigationTheme";
 import { hasValidPmtilesPackage } from "../src/storage/pmtilesGuard";
 import { refreshLocationTrackingAccuracyIfRunning } from "../src/tracking/locationTracking";
 
@@ -56,15 +58,21 @@ export default function RootLayout() {
     return () => sub.remove();
   }, [pathname, router]);
 
+  useEffect(() => {
+    void SplashScreen.hideAsync();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack
-        screenOptions={{
-          headerShown: true,
-          // Default `title` (not string `headerTitle`) so screens can override via setOptions({ title }).
-          title: "MapMyTrip",
-        }}
-      />
+      <ThemeProvider value={appNavigationTheme}>
+        <Stack
+          screenOptions={{
+            headerShown: true,
+            // Default `title` (not string `headerTitle`) so screens can override via setOptions({ title }).
+            title: "MapMyTrip",
+          }}
+        />
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }

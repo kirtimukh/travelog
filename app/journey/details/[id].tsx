@@ -319,6 +319,15 @@ export default function JourneyDetailsScreen() {
         </GestureDetector>
       </View>
 
+      <View className="mt-3 rounded-xl border border-neutral-200 p-3">
+        <Text className="text-xs text-neutral-700">
+          Speed: {speed == null ? "—" : `${(speed * 3.6).toFixed(2)} km/h`}
+        </Text>
+        {/* <Text className="mt-1 text-xs text-neutral-700">
+          Replay heading: {heading == null ? "—" : heading.toFixed(2)} deg
+        </Text> */}
+      </View>
+
       {!canReplay ? (
         <Text className="mt-3 text-sm text-neutral-600">
           Replay is unavailable for scheduled journeys.
@@ -354,15 +363,6 @@ export default function JourneyDetailsScreen() {
           </Pressable>
         </View>
       )}
-
-      <View className="mt-3 rounded-xl border border-neutral-200 p-3">
-        <Text className="text-xs text-neutral-700">
-          Replay speed: {speed == null ? "—" : speed.toFixed(2)} m/s
-        </Text>
-        <Text className="mt-1 text-xs text-neutral-700">
-          Replay heading: {heading == null ? "—" : heading.toFixed(2)} deg
-        </Text>
-      </View>
 
       <View className="mt-4 rounded-xl border border-neutral-200 p-3">
         <Text className="text-sm font-semibold text-neutral-800">Replay events</Text>
