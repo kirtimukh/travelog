@@ -268,10 +268,14 @@ export default function JourneyScreen() {
             textNoteModalVisible ||
             voiceNoteModalVisible ||
             noteEditFlow.target !== null ||
-            rerecordFlow.session !== null
+            rerecordFlow.session !== null ||
+            weatherCaptureFlow.modal.visible
           }
           onLongPressNote={noteEditFlow.openFor}
           onLongPressMedia={mediaEditFlow.editModal.openFor}
+          onLongPressWeather={(row) => {
+            weatherCaptureFlow.modal.openForWeather(row);
+          }}
         />
       </ScrollView>
 
@@ -391,19 +395,25 @@ export default function JourneyScreen() {
 
       <JourneyWeatherModal
         visible={weatherCaptureFlow.modal.visible}
+        mode={weatherCaptureFlow.modal.mode}
         busy={weatherCaptureFlow.modal.busy}
         offline={weatherCaptureFlow.modal.offline}
         error={weatherCaptureFlow.modal.error}
-        success={weatherCaptureFlow.modal.success}
         quotaLabel={weatherCaptureFlow.modal.quotaLabel}
         canRequest={weatherCaptureFlow.modal.canRequest}
+        weatherDisplay={weatherCaptureFlow.modal.weatherDisplay}
+        dismissButtonLabel={weatherCaptureFlow.modal.dismissButtonLabel}
         onRetry={() => {
           void weatherCaptureFlow.modal.retryAvailability();
         }}
         onRequestWeather={() => {
           void weatherCaptureFlow.modal.requestWeather();
         }}
-        onClose={weatherCaptureFlow.modal.close}
+        onDismiss={weatherCaptureFlow.modal.close}
+        onSave={() => {
+          void weatherCaptureFlow.modal.savePreview();
+        }}
+        onDelete={weatherCaptureFlow.modal.requestDeleteWeather}
       />
     </View>
   );

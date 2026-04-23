@@ -16,7 +16,7 @@ describe("runMigrations", () => {
     const { runMigrations } = require("../migrations") as typeof import("../migrations");
     await runMigrations(db as never);
 
-    expect(execAsync).toHaveBeenCalledTimes(14);
+    expect(execAsync).toHaveBeenCalledTimes(16);
     expect(execAsync).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining("CREATE TABLE IF NOT EXISTS journey"),
@@ -52,10 +52,15 @@ describe("runMigrations", () => {
       expect.stringContaining("CREATE TABLE IF NOT EXISTS weather"),
     );
     expect(execAsync).toHaveBeenNthCalledWith(14, "PRAGMA user_version = 7");
+    expect(execAsync).toHaveBeenNthCalledWith(
+      15,
+      expect.stringContaining("CREATE TABLE IF NOT EXISTS weather_quota_event"),
+    );
+    expect(execAsync).toHaveBeenNthCalledWith(16, "PRAGMA user_version = 8");
   });
 
   it("does nothing when already at latest version", async () => {
-    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 7 });
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 8 });
     const execAsync = jest.fn().mockResolvedValue(undefined);
     const db = { getFirstAsync, execAsync };
 
@@ -159,5 +164,18 @@ describe("runMigrations", () => {
     expect(v7Sql).toContain("full_data TEXT NOT NULL");
     expect(v7Sql).toContain("FOREIGN KEY (journey_id) REFERENCES journey(id) ON DELETE CASCADE");
     expect(v7Sql).toContain("CREATE INDEX IF NOT EXISTS idx_weather_journey_ts");
+  });
+
+  it("adds weather_quota_event table in migration v8", async () => {
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 0 });
+    const execAsync = jest.fn().mockResolvedValue(undefined);
+    const db = { getFirstAsync, execAsync };
+
+    const { runMigrations } = require("../migrations") as typeof import("../migrations");
+    await runMigrations(db as never);
+
+    const v8Sql = String(execAsync.mock.calls[14]?.[0] ?? "");
+    expect(v8Sql).toContain("CREATE TABLE IF NOT EXISTS weather_quota_event");
+    expect(v8Sql).toContain("idx_weather_quota_event_ts");
   });
 });

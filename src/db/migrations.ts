@@ -96,6 +96,16 @@ const MIGRATIONS: string[] = [
   CREATE INDEX IF NOT EXISTS idx_weather_journey_ts
     ON weather (journey_id, timestamp);
   `,
+  // version 8 — successful weather API fetches (quota), independent of saved weather rows.
+  `
+  CREATE TABLE IF NOT EXISTS weather_quota_event (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    timestamp INTEGER NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_weather_quota_event_ts
+    ON weather_quota_event (timestamp);
+  `,
 ];
 
 /**

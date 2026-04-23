@@ -34,6 +34,7 @@ import { JourneyMapPanel } from "../../../src/features/journey/components/Journe
 import { JourneyMediaEditModal } from "../../../src/features/journey/components/JourneyMediaEditModal";
 import { JourneyNoteEditModal } from "../../../src/features/journey/components/JourneyNoteEditModal";
 import { JourneyNotesFeed } from "../../../src/features/journey/components/JourneyNotesFeed";
+import { JourneyWeatherModal } from "../../../src/features/journey/components/JourneyWeatherModal";
 import {
   buildReplayEvents,
   getJourneyPauseWindows,
@@ -46,6 +47,7 @@ import {
 } from "../../../src/features/journey/replay";
 import { onPermissionGranted } from "../../../src/location/currentLocationCache";
 import { sumPathDistanceMeters } from "../../../src/features/journey/journeyMetrics";
+import { useWeatherCaptureFlow } from "../../../src/features/journey/hooks/useWeatherCaptureFlow";
 import { canEditInDetails } from "../../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../../src/features/journey/useOngoingJourneyCandidate";
 import { AppHeaderMenu } from "../../../src/components/AppHeaderMenu";
@@ -142,6 +144,11 @@ export default function JourneyDetailsScreen() {
     setMedia(bundle.media);
     setWeather(bundle.weather);
   }, [journeyId]);
+
+  const weatherCaptureFlow = useWeatherCaptureFlow({
+    journeyId,
+    refreshJourneyData: refresh,
+  });
 
   const requestDeleteJourney = useCallback((): void => {
     if (!journey || deleteJourneyBusy || !Number.isFinite(journeyId)) {
@@ -624,6 +631,19 @@ export default function JourneyDetailsScreen() {
         </Text>
       ) : null}
 
+      {editable ? (
+        <Pressable
+          className="mt-4 self-stretch rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3"
+          accessibilityLabel="Weather"
+          accessibilityRole="button"
+          onPress={() => {
+            weatherCaptureFlow.modal.open();
+          }}
+        >
+          <Text className="text-center text-lg font-semibold text-neutral-900">☁️</Text>
+        </Pressable>
+      ) : null}
+
       <JourneyNotesFeed
         notes={notes}
         media={media}
@@ -631,7 +651,11 @@ export default function JourneyDetailsScreen() {
         pauseWindows={replayPauseWindows}
         locationPoints={points}
         editable={editable}
-        suspendPlayback={noteEditTarget !== null || mediaEditTarget !== null}
+        suspendPlayback={
+          noteEditTarget !== null ||
+          mediaEditTarget !== null ||
+          weatherCaptureFlow.modal.visible
+        }
         onLongPressNote={(note) => {
           if (!editable) {
             return;
@@ -653,6 +677,9 @@ export default function JourneyDetailsScreen() {
           );
           setMediaEditLat(item.lat != null ? String(item.lat) : "");
           setMediaEditLng(item.lng != null ? String(item.lng) : "");
+        }}
+        onLongPressWeather={(row) => {
+          weatherCaptureFlow.modal.openForWeather(row);
         }}
       />
 
@@ -722,6 +749,29 @@ export default function JourneyDetailsScreen() {
             setMediaEditTarget(null);
           });
         }}
+      />
+
+      <JourneyWeatherModal
+        visible={weatherCaptureFlow.modal.visible}
+        mode={weatherCaptureFlow.modal.mode}
+        busy={weatherCaptureFlow.modal.busy}
+        offline={weatherCaptureFlow.modal.offline}
+        error={weatherCaptureFlow.modal.error}
+        quotaLabel={weatherCaptureFlow.modal.quotaLabel}
+        canRequest={weatherCaptureFlow.modal.canRequest}
+        weatherDisplay={weatherCaptureFlow.modal.weatherDisplay}
+        dismissButtonLabel={weatherCaptureFlow.modal.dismissButtonLabel}
+        onRetry={() => {
+          void weatherCaptureFlow.modal.retryAvailability();
+        }}
+        onRequestWeather={() => {
+          void weatherCaptureFlow.modal.requestWeather();
+        }}
+        onDismiss={weatherCaptureFlow.modal.close}
+        onSave={() => {
+          void weatherCaptureFlow.modal.savePreview();
+        }}
+        onDelete={editable ? weatherCaptureFlow.modal.requestDeleteWeather : undefined}
       />
     </ScrollView>
   );

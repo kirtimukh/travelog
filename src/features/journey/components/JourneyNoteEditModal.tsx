@@ -116,15 +116,30 @@ export function JourneyNoteEditModal({
           >
             <Text className="text-base font-semibold text-neutral-900">Edit note</Text>
             {isText ? (
-              <TextInput
-                className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-                placeholder="Note text"
-                value={text}
-                onChangeText={onChangeText}
-              />
-            ) : null}
-            {isVoice ? (
-              <Text className="mt-3 text-sm text-neutral-600">Voice note</Text>
+              <>
+                <TextInput
+                  className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
+                  placeholder="Note text"
+                  value={text}
+                  onChangeText={onChangeText}
+                />
+                <View className="mt-3 flex-row gap-2">
+                  <Pressable
+                    className={`flex-1 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-red-700"}`}
+                    disabled={busy}
+                    onPress={onDelete}
+                  >
+                    <Text className="text-center font-semibold text-white">Delete</Text>
+                  </Pressable>
+                  <Pressable
+                    className={`flex-1 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-blue-600"}`}
+                    disabled={busy}
+                    onPress={onSave}
+                  >
+                    <Text className="text-center font-semibold text-white">Save</Text>
+                  </Pressable>
+                </View>
+              </>
             ) : null}
             {isVoice ? (
               <>
@@ -136,63 +151,47 @@ export function JourneyNoteEditModal({
                     {loadError ? (
                       <Text className="mb-2 text-center text-xs text-red-600">{loadError}</Text>
                     ) : null}
-                    <Pressable
-                      className={`rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-neutral-700"}`}
-                      disabled={busy}
-                      onPress={() => {
-                        void togglePlayback();
-                      }}
-                    >
-                      <Text className="text-center font-semibold text-white">
-                        {status.playing ? "Pause" : "Play"}
-                      </Text>
-                    </Pressable>
+                    <View className="flex-row gap-2">
+                      <Pressable
+                        className={`flex-1 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-red-700"}`}
+                        disabled={busy}
+                        onPress={onDelete}
+                      >
+                        <Text className="text-center font-semibold text-white">Delete</Text>
+                      </Pressable>
+                      <Pressable
+                        className={`flex-1 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-neutral-700"}`}
+                        disabled={busy}
+                        onPress={() => {
+                          void togglePlayback();
+                        }}
+                      >
+                        <Text className="text-center font-semibold text-white">
+                          {status.playing ? "Pause" : "Play"}
+                        </Text>
+                      </Pressable>
+                    </View>
                   </View>
                 ) : (
-                  <Pressable
-                    className={`mt-3 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-emerald-700"}`}
-                    disabled={busy}
-                    onPress={onRerecordAudio}
-                  >
-                    <Text className="text-center font-semibold text-white">Re-record audio</Text>
-                  </Pressable>
+                  <View className="mt-3 flex-row gap-2">
+                    <Pressable
+                      className={`flex-1 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-red-700"}`}
+                      disabled={busy}
+                      onPress={onDelete}
+                    >
+                      <Text className="text-center font-semibold text-white">Delete</Text>
+                    </Pressable>
+                    <Pressable
+                      className={`flex-1 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-emerald-700"}`}
+                      disabled={busy}
+                      onPress={onRerecordAudio}
+                    >
+                      <Text className="text-center font-semibold text-white">Re-record audio</Text>
+                    </Pressable>
+                  </View>
                 )}
               </>
             ) : null}
-            <Pressable
-              className={`mt-3 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-red-700"}`}
-              disabled={busy}
-              onPress={onDelete}
-            >
-              <Text className="text-center font-semibold text-white">Delete note</Text>
-            </Pressable>
-            <View className="mt-3 flex-row gap-2">
-              <Pressable
-                className="flex-1 rounded-md border border-neutral-300 px-3 py-2"
-                onPress={onRequestClose}
-              >
-                <Text className="text-center font-semibold text-neutral-900">Cancel</Text>
-              </Pressable>
-              {isText ? (
-                <Pressable
-                  className={`flex-1 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-blue-600"}`}
-                  disabled={busy}
-                  onPress={onSave}
-                >
-                  <Text className="text-center font-semibold text-white">Save</Text>
-                </Pressable>
-              ) : isVoice ? (
-                <Pressable
-                  className="flex-1 rounded-md bg-blue-600 px-3 py-2"
-                  onPress={() => {
-                    Keyboard.dismiss();
-                    onRequestClose();
-                  }}
-                >
-                  <Text className="text-center font-semibold text-white">Done</Text>
-                </Pressable>
-              ) : null}
-            </View>
           </View>
         </View>
       </View>

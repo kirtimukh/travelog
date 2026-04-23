@@ -8,6 +8,8 @@ import type { JourneyPauseWindow } from "../replay";
 
 import { waitForPlayerReady } from "../audio/waitForPlayerReady";
 import type { LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
+
+import { JourneyWeatherCardBody, weatherRowToCardDisplay } from "./JourneyWeatherCardBody";
 import { formatDurationSeconds } from "../formatDuration";
 
 const MEDIA_FEED_THUMBNAIL_HEIGHT = 100;
@@ -313,6 +315,7 @@ type Props = {
   editable?: boolean;
   onLongPressNote: (note: NoteRow) => void;
   onLongPressMedia: (item: MediaRow) => void;
+  onLongPressWeather?: (row: WeatherRow) => void;
   /** When true, pauses the shared list player (modals / re-record overlay own audio). */
   suspendPlayback?: boolean;
 };
@@ -330,6 +333,7 @@ export function JourneyNotesFeed({
   editable = true,
   onLongPressNote,
   onLongPressMedia,
+  onLongPressWeather,
   suspendPlayback = false,
 }: Props) {
   const feed = buildFeed(notes, media, weather, pauseWindows);
@@ -423,40 +427,26 @@ export function JourneyNotesFeed({
             </View>
           )
         ) : item.kind === "weather" ? (
-          <View
-            key={`weather-${item.data.id}`}
-            className="mt-3 overflow-hidden rounded-md border border-sky-200 bg-sky-50"
-          >
-            <View className="border-b border-sky-200 px-3 py-2">
-              <Text className="text-xs text-neutral-600">
-                {formatListTimestamp(item.data.timestamp)} · (
-                {formatLatLngPair(item.data.lat, item.data.lng)})
-              </Text>
+          onLongPressWeather ? (
+            <Pressable
+              key={`weather-${item.data.id}`}
+              className="mt-3 overflow-hidden rounded-md border border-sky-200 active:bg-sky-100/80"
+              onLongPress={() => {
+                onLongPressWeather(item.data);
+              }}
+              delayLongPress={350}
+            >
+              <JourneyWeatherCardBody
+                data={weatherRowToCardDisplay(item.data)}
+                includeTopMargin={false}
+                layout="feed"
+              />
+            </Pressable>
+          ) : (
+            <View key={`weather-${item.data.id}`}>
+              <JourneyWeatherCardBody data={weatherRowToCardDisplay(item.data)} />
             </View>
-            <View className="flex-row items-center px-3 py-3">
-              {item.data.weather_condition_icon ? (
-                <Image
-                  source={{ uri: item.data.weather_condition_icon }}
-                  style={{ width: 40, height: 40 }}
-                  resizeMode="contain"
-                />
-              ) : null}
-              <View className="ml-3 flex-1">
-                <Text className="text-sm font-semibold text-neutral-900">
-                  {item.data.weather_condition ?? "Weather update"}
-                </Text>
-                <Text className="mt-1 text-sm text-neutral-700">
-                  Temperature: {item.data.temperature != null ? `${item.data.temperature}°` : "—"}
-                </Text>
-                <Text className="text-sm text-neutral-700">
-                  Feels like:{" "}
-                  {item.data.feels_like_temperature != null
-                    ? `${item.data.feels_like_temperature}°`
-                    : "—"}
-                </Text>
-              </View>
-            </View>
-          </View>
+          )
         ) : (
           <View
             key={`pause-${item.data.startTs}-${item.data.endTs ?? "open"}`}
