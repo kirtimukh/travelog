@@ -44,6 +44,7 @@ import {
   getStoredOrComputedJourneyDurationMs,
   mapRecordedElapsedMsToWallTs,
 } from "../../../src/features/journey/replay";
+import { onPermissionGranted } from "../../../src/location/currentLocationCache";
 import { sumPathDistanceMeters } from "../../../src/features/journey/journeyMetrics";
 import { canEditInDetails } from "../../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../../src/features/journey/useOngoingJourneyCandidate";
@@ -190,7 +191,11 @@ export default function JourneyDetailsScreen() {
 
   const requestPermission = useCallback(async (): Promise<void> => {
     const res = await Location.requestForegroundPermissionsAsync();
-    setLocationPermission(res.status === Location.PermissionStatus.GRANTED);
+    const granted = res.status === Location.PermissionStatus.GRANTED;
+    setLocationPermission(granted);
+    if (granted) {
+      void onPermissionGranted();
+    }
   }, []);
 
   useEffect(() => {

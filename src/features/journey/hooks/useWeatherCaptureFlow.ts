@@ -2,6 +2,7 @@ import * as Location from "expo-location";
 import { useCallback, useMemo, useState } from "react";
 import NetInfo from "@react-native-community/netinfo";
 
+import { onPermissionGranted } from "../../../location/currentLocationCache";
 import { openAppDatabase } from "../../../db/client";
 import { createWeather, listRecentWeatherRequests } from "../../../db/weather";
 import { cacheWeatherIcon, lookupCurrentConditions } from "../../../weather";
@@ -117,12 +118,13 @@ export function useWeatherCaptureFlow({
       if (permission.status !== Location.PermissionStatus.GRANTED) {
         throw new Error("Location permission is required to fetch weather.");
       }
-      const position = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
+      const coords = await onPermissionGranted();
+      if (!coords) {
+        throw new Error("Could not get current location.");
+      }
       const timestamp = Date.now();
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
+      const lat = coords.lat;
+      const lng = coords.lng;
       const response = await lookupCurrentConditions({
         apiKey: GOOGLE_WEATHER_API_KEY,
         latitude: lat,

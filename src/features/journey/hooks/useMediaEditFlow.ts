@@ -1,6 +1,7 @@
 import * as ImagePicker from "expo-image-picker";
 import { useCallback, useState } from "react";
 
+import { getCachedCurrentLocation, mergeWithCachedGps } from "../../../location/currentLocationCache";
 import { openAppDatabase } from "../../../db/client";
 import { createMedia, deleteMediaById, updateMediaDetails } from "../../../db/media";
 import type { MediaRow } from "../../../db/schema";
@@ -187,8 +188,15 @@ export function useMediaEditFlow({
       );
       setAddSelectedExif(exifJson);
       setAddSelectedTs(exifTs ?? creationTs ?? Date.now());
-      setAddSelectedLat(pickExifNumber(exifSource, ["GPSLatitude", "latitude", "lat"]));
-      setAddSelectedLng(pickExifNumber(exifSource, ["GPSLongitude", "longitude", "lng", "lon"]));
+      const exifLat = pickExifNumber(exifSource, ["GPSLatitude", "latitude", "lat"]);
+      const exifLng = pickExifNumber(exifSource, ["GPSLongitude", "longitude", "lng", "lon"]);
+      const merged = mergeWithCachedGps({
+        exifLat,
+        exifLng,
+        cache: getCachedCurrentLocation(),
+      });
+      setAddSelectedLat(merged.lat);
+      setAddSelectedLng(merged.lng);
     } catch (err) {
       setAddError(err instanceof Error ? err.message : "Could not add image.");
     } finally {

@@ -34,6 +34,11 @@ jest.mock("expo-location", () => ({
     mockRequestBackgroundPermissionsAsync(...args),
 }));
 
+jest.mock("../../location/currentLocationCache", () => ({
+  onPermissionGranted: jest.fn(() => Promise.resolve(null)),
+  reconcileForegroundWatch: jest.fn(() => Promise.resolve()),
+}));
+
 /**
  * Tests high-level tracking control that configures Expo background updates.
  *

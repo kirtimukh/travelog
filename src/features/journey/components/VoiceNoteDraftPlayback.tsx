@@ -23,8 +23,8 @@ export function VoiceNoteDraftPlayback({
   uri,
   busy,
   totalSecondsHint,
-  playLabel = "Play preview",
-  pauseLabel = "Pause preview",
+  playLabel = "Play",
+  pauseLabel = "Pause",
 }: Props) {
   const player = useAudioPlayer(uri);
   const status = useAudioPlayerStatus(player);

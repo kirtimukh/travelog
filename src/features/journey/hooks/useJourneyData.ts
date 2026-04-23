@@ -12,6 +12,7 @@ import type {
   NoteRow,
   WeatherRow,
 } from "../../../db/schema";
+import { onPermissionGranted } from "../../../location/currentLocationCache";
 import { syncActiveJourneySession } from "../../../storage/activeJourney";
 import { hasValidPmtilesPackage } from "../../../storage/pmtilesGuard";
 import { syncBackgroundTrackingForJourneyStatus } from "../../../tracking/locationTracking";
@@ -89,6 +90,9 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
     const res = await Location.requestForegroundPermissionsAsync();
     const granted = res.status === Location.PermissionStatus.GRANTED;
     setLocationPermission(granted ? "granted" : "denied");
+    if (granted) {
+      void onPermissionGranted();
+    }
     return granted;
   }, []);
 

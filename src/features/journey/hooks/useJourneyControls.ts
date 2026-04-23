@@ -1,6 +1,7 @@
 import * as Location from "expo-location";
 import { useCallback, useState } from "react";
 
+import { writeCurrentLocationFromCoords } from "../../../location/currentLocationCache";
 import { openAppDatabase } from "../../../db/client";
 import { updateJourneyStatus } from "../../../db/journeys";
 import { insertLocationPoint } from "../../../db/locationPoints";
@@ -37,6 +38,11 @@ export function useJourneyControls({
     const pos = await Location.getCurrentPositionAsync({
       accuracy: Location.LocationAccuracy.Balanced,
     });
+    writeCurrentLocationFromCoords(
+      pos.coords.latitude,
+      pos.coords.longitude,
+      pos.timestamp ?? Date.now(),
+    );
     const db = await openAppDatabase();
     await insertLocationPoint(db, {
       journeyId,

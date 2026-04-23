@@ -42,6 +42,10 @@ jest.mock("../../geo/distance", () => ({
   distanceMeters: (...args: unknown[]) => mockDistanceMeters(...args),
 }));
 
+jest.mock("../../location/currentLocationCache", () => ({
+  writeCurrentLocationFromCoords: jest.fn(),
+}));
+
 function location(
   timestamp: number,
   latitude: number,

@@ -2,6 +2,10 @@ import * as Battery from "expo-battery";
 import * as Location from "expo-location";
 
 import type { JourneyStatus } from "../db/schema";
+import {
+  onPermissionGranted,
+  reconcileForegroundWatch,
+} from "../location/currentLocationCache";
 
 import {
   BATTERY_RECOVERY_FRACTION,
@@ -80,6 +84,8 @@ export async function requestLocationPermissionsForTracking(): Promise<TrackingS
     };
   }
 
+  void onPermissionGranted();
+
   try {
     const bg = await Location.requestBackgroundPermissionsAsync();
     if (bg.status === Location.PermissionStatus.GRANTED) {
@@ -119,6 +125,7 @@ export async function startOngoingLocationTracking(): Promise<void> {
     LOCATION_TASK_NAME,
     buildTaskOptions(mode),
   );
+  void reconcileForegroundWatch();
 }
 
 /**
@@ -132,6 +139,7 @@ export async function stopOngoingLocationTracking(): Promise<void> {
     await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
   }
   currentAccuracyMode = null;
+  void reconcileForegroundWatch();
 }
 
 /**
@@ -174,4 +182,5 @@ export async function refreshLocationTrackingAccuracyIfRunning(): Promise<void> 
     LOCATION_TASK_NAME,
     buildTaskOptions(nextMode),
   );
+  void reconcileForegroundWatch();
 }

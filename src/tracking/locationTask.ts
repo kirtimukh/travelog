@@ -13,6 +13,7 @@ import {
 } from "../db/locationPoints";
 import { getActiveJourneyId } from "../storage/activeJourney";
 import { distanceMeters } from "../geo/distance";
+import { writeCurrentLocationFromCoords } from "../location/currentLocationCache";
 
 import {
   LOCATION_TASK_NAME,
@@ -95,6 +96,11 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
           heading: heading ?? null,
           metadata,
         });
+        try {
+          writeCurrentLocationFromCoords(lat, lng, ts);
+        } catch {
+          /* ignore cache write failures in headless task */
+        }
         last = { lat, lng, timestamp: ts };
         continue;
       }
@@ -111,6 +117,11 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
           heading: heading ?? null,
           metadata,
         });
+        try {
+          writeCurrentLocationFromCoords(lat, lng, ts);
+        } catch {
+          /* ignore cache write failures in headless task */
+        }
         last = { lat, lng, timestamp: ts };
       }
     }

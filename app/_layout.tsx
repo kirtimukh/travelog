@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { AppState } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
+import { subscribeCurrentLocationCacheAppState } from "../src/location/currentLocationCache";
 import { appNavigationTheme } from "../src/theme/navigationTheme";
 import { hasValidPmtilesPackage } from "../src/storage/pmtilesGuard";
 import { refreshLocationTrackingAccuracyIfRunning } from "../src/tracking/locationTracking";
@@ -26,6 +27,10 @@ export default function RootLayout() {
   const router = useRouter();
   const navState = useRootNavigationState();
   const pathname = usePathname();
+
+  useEffect(() => {
+    return subscribeCurrentLocationCacheAppState();
+  }, []);
 
   useEffect(() => {
     const levelSub = Battery.addBatteryLevelListener(() => {

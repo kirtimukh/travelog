@@ -90,7 +90,7 @@ export function JourneyAddNoteModal({
                   disabled={busy}
                   onPress={onAddTextNote}
                 >
-                  <Text className="text-center font-semibold text-white">Save text note</Text>
+                  <Text className="text-center font-semibold text-white">Save</Text>
                 </Pressable>
               </>
             ) : (
@@ -132,7 +132,7 @@ export function JourneyAddNoteModal({
                       onPress={onSaveVoiceNote}
                     >
                       <Text className="text-center font-semibold text-white">
-                        Save voice note
+                        Save
                       </Text>
                     </Pressable>
                     <Pressable
@@ -141,7 +141,7 @@ export function JourneyAddNoteModal({
                       onPress={onDiscardVoiceRecording}
                     >
                       <Text className="text-center font-semibold text-white">
-                        Discard recording
+                        Discard
                       </Text>
                     </Pressable>
                   </View>
