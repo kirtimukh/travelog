@@ -34,7 +34,6 @@ export type UseMediaEditFlowResult = {
     localDateTime: string;
     lat: string;
     lng: string;
-    exif: string | null;
     busy: boolean;
     openFor: (item: MediaRow) => void;
     close: () => void;
@@ -174,9 +173,10 @@ export function useMediaEditFlow({
       const exifJson =
         asset.exif && typeof asset.exif === "object" ? JSON.stringify(asset.exif) : null;
       const exifTs = pickExifTimestamp(exifSource);
-      const fallbackTs =
-        typeof asset.creationTime === "number" && Number.isFinite(asset.creationTime)
-          ? asset.creationTime
+      const assetCreationTime = (asset as { creationTime?: unknown }).creationTime;
+      const creationTs =
+        typeof assetCreationTime === "number" && Number.isFinite(assetCreationTime)
+          ? assetCreationTime
           : null;
       setAddSelectedFile(copiedFile);
       setAddSelectedWidth(
@@ -186,7 +186,7 @@ export function useMediaEditFlow({
         typeof asset.height === "number" && Number.isFinite(asset.height) ? asset.height : null,
       );
       setAddSelectedExif(exifJson);
-      setAddSelectedTs(exifTs ?? fallbackTs);
+      setAddSelectedTs(exifTs ?? creationTs ?? Date.now());
       setAddSelectedLat(pickExifNumber(exifSource, ["GPSLatitude", "latitude", "lat"]));
       setAddSelectedLng(pickExifNumber(exifSource, ["GPSLongitude", "longitude", "lng", "lon"]));
     } catch (err) {
@@ -343,7 +343,6 @@ export function useMediaEditFlow({
       localDateTime: editLocalDateTime,
       lat: editLat,
       lng: editLng,
-      exif: editTarget?.exif ?? null,
       busy: editBusy,
       openFor: openEditFor,
       close: () => setEditTarget(null),

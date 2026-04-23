@@ -666,7 +666,6 @@ export default function JourneyDetailsScreen() {
         onChangeLat={setMediaEditLat}
         lng={mediaEditLng}
         onChangeLng={setMediaEditLng}
-        exif={mediaEditTarget?.exif ?? null}
         busy={busy}
         onRequestClose={() => {
           setMediaEditTarget(null);

@@ -330,7 +330,6 @@ export default function JourneyScreen() {
           onChangeLat={mediaEditFlow.editModal.onChangeLat}
           lng={mediaEditFlow.editModal.lng}
           onChangeLng={mediaEditFlow.editModal.onChangeLng}
-          exif={mediaEditFlow.editModal.exif}
           busy={mediaEditFlow.editModal.busy}
           onRequestClose={mediaEditFlow.editModal.close}
           onSave={() => {
