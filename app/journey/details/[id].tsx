@@ -28,15 +28,23 @@ import { JourneyNoteEditModal } from "../../../src/features/journey/components/J
 import { JourneyNotesFeed } from "../../../src/features/journey/components/JourneyNotesFeed";
 import {
   buildReplayEvents,
+  getJourneyPauseWindows,
   getLatestReplayEvent,
   getReplayHeading,
   getReplayPointAtTimestamp,
-  getReplayTimeBounds,
+  getReplayRecordedDurationMs,
+  mapRecordedElapsedMsToWallTs,
 } from "../../../src/features/journey/replay";
 import { canEditInDetails } from "../../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../../src/features/journey/useOngoingJourneyCandidate";
 import { AppHeaderMenu } from "../../../src/components/AppHeaderMenu";
 import { HeaderBackButton } from "../../../src/components/HeaderBackButton";
+
+const NORMALIZED_REPLAY_DURATION_MS = 120_000;
+const HOLD_TO_FAST_MS = 1_000;
+const TAP_JUMP_MAX_MS = 500;
+const FAST_HOLD_MULTIPLIER = 5;
+const REPLAY_TICK_MS = 100;
 
 export default function JourneyDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -54,8 +62,9 @@ export default function JourneyDetailsScreen() {
   const [busy, setBusy] = useState<boolean>(false);
   const [deleteJourneyBusy, setDeleteJourneyBusy] = useState<boolean>(false);
   const [isReplaying, setIsReplaying] = useState<boolean>(false);
-  const [scrubDirection, setScrubDirection] = useState<-1 | 0 | 1>(0);
-  const [replayTs, setReplayTs] = useState<number | null>(null);
+  const [holdDirection, setHoldDirection] = useState<-1 | 0 | 1>(0);
+  const [replayElapsedMs, setReplayElapsedMs] = useState<number | null>(null);
+  const [timelineNowTs, setTimelineNowTs] = useState<number>(Date.now());
   const [eventFeed, setEventFeed] = useState<string[]>([]);
   const eventScrollRef = useRef<RNScrollView | null>(null);
   const [noteEditTarget, setNoteEditTarget] = useState<NoteRow | null>(null);
@@ -68,8 +77,21 @@ export default function JourneyDetailsScreen() {
   const [mediaEditLng, setMediaEditLng] = useState<string>("");
   const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdActivatedRef = useRef<boolean>(false);
+  const pressedDirectionRef = useRef<-1 | 0 | 1>(0);
+  const pressStartTsRef = useRef<number | null>(null);
 
-  const replayBounds = useMemo(() => getReplayTimeBounds(journey, Date.now()), [journey]);
+  const replayPauseWindows = useMemo(() => getJourneyPauseWindows(journey), [journey]);
+  const replayDurationMs = useMemo(
+    () => getReplayRecordedDurationMs(journey, timelineNowTs),
+    [journey, timelineNowTs],
+  );
+  const replayTs = useMemo(
+    () =>
+      replayElapsedMs == null
+        ? null
+        : mapRecordedElapsedMsToWallTs(journey, replayElapsedMs, timelineNowTs),
+    [journey, replayElapsedMs, timelineNowTs],
+  );
   const replayEvents = useMemo(() => buildReplayEvents(notes, media), [media, notes]);
 
   const refresh = useCallback(async (): Promise<void> => {
@@ -183,49 +205,52 @@ export default function JourneyDetailsScreen() {
   ]);
 
   useEffect(() => {
-    if (!replayBounds || replayTs != null) {
+    if (!journey?.start_ts || replayElapsedMs != null) {
       return;
     }
-    setReplayTs(replayBounds.startTs);
-  }, [replayBounds, replayTs]);
+    setReplayElapsedMs(0);
+  }, [journey?.start_ts, replayElapsedMs]);
 
   useEffect(() => {
-    const hasFastScrub = scrubDirection !== 0;
-    if ((!isReplaying && !hasFastScrub) || !replayBounds || replayTs == null) {
+    const hasHold = holdDirection !== 0;
+    if ((!isReplaying && !hasHold) || replayElapsedMs == null || replayDurationMs <= 0) {
       return;
     }
-    const tickMs = 100;
-    const replayRate = hasFastScrub ? 5 : 1;
-    const direction: -1 | 1 = hasFastScrub ? scrubDirection : 1;
+    const baseRate = replayDurationMs / NORMALIZED_REPLAY_DURATION_MS;
+    const direction: -1 | 1 = hasHold ? holdDirection : 1;
+    const speedMultiplier = hasHold ? FAST_HOLD_MULTIPLIER : 1;
     const intervalId = setInterval(() => {
-      setReplayTs((current) => {
+      setTimelineNowTs(Date.now());
+      setReplayElapsedMs((current) => {
         if (current == null) {
-          return replayBounds.startTs;
+          return 0;
         }
-        const deltaMs = direction * replayRate * tickMs;
+        const deltaMs = direction * baseRate * speedMultiplier * REPLAY_TICK_MS;
         const next = current + deltaMs;
-        if (next >= replayBounds.endTs) {
+        if (next >= replayDurationMs) {
           setIsReplaying(false);
-          setScrubDirection(0);
-          return replayBounds.endTs;
+          setHoldDirection(0);
+          return replayDurationMs;
         }
-        if (next <= replayBounds.startTs) {
-          setScrubDirection(0);
-          return replayBounds.startTs;
+        if (next <= 0) {
+          return 0;
         }
         return next;
       });
-    }, tickMs);
+    }, REPLAY_TICK_MS);
     return () => {
       clearInterval(intervalId);
     };
-  }, [isReplaying, replayBounds, replayTs, scrubDirection]);
+  }, [holdDirection, isReplaying, replayDurationMs, replayElapsedMs]);
 
   useEffect(
     () => () => {
       if (holdTimeoutRef.current != null) {
         clearTimeout(holdTimeoutRef.current);
       }
+      holdActivatedRef.current = false;
+      pressedDirectionRef.current = 0;
+      pressStartTsRef.current = null;
     },
     [],
   );
@@ -328,33 +353,30 @@ export default function JourneyDetailsScreen() {
     [points, replayTs],
   );
   const editable = canEditInDetails(journey?.status ?? "");
-  const canReplay = Boolean(replayBounds) && journey?.status !== "scheduled";
+  const canReplay =
+    Boolean(journey?.start_ts) && replayDurationMs > 0 && journey?.status !== "scheduled";
   const heading = getReplayHeading(replayPoint);
   const speed = replayPoint?.speed ?? null;
-  const replayDurationMs = replayBounds ? replayBounds.endTs - replayBounds.startTs : 0;
 
   const clampReplayTs = useCallback(
     (value: number): number => {
-      if (!replayBounds) {
-        return value;
-      }
-      return Math.max(replayBounds.startTs, Math.min(replayBounds.endTs, value));
+      return Math.max(0, Math.min(replayDurationMs, value));
     },
-    [replayBounds],
+    [replayDurationMs],
   );
 
   const skipReplayByPercent = useCallback(
     (direction: -1 | 1): void => {
-      if (!replayBounds) {
+      if (!canReplay) {
         return;
       }
-      const stepMs = Math.max(1000, Math.round(replayDurationMs * 0.05));
-      setReplayTs((current) => {
-        const anchor = current ?? replayBounds.startTs;
+      const stepMs = Math.max(1, Math.round(replayDurationMs * 0.05));
+      setReplayElapsedMs((current) => {
+        const anchor = current ?? 0;
         return clampReplayTs(anchor + direction * stepMs);
       });
     },
-    [clampReplayTs, replayBounds, replayDurationMs],
+    [canReplay, clampReplayTs, replayDurationMs],
   );
 
   const handleDirectionalPressIn = useCallback(
@@ -362,18 +384,21 @@ export default function JourneyDetailsScreen() {
       if (!canReplay) {
         return;
       }
-      setIsReplaying(false);
-      skipReplayByPercent(direction);
+      pressStartTsRef.current = Date.now();
+      pressedDirectionRef.current = direction;
       holdActivatedRef.current = false;
       if (holdTimeoutRef.current != null) {
         clearTimeout(holdTimeoutRef.current);
       }
       holdTimeoutRef.current = setTimeout(() => {
+        if (pressedDirectionRef.current !== direction) {
+          return;
+        }
         holdActivatedRef.current = true;
-        setScrubDirection(direction);
-      }, 1000);
+        setHoldDirection(direction);
+      }, HOLD_TO_FAST_MS);
     },
-    [canReplay, skipReplayByPercent],
+    [canReplay],
   );
 
   const handleDirectionalPressOut = useCallback(
@@ -382,15 +407,21 @@ export default function JourneyDetailsScreen() {
         clearTimeout(holdTimeoutRef.current);
         holdTimeoutRef.current = null;
       }
+      const pressStartTs = pressStartTsRef.current;
+      const pressDurationMs = pressStartTs == null ? Number.POSITIVE_INFINITY : Date.now() - pressStartTs;
+      pressStartTsRef.current = null;
+      pressedDirectionRef.current = 0;
       if (holdActivatedRef.current) {
         holdActivatedRef.current = false;
-        setScrubDirection(0);
+        setHoldDirection(0);
         return;
       }
       if (!canReplay) {
         return;
       }
-      skipReplayByPercent(direction);
+      if (pressDurationMs < TAP_JUMP_MAX_MS) {
+        skipReplayByPercent(direction);
+      }
     },
     [canReplay, skipReplayByPercent],
   );
@@ -432,6 +463,15 @@ export default function JourneyDetailsScreen() {
 
       <View className="mt-3 rounded-xl border border-neutral-200 p-3">
         <Text className="text-xs text-neutral-700">
+          Timestamp:{" "}
+          {replayTs == null
+            ? "—"
+            : new Date(replayTs).toLocaleString(undefined, {
+                dateStyle: "short",
+                timeStyle: "medium",
+              })}
+        </Text>
+        <Text className="text-xs text-neutral-700">
           Speed: {speed == null ? "—" : `${(speed * 3.6).toFixed(2)} km/h`}
         </Text>
         <Text className="mt-1 text-xs text-neutral-700">
@@ -460,13 +500,15 @@ export default function JourneyDetailsScreen() {
             className="min-w-12 rounded-md bg-amber-700 px-3 py-3"
             onPress={() => {
               setIsReplaying(false);
-              setScrubDirection(0);
+              setHoldDirection(0);
               holdActivatedRef.current = false;
+              pressedDirectionRef.current = 0;
+              pressStartTsRef.current = null;
               if (holdTimeoutRef.current != null) {
                 clearTimeout(holdTimeoutRef.current);
                 holdTimeoutRef.current = null;
               }
-              setReplayTs(replayBounds?.startTs ?? null);
+              setReplayElapsedMs(0);
               setEventFeed([]);
             }}
           >
@@ -475,7 +517,7 @@ export default function JourneyDetailsScreen() {
           <Pressable
             className={`min-w-12 rounded-md px-3 py-3 ${isReplaying ? "bg-amber-600" : "bg-emerald-600"}`}
             onPress={() => {
-              setScrubDirection(0);
+              setHoldDirection(0);
               setIsReplaying((current) => !current);
             }}
           >
@@ -524,6 +566,7 @@ export default function JourneyDetailsScreen() {
       <JourneyNotesFeed
         notes={notes}
         media={media}
+        pauseWindows={replayPauseWindows}
         locationPoints={points}
         editable={editable}
         suspendPlayback={noteEditTarget !== null || mediaEditTarget !== null}

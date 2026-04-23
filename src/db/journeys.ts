@@ -9,6 +9,43 @@ import { unlinkIfExists } from "../files/fsCleanup";
 
 import type { JourneyRow, JourneyStatus } from "./schema";
 
+export type JourneyPauseWindow = {
+  startTs: number;
+  endTs: number | null;
+};
+
+type JourneyMetadata = {
+  pauseWindows?: JourneyPauseWindow[];
+};
+
+function parseJourneyMetadata(metadata: string | null): JourneyMetadata {
+  if (!metadata) {
+    return {};
+  }
+  try {
+    const parsed = JSON.parse(metadata) as JourneyMetadata;
+    const pauseWindows = Array.isArray(parsed.pauseWindows)
+      ? parsed.pauseWindows
+          .filter(
+            (entry): entry is JourneyPauseWindow =>
+              typeof entry?.startTs === "number" &&
+              (typeof entry.endTs === "number" || entry.endTs === null),
+          )
+          .map((entry) => ({ startTs: entry.startTs, endTs: entry.endTs }))
+      : undefined;
+    return pauseWindows ? { pauseWindows } : {};
+  } catch {
+    return {};
+  }
+}
+
+function stringifyJourneyMetadata(metadata: JourneyMetadata): string | null {
+  if (!metadata.pauseWindows || metadata.pauseWindows.length === 0) {
+    return null;
+  }
+  return JSON.stringify({ pauseWindows: metadata.pauseWindows });
+}
+
 export type JourneyListFilters = {
   name?: string;
   status?: JourneyStatus | "all";
@@ -26,8 +63,9 @@ export async function getJourneyById(
     start_ts: number | null;
     end_ts: number | null;
     status: JourneyStatus;
+    metadata: string | null;
   }>(
-    `SELECT id, name, description, start_ts, end_ts, status FROM journey WHERE id = ?`,
+    `SELECT id, name, description, start_ts, end_ts, status, metadata FROM journey WHERE id = ?`,
     [id],
   );
   return row ?? null;
@@ -37,7 +75,7 @@ export async function getMainScreenJourneyCandidate(
   db: SQLite.SQLiteDatabase,
 ): Promise<JourneyRow | null> {
   const row = await db.getFirstAsync<JourneyRow>(
-    `SELECT id, name, description, start_ts, end_ts, status
+    `SELECT id, name, description, start_ts, end_ts, status, metadata
      FROM journey
      WHERE status IN ('ongoing', 'paused', 'scheduled')
      ORDER BY CASE status
@@ -61,8 +99,8 @@ export async function createJourney(
 ): Promise<number> {
   const status = input.status ?? "scheduled";
   const result = await db.runAsync(
-    `INSERT INTO journey (name, description, start_ts, end_ts, status) VALUES (?, ?, ?, ?, ?)`,
-    [input.name, input.description ?? null, null, null, status],
+    `INSERT INTO journey (name, description, start_ts, end_ts, status, metadata) VALUES (?, ?, ?, ?, ?, ?)`,
+    [input.name, input.description ?? null, null, null, status, null],
   );
   const id = Number(result.lastInsertRowId);
   syncActiveJourneySession(id, status);
@@ -101,7 +139,7 @@ export async function listJourneysWithFilters(
     whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
   const rows = await db.getAllAsync<JourneyRow>(
-    `SELECT id, name, description, start_ts, end_ts, status
+    `SELECT id, name, description, start_ts, end_ts, status, metadata
      FROM journey
      ${whereSql}
      ORDER BY id DESC`,
@@ -122,18 +160,36 @@ export async function updateJourneyStatus(
 
   let start_ts = current.start_ts;
   let end_ts = current.end_ts;
+  const metadata = parseJourneyMetadata(current.metadata);
+  const pauseWindows = [...(metadata.pauseWindows ?? [])];
   const now = Date.now();
 
   if (nextStatus === "ongoing" && start_ts == null) {
     start_ts = now;
   }
+  if (current.status === "ongoing" && nextStatus === "paused") {
+    pauseWindows.push({ startTs: now, endTs: null });
+  }
+  if (current.status === "paused" && nextStatus === "ongoing") {
+    const latestOpenPause = [...pauseWindows].reverse().find((entry) => entry.endTs == null);
+    if (latestOpenPause) {
+      latestOpenPause.endTs = now;
+    }
+  }
   if (nextStatus === "completed" || nextStatus === "abandoned") {
+    if (current.status === "paused") {
+      const latestOpenPause = [...pauseWindows].reverse().find((entry) => entry.endTs == null);
+      if (latestOpenPause) {
+        latestOpenPause.endTs = now;
+      }
+    }
     end_ts = now;
   }
+  const serializedMetadata = stringifyJourneyMetadata({ pauseWindows });
 
   await db.runAsync(
-    `UPDATE journey SET status = ?, start_ts = ?, end_ts = ? WHERE id = ?`,
-    [nextStatus, start_ts, end_ts, journeyId],
+    `UPDATE journey SET status = ?, start_ts = ?, end_ts = ?, metadata = ? WHERE id = ?`,
+    [nextStatus, start_ts, end_ts, serializedMetadata, journeyId],
   );
 
   syncActiveJourneySession(journeyId, nextStatus);

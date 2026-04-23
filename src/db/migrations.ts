@@ -67,6 +67,10 @@ const MIGRATIONS: string[] = [
   `
   ALTER TABLE location_points ADD COLUMN heading REAL;
   `,
+  // version 5 — journey metadata for pause windows.
+  `
+  ALTER TABLE journey ADD COLUMN metadata TEXT;
+  `,
 ];
 
 /**

@@ -22,6 +22,7 @@ import { useJourneyData } from "../../src/features/journey/hooks/useJourneyData"
 import { useMediaEditFlow } from "../../src/features/journey/hooks/useMediaEditFlow";
 import { useNoteEditFlow } from "../../src/features/journey/hooks/useNoteEditFlow";
 import { useRerecordFlow } from "../../src/features/journey/hooks/useRerecordFlow";
+import { getJourneyPauseWindows } from "../../src/features/journey/replay";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
 
@@ -57,6 +58,10 @@ export default function JourneyScreen() {
     mediaEditFlow.addModal.error;
 
   const actionLabel = getJourneyActionLabel(journeyData.statusLabel);
+  const pauseWindows = useMemo(
+    () => getJourneyPauseWindows(journeyData.journey),
+    [journeyData.journey],
+  );
 
   const mapGestureRef = useRef<GestureType | undefined>(undefined);
   const mapNativeGesture = useMemo(
@@ -204,6 +209,7 @@ export default function JourneyScreen() {
         <JourneyNotesFeed
           notes={journeyData.notes}
           media={journeyData.media}
+          pauseWindows={pauseWindows}
           locationPoints={journeyData.points}
           suspendPlayback={
             noteModalVisible ||

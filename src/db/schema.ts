@@ -18,6 +18,7 @@ export type JourneyRow = {
   start_ts: number | null;
   end_ts: number | null;
   status: JourneyStatus;
+  metadata: string | null;
 };
 
 export type LocationPointRow = {

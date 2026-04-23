@@ -4,13 +4,20 @@ import { useCallback, useEffect, useState } from "react";
 
 import { openAppDatabase } from "../../../db/client";
 import { listLocationPointsForJourney } from "../../../db/locationPoints";
-import type { JourneyStatus, LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
+import type {
+  JourneyRow,
+  JourneyStatus,
+  LocationPointRow,
+  MediaRow,
+  NoteRow,
+} from "../../../db/schema";
 import { syncActiveJourneySession } from "../../../storage/activeJourney";
 import { hasValidPmtilesPackage } from "../../../storage/pmtilesGuard";
 import { syncBackgroundTrackingForJourneyStatus } from "../../../tracking/locationTracking";
 import { loadJourneyBundle as loadJourneyBundleData } from "../bundle";
 
 export type UseJourneyDataResult = {
+  journey: JourneyRow | null;
   name: string;
   statusLabel: JourneyStatus | "";
   points: LocationPointRow[];
@@ -25,6 +32,7 @@ export type UseJourneyDataResult = {
 
 export function useJourneyData(journeyId: number): UseJourneyDataResult {
   const router = useRouter();
+  const [journey, setJourney] = useState<JourneyRow | null>(null);
   const [name, setName] = useState<string>("Journey");
   const [statusLabel, setStatusLabel] = useState<JourneyStatus | "">("");
   const [points, setPoints] = useState<LocationPointRow[]>([]);
@@ -46,6 +54,7 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
       return;
     }
     const { journey, points: loadedPoints, notes: loadedNotes, media: loadedMedia } = bundle;
+    setJourney(journey);
     setName(journey.name);
     setStatusLabel(journey.status);
     setPoints(loadedPoints);
@@ -115,6 +124,7 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
   }, [journeyId, statusLabel]);
 
   return {
+    journey,
     name,
     statusLabel,
     points,

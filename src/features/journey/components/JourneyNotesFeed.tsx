@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 
 import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessionManager";
+import type { JourneyPauseWindow } from "../replay";
 
 import { waitForPlayerReady } from "../audio/waitForPlayerReady";
 import type { LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
@@ -13,9 +14,14 @@ import { formatDurationSeconds } from "../formatDuration";
 
 type FeedItem =
   | { kind: "note"; data: NoteRow; sortTs: number }
-  | { kind: "media"; data: MediaRow; sortTs: number };
+  | { kind: "media"; data: MediaRow; sortTs: number }
+  | { kind: "pause"; data: JourneyPauseWindow; sortTs: number };
 
-function buildFeed(notes: NoteRow[], media: MediaRow[]): FeedItem[] {
+function buildFeed(
+  notes: NoteRow[],
+  media: MediaRow[],
+  pauseWindows: JourneyPauseWindow[],
+): FeedItem[] {
   const items: FeedItem[] = [
     ...notes.map((n) => ({
       kind: "note" as const,
@@ -26,6 +32,11 @@ function buildFeed(notes: NoteRow[], media: MediaRow[]): FeedItem[] {
       kind: "media" as const,
       data: m,
       sortTs: m.timestamp ?? Number.MAX_SAFE_INTEGER,
+    })),
+    ...pauseWindows.map((window) => ({
+      kind: "pause" as const,
+      data: window,
+      sortTs: window.startTs,
     })),
   ];
   items.sort((a, b) => a.sortTs - b.sortTs);
@@ -288,6 +299,7 @@ function NoteFeedRowBody({
 type Props = {
   notes: NoteRow[];
   media: MediaRow[];
+  pauseWindows?: JourneyPauseWindow[];
   locationPoints?: LocationPointRow[];
   editable?: boolean;
   onLongPressNote: (note: NoteRow) => void;
@@ -303,14 +315,15 @@ type Props = {
 export function JourneyNotesFeed({
   notes,
   media,
+  pauseWindows = [],
   locationPoints = [],
   editable = true,
   onLongPressNote,
   onLongPressMedia,
   suspendPlayback = false,
 }: Props) {
-  const feed = buildFeed(notes, media);
-  const total = notes.length + media.length;
+  const feed = buildFeed(notes, media, pauseWindows);
+  const total = notes.length + media.length + pauseWindows.length;
 
   const feedPlayer = useAudioPlayer(null);
   const feedStatus = useAudioPlayerStatus(feedPlayer);
@@ -365,37 +378,49 @@ export function JourneyNotesFeed({
               />
             </View>
           )
-        ) : editable ? (
-          <Pressable
-            key={`media-${item.data.id}`}
-            className="mt-3 overflow-hidden rounded-md border border-neutral-200 active:bg-neutral-50"
-            onLongPress={() => {
-              onLongPressMedia(item.data);
-            }}
-            delayLongPress={350}
-          >
-            <View className="border-b border-neutral-200 bg-neutral-50 px-3 py-2">
-              <Text className="text-xs text-neutral-500">
-                {mediaListMetaLine(item.data, locationPoints)}
-              </Text>
+        ) : item.kind === "media" ? (
+          editable ? (
+            <Pressable
+              key={`media-${item.data.id}`}
+              className="mt-3 overflow-hidden rounded-md border border-neutral-200 active:bg-neutral-50"
+              onLongPress={() => {
+                onLongPressMedia(item.data);
+              }}
+              delayLongPress={350}
+            >
+              <View className="border-b border-neutral-200 bg-neutral-50 px-3 py-2">
+                <Text className="text-xs text-neutral-500">
+                  {mediaListMetaLine(item.data, locationPoints)}
+                </Text>
+              </View>
+              <View className="px-3 pb-3">
+                <MediaFeedCaption media={item.data} />
+              </View>
+            </Pressable>
+          ) : (
+            <View
+              key={`media-${item.data.id}`}
+              className="mt-3 overflow-hidden rounded-md border border-neutral-200"
+            >
+              <View className="border-b border-neutral-200 bg-neutral-50 px-3 py-2">
+                <Text className="text-xs text-neutral-500">
+                  {mediaListMetaLine(item.data, locationPoints)}
+                </Text>
+              </View>
+              <View className="px-3 pb-3">
+                <MediaFeedCaption media={item.data} />
+              </View>
             </View>
-            <View className="px-3 pb-3">
-              <MediaFeedCaption media={item.data} />
-            </View>
-          </Pressable>
+          )
         ) : (
           <View
-            key={`media-${item.data.id}`}
-            className="mt-3 overflow-hidden rounded-md border border-neutral-200"
+            key={`pause-${item.data.startTs}-${item.data.endTs ?? "open"}`}
+            className="mt-3 rounded-md border border-neutral-200 p-3"
           >
-            <View className="border-b border-neutral-200 bg-neutral-50 px-3 py-2">
-              <Text className="text-xs text-neutral-500">
-                {mediaListMetaLine(item.data, locationPoints)}
-              </Text>
-            </View>
-            <View className="px-3 pb-3">
-              <MediaFeedCaption media={item.data} />
-            </View>
+            <Text className="text-sm text-neutral-900">
+              Pause {formatListTimestamp(item.data.startTs)} -{" "}
+              {item.data.endTs == null ? "ongoing" : formatListTimestamp(item.data.endTs)}
+            </Text>
           </View>
         ),
       )}

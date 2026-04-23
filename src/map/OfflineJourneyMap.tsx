@@ -387,11 +387,6 @@ export function OfflineJourneyMap({ points }: Props) {
           </Text>
         </Pressable>
       </View>
-      <View className="absolute bottom-2 left-2 rounded bg-white/90 px-2 py-1">
-        <Text className="font-mono text-xs text-neutral-700">
-          PMTiles: {pmtilesConfig?.pmtilesFileName ?? "missing"}
-        </Text>
-      </View>
     </View>
   );
 }
