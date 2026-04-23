@@ -11,11 +11,12 @@ export async function insertLocationPoint(
     timestamp: number;
     metadata?: string | null;
     speed?: number | null;
+    heading?: number | null;
   },
 ): Promise<number> {
   const result = await db.runAsync(
-    `INSERT INTO location_points (journey_id, lat, lng, timestamp, metadata, speed)
-     VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO location_points (journey_id, lat, lng, timestamp, metadata, speed, heading)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [
       input.journeyId,
       input.lat,
@@ -23,6 +24,7 @@ export async function insertLocationPoint(
       input.timestamp,
       input.metadata ?? null,
       input.speed ?? null,
+      input.heading ?? null,
     ],
   );
   return result.lastInsertRowId;
@@ -40,8 +42,9 @@ export async function getLastLocationPointForJourney(
     timestamp: number;
     metadata: string | null;
     speed: number | null;
+    heading: number | null;
   }>(
-    `SELECT id, journey_id, lat, lng, timestamp, metadata, speed
+    `SELECT id, journey_id, lat, lng, timestamp, metadata, speed, heading
      FROM location_points
      WHERE journey_id = ?
      ORDER BY timestamp DESC
@@ -59,6 +62,7 @@ export async function getLastLocationPointForJourney(
     timestamp: row.timestamp,
     metadata: row.metadata,
     speed: row.speed,
+    heading: row.heading,
   };
 }
 
@@ -74,8 +78,9 @@ export async function listLocationPointsForJourney(
     timestamp: number;
     metadata: string | null;
     speed: number | null;
+    heading: number | null;
   }>(
-    `SELECT id, journey_id, lat, lng, timestamp, metadata, speed
+    `SELECT id, journey_id, lat, lng, timestamp, metadata, speed, heading
      FROM location_points
      WHERE journey_id = ?
      ORDER BY timestamp ASC`,
@@ -89,5 +94,6 @@ export async function listLocationPointsForJourney(
     timestamp: row.timestamp,
     metadata: row.metadata,
     speed: row.speed,
+    heading: row.heading,
   }));
 }

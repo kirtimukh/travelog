@@ -44,7 +44,8 @@ export function useJourneyControls({
       lng: pos.coords.longitude,
       timestamp: pos.timestamp || Date.now(),
       speed: pos.coords.speed ?? null,
-      metadata: null,
+      heading: pos.coords.heading ?? null,
+      metadata: JSON.stringify(pos),
     });
   }, [journeyId]);
 

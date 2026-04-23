@@ -82,6 +82,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       const lng = loc.coords.longitude;
       const ts = loc.timestamp;
       const speed = loc.coords.speed;
+      const heading = loc.coords.heading;
+      const metadata = JSON.stringify(loc);
 
       if (last == null) {
         await insertLocationPoint(db, {
@@ -90,7 +92,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
           lng,
           timestamp: ts,
           speed,
-          metadata: null,
+          heading: heading ?? null,
+          metadata,
         });
         last = { lat, lng, timestamp: ts };
         continue;
@@ -105,7 +108,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
           lng,
           timestamp: ts,
           speed,
-          metadata: null,
+          heading: heading ?? null,
+          metadata,
         });
         last = { lat, lng, timestamp: ts };
       }

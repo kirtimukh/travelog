@@ -185,7 +185,7 @@ export default function HomeScreen() {
       });
       setName("");
       setDescription("");
-      router.push(`/journey/${newId}`);
+      router.navigate(`/journey/${newId}`);
     } catch {
       setJourneyError("Failed to create journey. Try again.");
     } finally {
@@ -206,7 +206,7 @@ export default function HomeScreen() {
         <Pressable
           className="mt-4 self-start rounded-md bg-neutral-800 px-4 py-2"
           onPress={() => {
-            router.push("/journeys");
+            router.navigate("/journeys");
           }}
         >
           <Text className="font-semibold text-white">View all journeys</Text>
@@ -266,7 +266,7 @@ export default function HomeScreen() {
           ) : null}
           <Pressable
             className="mt-4 rounded-md bg-emerald-600 px-4 py-3"
-            onPress={() => router.push(`/journey/${candidateJourney.id}`)}
+            onPress={() => router.navigate(`/journey/${candidateJourney.id}`)}
           >
             <Text className="text-center font-semibold text-white">
               {candidateActionLabel}

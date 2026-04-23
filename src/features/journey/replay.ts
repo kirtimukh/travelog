@@ -42,12 +42,21 @@ export function getReplayPointAtTimestamp(
 }
 
 export function getReplayHeading(point: LocationPointRow | null): number | null {
+  if (typeof point?.heading === "number") {
+    return point.heading;
+  }
   if (!point?.metadata) {
     return null;
   }
   try {
-    const parsed = JSON.parse(point.metadata) as { heading?: unknown };
-    return typeof parsed.heading === "number" ? parsed.heading : null;
+    const parsed = JSON.parse(point.metadata) as {
+      heading?: unknown;
+      coords?: { heading?: unknown };
+    };
+    if (typeof parsed.heading === "number") {
+      return parsed.heading;
+    }
+    return typeof parsed.coords?.heading === "number" ? parsed.coords.heading : null;
   } catch {
     return null;
   }

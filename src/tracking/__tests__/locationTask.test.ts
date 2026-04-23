@@ -48,6 +48,7 @@ function location(
   longitude: number,
   accuracy = 10,
   speed: number | null = null,
+  heading: number | null = null,
 ) {
   return {
     timestamp,
@@ -56,6 +57,7 @@ function location(
       longitude,
       accuracy,
       speed,
+      heading,
     },
   };
 }
@@ -112,7 +114,8 @@ describe("locationTask", () => {
       lng: 20.22,
       timestamp: 1_000,
       speed: 2.5,
-      metadata: null,
+      heading: null,
+      metadata: JSON.stringify(location(1_000, 10.11, 20.22, 8, 2.5)),
     });
   });
 
@@ -152,7 +155,8 @@ describe("locationTask", () => {
       lng: 20.002,
       timestamp: 4_000,
       speed: null,
-      metadata: null,
+      heading: null,
+      metadata: JSON.stringify(location(4_000, 10.002, 20.002, 5)),
     });
     expect(mockInsertLocationPoint).toHaveBeenNthCalledWith(2, db, {
       journeyId: 42,
@@ -160,7 +164,8 @@ describe("locationTask", () => {
       lng: 20.003,
       timestamp: 9_000,
       speed: null,
-      metadata: null,
+      heading: null,
+      metadata: JSON.stringify(location(9_000, 10.003, 20.003, 5)),
     });
   });
 
@@ -221,7 +226,28 @@ describe("locationTask", () => {
       lng: 22.22,
       timestamp: 4_000,
       speed: null,
-      metadata: null,
+      heading: null,
+      metadata: JSON.stringify(location(4_000, 11.11, 22.22, 5)),
+    });
+  });
+
+  it("persists heading in location points", async () => {
+    const db = {};
+    mockGetActiveJourneyId.mockReturnValue(42);
+    mockOpenAppDatabase.mockResolvedValue(db);
+    mockGetJourneyById.mockResolvedValue({ id: 42, status: "ongoing" });
+    mockGetLastLocationPointForJourney.mockResolvedValue(null);
+
+    await runTask([location(1_000, 10.11, 20.22, 5, 2.5, 125.4)]);
+
+    expect(mockInsertLocationPoint).toHaveBeenCalledWith(db, {
+      journeyId: 42,
+      lat: 10.11,
+      lng: 20.22,
+      timestamp: 1_000,
+      speed: 2.5,
+      heading: 125.4,
+      metadata: JSON.stringify(location(1_000, 10.11, 20.22, 5, 2.5, 125.4)),
     });
   });
 });

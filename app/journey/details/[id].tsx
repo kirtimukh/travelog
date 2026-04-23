@@ -54,6 +54,7 @@ export default function JourneyDetailsScreen() {
   const [busy, setBusy] = useState<boolean>(false);
   const [deleteJourneyBusy, setDeleteJourneyBusy] = useState<boolean>(false);
   const [isReplaying, setIsReplaying] = useState<boolean>(false);
+  const [scrubDirection, setScrubDirection] = useState<-1 | 0 | 1>(0);
   const [replayTs, setReplayTs] = useState<number | null>(null);
   const [eventFeed, setEventFeed] = useState<string[]>([]);
   const eventScrollRef = useRef<RNScrollView | null>(null);
@@ -65,6 +66,8 @@ export default function JourneyDetailsScreen() {
   const [mediaEditLocalTs, setMediaEditLocalTs] = useState<string>("");
   const [mediaEditLat, setMediaEditLat] = useState<string>("");
   const [mediaEditLng, setMediaEditLng] = useState<string>("");
+  const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const holdActivatedRef = useRef<boolean>(false);
 
   const replayBounds = useMemo(() => getReplayTimeBounds(journey, Date.now()), [journey]);
   const replayEvents = useMemo(() => buildReplayEvents(notes, media), [media, notes]);
@@ -187,26 +190,45 @@ export default function JourneyDetailsScreen() {
   }, [replayBounds, replayTs]);
 
   useEffect(() => {
-    if (!isReplaying || !replayBounds || replayTs == null) {
+    const hasFastScrub = scrubDirection !== 0;
+    if ((!isReplaying && !hasFastScrub) || !replayBounds || replayTs == null) {
       return;
     }
+    const tickMs = 100;
+    const replayRate = hasFastScrub ? 5 : 1;
+    const direction: -1 | 1 = hasFastScrub ? scrubDirection : 1;
     const intervalId = setInterval(() => {
       setReplayTs((current) => {
         if (current == null) {
           return replayBounds.startTs;
         }
-        const next = current + 1000;
+        const deltaMs = direction * replayRate * tickMs;
+        const next = current + deltaMs;
         if (next >= replayBounds.endTs) {
           setIsReplaying(false);
+          setScrubDirection(0);
           return replayBounds.endTs;
+        }
+        if (next <= replayBounds.startTs) {
+          setScrubDirection(0);
+          return replayBounds.startTs;
         }
         return next;
       });
-    }, 150);
+    }, tickMs);
     return () => {
       clearInterval(intervalId);
     };
-  }, [isReplaying, replayBounds, replayTs]);
+  }, [isReplaying, replayBounds, replayTs, scrubDirection]);
+
+  useEffect(
+    () => () => {
+      if (holdTimeoutRef.current != null) {
+        clearTimeout(holdTimeoutRef.current);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     if (replayTs == null) {
@@ -309,6 +331,69 @@ export default function JourneyDetailsScreen() {
   const canReplay = Boolean(replayBounds) && journey?.status !== "scheduled";
   const heading = getReplayHeading(replayPoint);
   const speed = replayPoint?.speed ?? null;
+  const replayDurationMs = replayBounds ? replayBounds.endTs - replayBounds.startTs : 0;
+
+  const clampReplayTs = useCallback(
+    (value: number): number => {
+      if (!replayBounds) {
+        return value;
+      }
+      return Math.max(replayBounds.startTs, Math.min(replayBounds.endTs, value));
+    },
+    [replayBounds],
+  );
+
+  const skipReplayByPercent = useCallback(
+    (direction: -1 | 1): void => {
+      if (!replayBounds) {
+        return;
+      }
+      const stepMs = Math.max(1000, Math.round(replayDurationMs * 0.05));
+      setReplayTs((current) => {
+        const anchor = current ?? replayBounds.startTs;
+        return clampReplayTs(anchor + direction * stepMs);
+      });
+    },
+    [clampReplayTs, replayBounds, replayDurationMs],
+  );
+
+  const handleDirectionalPressIn = useCallback(
+    (direction: -1 | 1): void => {
+      if (!canReplay) {
+        return;
+      }
+      setIsReplaying(false);
+      skipReplayByPercent(direction);
+      holdActivatedRef.current = false;
+      if (holdTimeoutRef.current != null) {
+        clearTimeout(holdTimeoutRef.current);
+      }
+      holdTimeoutRef.current = setTimeout(() => {
+        holdActivatedRef.current = true;
+        setScrubDirection(direction);
+      }, 1000);
+    },
+    [canReplay, skipReplayByPercent],
+  );
+
+  const handleDirectionalPressOut = useCallback(
+    (direction: -1 | 1): void => {
+      if (holdTimeoutRef.current != null) {
+        clearTimeout(holdTimeoutRef.current);
+        holdTimeoutRef.current = null;
+      }
+      if (holdActivatedRef.current) {
+        holdActivatedRef.current = false;
+        setScrubDirection(0);
+        return;
+      }
+      if (!canReplay) {
+        return;
+      }
+      skipReplayByPercent(direction);
+    },
+    [canReplay, skipReplayByPercent],
+  );
 
   const mapGestureRef = useRef<GestureType | undefined>(undefined);
   const mapNativeGesture = useMemo(
@@ -349,9 +434,9 @@ export default function JourneyDetailsScreen() {
         <Text className="text-xs text-neutral-700">
           Speed: {speed == null ? "—" : `${(speed * 3.6).toFixed(2)} km/h`}
         </Text>
-        {/* <Text className="mt-1 text-xs text-neutral-700">
-          Replay heading: {heading == null ? "—" : heading.toFixed(2)} deg
-        </Text> */}
+        <Text className="mt-1 text-xs text-neutral-700">
+          Heading: {heading == null ? "—" : `${heading.toFixed(2)} deg`}
+        </Text>
       </View>
 
       {!canReplay ? (
@@ -359,33 +444,53 @@ export default function JourneyDetailsScreen() {
           Replay is unavailable for scheduled journeys.
         </Text>
       ) : (
-        <View className="mt-4 flex-row gap-2">
+        <View className="mt-4 flex-row items-center gap-2">
           <Pressable
-            className={`flex-1 rounded-md px-4 py-3 ${isReplaying ? "bg-neutral-300" : "bg-emerald-600"}`}
-            disabled={isReplaying}
-            onPress={() => {
-              setIsReplaying(true);
+            className="min-w-12 rounded-md bg-neutral-700 px-3 py-3"
+            onPressIn={() => {
+              handleDirectionalPressIn(-1);
+            }}
+            onPressOut={() => {
+              handleDirectionalPressOut(-1);
             }}
           >
-            <Text className="text-center font-semibold text-white">Replay</Text>
+            <Text className="text-center font-semibold text-white">{"<<"}</Text>
           </Pressable>
           <Pressable
-            className="flex-1 rounded-md bg-amber-600 px-4 py-3"
+            className="min-w-12 rounded-md bg-amber-700 px-3 py-3"
             onPress={() => {
               setIsReplaying(false);
-            }}
-          >
-            <Text className="text-center font-semibold text-white">Pause</Text>
-          </Pressable>
-          <Pressable
-            className="flex-1 rounded-md bg-neutral-700 px-4 py-3"
-            onPress={() => {
-              setIsReplaying(false);
+              setScrubDirection(0);
+              holdActivatedRef.current = false;
+              if (holdTimeoutRef.current != null) {
+                clearTimeout(holdTimeoutRef.current);
+                holdTimeoutRef.current = null;
+              }
               setReplayTs(replayBounds?.startTs ?? null);
               setEventFeed([]);
             }}
           >
-            <Text className="text-center font-semibold text-white">Reset</Text>
+            <Text className="text-center font-semibold text-white">↺</Text>
+          </Pressable>
+          <Pressable
+            className={`min-w-12 rounded-md px-3 py-3 ${isReplaying ? "bg-amber-600" : "bg-emerald-600"}`}
+            onPress={() => {
+              setScrubDirection(0);
+              setIsReplaying((current) => !current);
+            }}
+          >
+            <Text className="text-center font-semibold text-white">{isReplaying ? "||" : "▶"}</Text>
+          </Pressable>
+          <Pressable
+            className="min-w-12 rounded-md bg-neutral-700 px-3 py-3"
+            onPressIn={() => {
+              handleDirectionalPressIn(1);
+            }}
+            onPressOut={() => {
+              handleDirectionalPressOut(1);
+            }}
+          >
+            <Text className="text-center font-semibold text-white">{">>"}</Text>
           </Pressable>
         </View>
       )}

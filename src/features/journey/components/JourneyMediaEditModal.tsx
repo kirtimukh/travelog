@@ -3,6 +3,8 @@ import { Image, Keyboard, Modal, Pressable, ScrollView, Text, TextInput, View } 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
+import { THUMBNAIL_WIDTH } from "../constants";
+
 
 export type JourneyMediaEditModalProps = {
   visible: boolean;
@@ -95,11 +97,11 @@ export function JourneyMediaEditModal({
               <Image
                 source={{ uri: file }}
                 style={{
-                  height: 15,
+                  height: THUMBNAIL_WIDTH,
                   width:
                     width != null && height != null && width > 0 && height > 0
-                      ? 15 * (width / height)
-                      : 15,
+                      ? THUMBNAIL_WIDTH * (width / height)
+                      : THUMBNAIL_WIDTH,
                 }}
                 resizeMode="contain"
               />

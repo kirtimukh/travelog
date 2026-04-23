@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Linking, Pressable, Text, View } from "react-native";
 import {
@@ -28,6 +28,7 @@ import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoin
 export default function JourneyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
+  const router = useRouter();
   const journeyId = Number(id);
 
   const journeyData = useJourneyData(journeyId);
@@ -86,7 +87,10 @@ export default function JourneyScreen() {
                   text: "End journey",
                   style: "destructive",
                   onPress: () => {
-                    void endJourney();
+                    void (async () => {
+                      await endJourney();
+                      router.replace(`/journey/details/${journeyId}`);
+                    })();
                   },
                 },
               ],
@@ -95,7 +99,7 @@ export default function JourneyScreen() {
         },
       ],
     );
-  }, [controlsBusy, endJourney, journeyData.name, journeyData.statusLabel]);
+  }, [controlsBusy, endJourney, journeyData.name, journeyData.statusLabel, journeyId, router]);
 
   useEffect(() => {
     navigation.setOptions({

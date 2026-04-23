@@ -7,8 +7,9 @@ import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessio
 
 import { waitForPlayerReady } from "../audio/waitForPlayerReady";
 import type { LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
-
+import { THUMBNAIL_WIDTH } from "../constants";
 import { formatDurationSeconds } from "../formatDuration";
+
 
 type FeedItem =
   | { kind: "note"; data: NoteRow; sortTs: number }
@@ -118,9 +119,9 @@ function mediaListMetaLine(media: MediaRow, locationPoints: LocationPointRow[]):
 
 function mediaThumbWidth(media: MediaRow): number {
   if (media.width != null && media.height != null && media.width > 0 && media.height > 0) {
-    return 15 * (media.width / media.height);
+    return THUMBNAIL_WIDTH * (media.width / media.height);
   }
-  return 15;
+  return THUMBNAIL_WIDTH;
 }
 
 function MediaFeedCaption({ media }: { media: MediaRow }) {
@@ -130,7 +131,7 @@ function MediaFeedCaption({ media }: { media: MediaRow }) {
       <View className="mt-2 flex-row items-center">
         <Image
           source={{ uri: media.file }}
-          style={{ height: 15, width: mediaThumbWidth(media) }}
+          style={{ height: THUMBNAIL_WIDTH, width: mediaThumbWidth(media) }}
           resizeMode="contain"
         />
       </View>
@@ -140,7 +141,7 @@ function MediaFeedCaption({ media }: { media: MediaRow }) {
     <Text className="mt-2 text-sm text-neutral-900">
       <Image
         source={{ uri: media.file }}
-        style={{ height: 15, width: mediaThumbWidth(media) }}
+        style={{ height: THUMBNAIL_WIDTH, width: mediaThumbWidth(media) }}
         resizeMode="contain"
       />{" "}
       {caption}

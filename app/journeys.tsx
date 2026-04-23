@@ -185,7 +185,7 @@ export default function JourneysScreen() {
             key={journey.id}
             className="mb-3 rounded-xl border border-neutral-200 bg-white p-4"
             onPress={() => {
-              router.push(`/journey/details/${journey.id}`);
+              router.navigate(`/journey/details/${journey.id}`);
             }}
           >
             <Text className="text-base font-semibold text-neutral-900">

@@ -56,7 +56,7 @@ export function AppHeaderMenu({
                 className="rounded-md px-3 py-2"
                 onPress={() => {
                   setOpen(false);
-                  router.push("/journeys");
+                  router.navigate("/journeys");
                 }}
               >
                 <Text className="font-medium text-neutral-900">History</Text>
@@ -67,7 +67,7 @@ export function AppHeaderMenu({
                 className="rounded-md px-3 py-2"
                 onPress={() => {
                   setOpen(false);
-                  router.push(`/journey/${ongoingJourneyId}`);
+                  router.navigate(`/journey/${ongoingJourneyId}`);
                 }}
               >
                 <Text className="font-medium text-neutral-900">Ongoing</Text>

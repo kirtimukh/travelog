@@ -63,6 +63,10 @@ const MIGRATIONS: string[] = [
   ALTER TABLE media ADD COLUMN width REAL;
   ALTER TABLE media ADD COLUMN height REAL;
   `,
+  // version 4 — replay heading as first-class location field.
+  `
+  ALTER TABLE location_points ADD COLUMN heading REAL;
+  `,
 ];
 
 /**

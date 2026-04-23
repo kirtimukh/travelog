@@ -28,6 +28,7 @@ export type LocationPointRow = {
   timestamp: number;
   metadata: string | null;
   speed: number | null;
+  heading: number | null;
 };
 
 export type NoteRow = {

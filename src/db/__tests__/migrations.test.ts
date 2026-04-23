@@ -16,7 +16,7 @@ describe("runMigrations", () => {
     const { runMigrations } = require("../migrations") as typeof import("../migrations");
     await runMigrations(db as never);
 
-    expect(execAsync).toHaveBeenCalledTimes(6);
+    expect(execAsync).toHaveBeenCalledTimes(8);
     expect(execAsync).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining("CREATE TABLE IF NOT EXISTS journey"),
@@ -32,10 +32,15 @@ describe("runMigrations", () => {
       expect.stringContaining("ALTER TABLE media ADD COLUMN width"),
     );
     expect(execAsync).toHaveBeenNthCalledWith(6, "PRAGMA user_version = 3");
+    expect(execAsync).toHaveBeenNthCalledWith(
+      7,
+      expect.stringContaining("ALTER TABLE location_points ADD COLUMN heading"),
+    );
+    expect(execAsync).toHaveBeenNthCalledWith(8, "PRAGMA user_version = 4");
   });
 
   it("does nothing when already at latest version", async () => {
-    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 3 });
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 4 });
     const execAsync = jest.fn().mockResolvedValue(undefined);
     const db = { getFirstAsync, execAsync };
 
@@ -84,5 +89,17 @@ describe("runMigrations", () => {
     const v3Sql = String(execAsync.mock.calls[4]?.[0] ?? "");
     expect(v3Sql).toContain("ALTER TABLE media ADD COLUMN width");
     expect(v3Sql).toContain("ALTER TABLE media ADD COLUMN height");
+  });
+
+  it("adds location heading in migration v4", async () => {
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 0 });
+    const execAsync = jest.fn().mockResolvedValue(undefined);
+    const db = { getFirstAsync, execAsync };
+
+    const { runMigrations } = require("../migrations") as typeof import("../migrations");
+    await runMigrations(db as never);
+
+    const v4Sql = String(execAsync.mock.calls[6]?.[0] ?? "");
+    expect(v4Sql).toContain("ALTER TABLE location_points ADD COLUMN heading");
   });
 });
