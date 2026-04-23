@@ -120,31 +120,33 @@ export function JourneyAddNoteModal({
                   </Pressable>
                 )}
                 {newAudioDraft ? (
-                  <View className="mt-3 gap-2">
-                    <VoiceNoteDraftPlayback
-                      uri={newAudioDraft.uri}
-                      busy={busy}
-                      totalSecondsHint={newAudioDraft.durationSeconds}
-                    />
-                    <Pressable
-                      className="rounded-md bg-emerald-700 px-4 py-2"
-                      disabled={busy}
-                      onPress={onSaveVoiceNote}
-                    >
-                      <Text className="text-center font-semibold text-white">
-                        Save
-                      </Text>
-                    </Pressable>
-                    <Pressable
-                      className="rounded-md bg-neutral-600 px-4 py-2"
-                      disabled={busy}
-                      onPress={onDiscardVoiceRecording}
-                    >
-                      <Text className="text-center font-semibold text-white">
-                        Discard
-                      </Text>
-                    </Pressable>
-                  </View>
+                  <VoiceNoteDraftPlayback
+                    uri={newAudioDraft.uri}
+                    busy={busy}
+                    totalSecondsHint={newAudioDraft.durationSeconds}
+                    saveButton={
+                      <Pressable
+                        className="min-w-0 flex-1 basis-0 rounded-md bg-emerald-700 px-2 py-2"
+                        disabled={busy}
+                        onPress={onSaveVoiceNote}
+                      >
+                        <Text className="text-center font-semibold text-white">
+                          Save
+                        </Text>
+                      </Pressable>
+                    }
+                    discardButton = {
+                      <Pressable
+                        className="min-w-0 flex-1 basis-0 rounded-md bg-neutral-600 px-2 py-2"
+                        disabled={busy}
+                        onPress={onDiscardVoiceRecording}
+                      >
+                        <Text className="text-center font-semibold text-white">
+                          Discard
+                        </Text>
+                      </Pressable>
+                    }
+                  />
                 ) : null}
               </>
             )}

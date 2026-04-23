@@ -1,5 +1,5 @@
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessionManager";
@@ -13,6 +13,10 @@ type Props = {
   totalSecondsHint?: number;
   playLabel?: string;
   pauseLabel?: string;
+  /** Root container classes; default adds top margin for stacked layouts. */
+  rootClassName?: string;
+  /** Renders after the play control in one row; use `flex-1` on each sibling for equal widths. */
+  actionRowExtras?: ReactNode;
 };
 
 /**
@@ -25,6 +29,9 @@ export function VoiceNoteDraftPlayback({
   totalSecondsHint,
   playLabel = "Play",
   pauseLabel = "Pause",
+  rootClassName = "mt-3",
+  saveButton,
+  discardButton,
 }: Props) {
   const player = useAudioPlayer(uri);
   const status = useAudioPlayerStatus(player);
@@ -75,24 +82,42 @@ export function VoiceNoteDraftPlayback({
   const currentLabel = formatDurationSeconds(status.currentTime);
 
   return (
-    <View className="mt-3">
+    <View className={rootClassName}>
       <Text className="text-center text-sm tabular-nums text-neutral-700">
         {currentLabel} / {totalLabel}
       </Text>
       {loadError ? (
         <Text className="mt-1 text-center text-xs text-red-600">{loadError}</Text>
       ) : null}
-      <Pressable
-        className={`mt-2 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-neutral-700"}`}
-        disabled={busy}
-        onPress={() => {
-          void togglePlayback();
-        }}
-      >
-        <Text className="text-center font-semibold text-white">
-          {status.playing ? pauseLabel : playLabel}
-        </Text>
-      </Pressable>
+      {saveButton != null ? (
+        <View className="mt-2 flex-row gap-2">
+          {discardButton}
+          <Pressable
+            className={`min-w-0 flex-1 basis-0 rounded-md px-2 py-2 ${busy ? "bg-neutral-300" : "bg-neutral-700"}`}
+            disabled={busy}
+            onPress={() => {
+              void togglePlayback();
+            }}
+          >
+            <Text className="text-center font-semibold text-white">
+              {status.playing ? pauseLabel : playLabel}
+            </Text>
+          </Pressable>
+          {saveButton}
+        </View>
+      ) : (
+        <Pressable
+          className={`mt-2 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-neutral-700"}`}
+          disabled={busy}
+          onPress={() => {
+            void togglePlayback();
+          }}
+        >
+          <Text className="text-center font-semibold text-white">
+            {status.playing ? pauseLabel : playLabel}
+          </Text>
+        </Pressable>
+      )}
     </View>
   );
 }
