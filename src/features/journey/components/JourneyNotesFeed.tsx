@@ -8,8 +8,9 @@ import type { JourneyPauseWindow } from "../replay";
 
 import { waitForPlayerReady } from "../audio/waitForPlayerReady";
 import type { LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
-import { THUMBNAIL_WIDTH } from "../constants";
 import { formatDurationSeconds } from "../formatDuration";
+
+const MEDIA_FEED_THUMBNAIL_HEIGHT = 100;
 
 
 type FeedItem =
@@ -130,9 +131,9 @@ function mediaListMetaLine(media: MediaRow, locationPoints: LocationPointRow[]):
 
 function mediaThumbWidth(media: MediaRow): number {
   if (media.width != null && media.height != null && media.width > 0 && media.height > 0) {
-    return THUMBNAIL_WIDTH * (media.width / media.height);
+    return MEDIA_FEED_THUMBNAIL_HEIGHT * (media.width / media.height);
   }
-  return THUMBNAIL_WIDTH;
+  return MEDIA_FEED_THUMBNAIL_HEIGHT;
 }
 
 function MediaFeedCaption({ media }: { media: MediaRow }) {
@@ -142,7 +143,7 @@ function MediaFeedCaption({ media }: { media: MediaRow }) {
       <View className="mt-2 flex-row items-center">
         <Image
           source={{ uri: media.file }}
-          style={{ height: THUMBNAIL_WIDTH, width: mediaThumbWidth(media) }}
+          style={{ height: MEDIA_FEED_THUMBNAIL_HEIGHT, width: mediaThumbWidth(media) }}
           resizeMode="contain"
         />
       </View>
@@ -152,7 +153,7 @@ function MediaFeedCaption({ media }: { media: MediaRow }) {
     <Text className="mt-2 text-sm text-neutral-900">
       <Image
         source={{ uri: media.file }}
-        style={{ height: THUMBNAIL_WIDTH, width: mediaThumbWidth(media) }}
+        style={{ height: MEDIA_FEED_THUMBNAIL_HEIGHT, width: mediaThumbWidth(media) }}
         resizeMode="contain"
       />{" "}
       {caption}

@@ -7,6 +7,7 @@ import {
   ScrollView,
   type GestureType,
 } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppHeaderMenu } from "../../src/components/AppHeaderMenu";
 import { HeaderBackButton } from "../../src/components/HeaderBackButton";
@@ -55,6 +56,7 @@ export default function JourneyScreen() {
 
   const [noteModalVisible, setNoteModalVisible] = useState(false);
   const [journeyActionConfirmOpen, setJourneyActionConfirmOpen] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const displayError =
     journeyData.error ??
@@ -153,7 +155,7 @@ export default function JourneyScreen() {
     <View className="flex-1 bg-white">
       <ScrollView
         className="flex-1 px-6 pt-12"
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingBottom: Math.max(insets.bottom + 24, 40) }}
         keyboardShouldPersistTaps="handled"
         nestedScrollEnabled
         waitFor={mapGestureRef}

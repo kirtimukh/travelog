@@ -37,35 +37,35 @@ export function getJourneyPauseWindows(journey: JourneyRow | null): JourneyPause
 
 export function getReplayTimeBounds(
   journey: JourneyRow | null,
-  nowTs: number,
+  latestPointTs: number | null,
 ): { startTs: number; endTs: number } | null {
   if (!journey?.start_ts) {
     return null;
   }
   const startTs = journey.start_ts;
-  const endTs =
-    journey.status === "completed"
-      ? (journey.end_ts ?? nowTs)
-      : nowTs;
+  const endTs = getEffectiveJourneyEndTs(journey, latestPointTs);
   if (endTs <= startTs) {
     return null;
   }
   return { startTs, endTs };
 }
 
-function getEffectiveJourneyEndTs(journey: JourneyRow, nowTs: number): number {
-  return journey.status === "completed" ? (journey.end_ts ?? nowTs) : nowTs;
+function getEffectiveJourneyEndTs(journey: JourneyRow, latestPointTs: number | null): number {
+  if (journey.status === "completed") {
+    return journey.end_ts ?? latestPointTs ?? journey.start_ts ?? 0;
+  }
+  return latestPointTs ?? journey.start_ts ?? 0;
 }
 
 function getNormalizedPauseWindows(
   journey: JourneyRow,
-  nowTs: number,
+  latestPointTs: number | null,
 ): Array<{ startTs: number; endTs: number }> {
   if (!journey.start_ts) {
     return [];
   }
   const journeyStartTs = journey.start_ts;
-  const journeyEndTs = getEffectiveJourneyEndTs(journey, nowTs);
+  const journeyEndTs = getEffectiveJourneyEndTs(journey, latestPointTs);
   if (journeyEndTs <= journeyStartTs) {
     return [];
   }
@@ -79,32 +79,38 @@ function getNormalizedPauseWindows(
 }
 
 /** Active (non-paused) duration from journey bounds; shared with completion persistence. */
-export function computeRecordedDurationMs(journey: JourneyRow | null, nowTs: number): number {
+export function computeRecordedDurationMs(
+  journey: JourneyRow | null,
+  latestPointTs: number | null,
+): number {
   if (!journey?.start_ts) {
     return 0;
   }
   const journeyStartTs = journey.start_ts;
-  const journeyEndTs = getEffectiveJourneyEndTs(journey, nowTs);
+  const journeyEndTs = getEffectiveJourneyEndTs(journey, latestPointTs);
   if (journeyEndTs <= journeyStartTs) {
     return 0;
   }
-  const totalPauseMs = getNormalizedPauseWindows(journey, nowTs).reduce(
+  const totalPauseMs = getNormalizedPauseWindows(journey, latestPointTs).reduce(
     (sum, window) => sum + (window.endTs - window.startTs),
     0,
   );
   return Math.max(0, journeyEndTs - journeyStartTs - totalPauseMs);
 }
 
-export function getReplayRecordedDurationMs(journey: JourneyRow | null, nowTs: number): number {
+export function getReplayRecordedDurationMs(
+  journey: JourneyRow | null,
+  latestPointTs: number | null,
+): number {
   if (journey?.status === "completed" && journey.recorded_duration_ms != null) {
     return journey.recorded_duration_ms;
   }
-  return computeRecordedDurationMs(journey, nowTs);
+  return computeRecordedDurationMs(journey, latestPointTs);
 }
 
 export function getStoredOrComputedJourneyDurationMs(
   journey: JourneyRow | null,
-  nowTs: number,
+  latestPointTs: number | null,
 ): number {
   if (!journey) {
     return 0;
@@ -112,7 +118,7 @@ export function getStoredOrComputedJourneyDurationMs(
   if (journey.status === "completed" && journey.journey_duration_ms != null) {
     return journey.journey_duration_ms;
   }
-  const bounds = getReplayTimeBounds(journey, nowTs);
+  const bounds = getReplayTimeBounds(journey, latestPointTs);
   if (!bounds) {
     return 0;
   }
@@ -122,18 +128,18 @@ export function getStoredOrComputedJourneyDurationMs(
 export function mapWallTsToRecordedElapsedMs(
   journey: JourneyRow | null,
   wallTs: number,
-  nowTs: number,
+  latestPointTs: number | null,
 ): number {
   if (!journey?.start_ts) {
     return 0;
   }
   const journeyStartTs = journey.start_ts;
-  const journeyEndTs = getEffectiveJourneyEndTs(journey, nowTs);
+  const journeyEndTs = getEffectiveJourneyEndTs(journey, latestPointTs);
   if (journeyEndTs <= journeyStartTs) {
     return 0;
   }
   const clampedTs = Math.min(journeyEndTs, Math.max(journeyStartTs, wallTs));
-  const windows = getNormalizedPauseWindows(journey, nowTs);
+  const windows = getNormalizedPauseWindows(journey, latestPointTs);
   let pauseBefore = 0;
   for (const window of windows) {
     if (clampedTs <= window.startTs) {
@@ -155,21 +161,21 @@ export function mapWallTsToRecordedElapsedMs(
 export function mapRecordedElapsedMsToWallTs(
   journey: JourneyRow | null,
   recordedElapsedMs: number,
-  nowTs: number,
+  latestPointTs: number | null,
 ): number | null {
   if (!journey?.start_ts) {
     return null;
   }
   const journeyStartTs = journey.start_ts;
-  const journeyEndTs = getEffectiveJourneyEndTs(journey, nowTs);
+  const journeyEndTs = getEffectiveJourneyEndTs(journey, latestPointTs);
   if (journeyEndTs <= journeyStartTs) {
     return null;
   }
   const targetElapsed = Math.max(
     0,
-    Math.min(recordedElapsedMs, getReplayRecordedDurationMs(journey, nowTs)),
+    Math.min(recordedElapsedMs, getReplayRecordedDurationMs(journey, latestPointTs)),
   );
-  const windows = getNormalizedPauseWindows(journey, nowTs);
+  const windows = getNormalizedPauseWindows(journey, latestPointTs);
   let cursorWallTs = journeyStartTs;
   let remaining = targetElapsed;
   for (const window of windows) {

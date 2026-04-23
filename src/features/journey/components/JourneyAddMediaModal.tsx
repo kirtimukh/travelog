@@ -1,8 +1,7 @@
-import { Image, Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
+import { Image, Keyboard, Modal, Pressable, Text, TextInput, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
-import { THUMBNAIL_WIDTH } from "../constants";
 
 
 export type JourneyAddMediaModalProps = {
@@ -31,8 +30,18 @@ export function JourneyAddMediaModal({
   onRequestClose,
 }: JourneyAddMediaModalProps) {
   const insets = useSafeAreaInsets();
+  const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const modalPaddingBottom = Math.max(insets.bottom + 16, 32);
   const modalKeyboardInset = useModalKeyboardInset();
+  const sheetMaxHeight = Math.max(300, Math.round(screenHeight * 0.62));
+  const previewFrameWidth = Math.max(0, screenWidth - 32);
+  const previewFrameMaxHeight = Math.max(140, Math.round(screenHeight * 0.28));
+  const previewAspectRatio =
+    selectedWidth != null && selectedHeight != null && selectedWidth > 0 && selectedHeight > 0
+      ? selectedWidth / selectedHeight
+      : 1;
+  const previewWidth = Math.min(previewFrameWidth, previewFrameMaxHeight * previewAspectRatio);
+  const previewHeight = previewWidth / previewAspectRatio;
 
   return (
     <Modal
@@ -53,24 +62,22 @@ export function JourneyAddMediaModal({
           <View
             className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pt-4"
             style={{
+              maxHeight: sheetMaxHeight,
               paddingBottom: modalPaddingBottom,
               transform: [{ translateY: -modalKeyboardInset }],
             }}
           >
             <Text className="text-base font-semibold text-neutral-900">Add media</Text>
             {selectedFile ? (
-              <View className="mt-3 flex-row items-start">
+              <View
+                className="mt-3 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50"
+                style={{ height: previewFrameMaxHeight }}
+              >
                 <Image
                   source={{ uri: selectedFile }}
                   style={{
-                    height: THUMBNAIL_WIDTH,
-                    width:
-                      selectedWidth != null &&
-                      selectedHeight != null &&
-                      selectedHeight > 0 &&
-                      selectedWidth > 0
-                        ? THUMBNAIL_WIDTH * (selectedWidth / selectedHeight)
-                        : THUMBNAIL_WIDTH,
+                    height: Math.max(1, previewHeight),
+                    width: Math.max(1, previewWidth),
                   }}
                   resizeMode="contain"
                 />

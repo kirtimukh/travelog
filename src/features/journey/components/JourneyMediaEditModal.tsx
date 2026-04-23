@@ -1,8 +1,17 @@
-import { Image, Keyboard, Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import {
+  Image,
+  Keyboard,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
-import { THUMBNAIL_WIDTH } from "../constants";
 
 
 export type JourneyMediaEditModalProps = {
@@ -47,8 +56,16 @@ export function JourneyMediaEditModal({
   onDelete,
 }: JourneyMediaEditModalProps) {
   const insets = useSafeAreaInsets();
+  const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const modalPaddingBottom = Math.max(insets.bottom + 16, 32);
   const keyboardInset = useModalKeyboardInset();
+  const sheetMaxHeight = Math.max(360, Math.round(screenHeight * 0.72));
+  const previewFrameWidth = Math.max(0, screenWidth - 32);
+  const previewFrameMaxHeight = Math.max(150, Math.round(screenHeight * 0.3));
+  const previewAspectRatio =
+    width != null && height != null && width > 0 && height > 0 ? width / height : 1;
+  const previewWidth = Math.min(previewFrameWidth, previewFrameMaxHeight * previewAspectRatio);
+  const previewHeight = previewWidth / previewAspectRatio;
 
   return (
     <Modal
@@ -71,19 +88,20 @@ export function JourneyMediaEditModal({
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ paddingBottom: modalPaddingBottom }}
             style={{
+              maxHeight: sheetMaxHeight,
               transform: [{ translateY: -keyboardInset }],
             }}
           >
             <Text className="text-base font-semibold text-neutral-900">Edit image</Text>
-            <View className="mt-3 flex-row items-start">
+            <View
+              className="mt-3 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50"
+              style={{ height: previewFrameMaxHeight }}
+            >
               <Image
                 source={{ uri: file }}
                 style={{
-                  height: THUMBNAIL_WIDTH,
-                  width:
-                    width != null && height != null && width > 0 && height > 0
-                      ? THUMBNAIL_WIDTH * (width / height)
-                      : THUMBNAIL_WIDTH,
+                  height: Math.max(1, previewHeight),
+                  width: Math.max(1, previewWidth),
                 }}
                 resizeMode="contain"
               />

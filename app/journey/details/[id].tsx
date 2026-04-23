@@ -14,6 +14,7 @@ import {
   ScrollView,
   type GestureType,
 } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { openAppDatabase } from "../../../src/db/client";
 import { deleteJourneyWithFileGc } from "../../../src/db/journeys";
@@ -66,8 +67,9 @@ export default function JourneyDetailsScreen() {
   const [deleteJourneyBusy, setDeleteJourneyBusy] = useState<boolean>(false);
   const [isReplaying, setIsReplaying] = useState<boolean>(false);
   const [holdDirection, setHoldDirection] = useState<-1 | 0 | 1>(0);
+  const insets = useSafeAreaInsets();
   const [replayElapsedMs, setReplayElapsedMs] = useState<number | null>(null);
-  const [timelineNowTs, setTimelineNowTs] = useState<number>(Date.now());
+  const [replaySessionPointTs, setReplaySessionPointTs] = useState<number | null>(null);
   const [eventFeed, setEventFeed] = useState<string[]>([]);
   const eventScrollRef = useRef<RNScrollView | null>(null);
   const [noteEditTarget, setNoteEditTarget] = useState<NoteRow | null>(null);
@@ -83,17 +85,38 @@ export default function JourneyDetailsScreen() {
   const pressedDirectionRef = useRef<-1 | 0 | 1>(0);
   const pressStartTsRef = useRef<number | null>(null);
 
+  const latestPointTs = useMemo(() => {
+    if (points.length === 0) {
+      return null;
+    }
+    return points.reduce(
+      (maxTs, point) => (point.timestamp > maxTs ? point.timestamp : maxTs),
+      points[0]?.timestamp ?? 0,
+    );
+  }, [points]);
+
+  useEffect(() => {
+    setReplaySessionPointTs(null);
+  }, [journeyId]);
+
+  useEffect(() => {
+    if (replaySessionPointTs != null || !journey?.start_ts) {
+      return;
+    }
+    setReplaySessionPointTs(latestPointTs ?? journey.end_ts ?? journey.start_ts);
+  }, [journey?.end_ts, journey?.start_ts, latestPointTs, replaySessionPointTs]);
+
   const replayPauseWindows = useMemo(() => getJourneyPauseWindows(journey), [journey]);
   const replayDurationMs = useMemo(
-    () => getReplayRecordedDurationMs(journey, timelineNowTs),
-    [journey, timelineNowTs],
+    () => getReplayRecordedDurationMs(journey, replaySessionPointTs),
+    [journey, replaySessionPointTs],
   );
   const replayTs = useMemo(
     () =>
       replayElapsedMs == null
         ? null
-        : mapRecordedElapsedMsToWallTs(journey, replayElapsedMs, timelineNowTs),
-    [journey, replayElapsedMs, timelineNowTs],
+        : mapRecordedElapsedMsToWallTs(journey, replayElapsedMs, replaySessionPointTs),
+    [journey, replayElapsedMs, replaySessionPointTs],
   );
   const replayEvents = useMemo(() => buildReplayEvents(notes, media), [media, notes]);
 
@@ -223,7 +246,6 @@ export default function JourneyDetailsScreen() {
     const direction: -1 | 1 = hasHold ? holdDirection : 1;
     const speedMultiplier = hasHold ? FAST_HOLD_MULTIPLIER : 1;
     const intervalId = setInterval(() => {
-      setTimelineNowTs(Date.now());
       setReplayElapsedMs((current) => {
         if (current == null) {
           return 0;
@@ -362,8 +384,8 @@ export default function JourneyDetailsScreen() {
   const speed = replayPoint?.speed ?? null;
 
   const journeyDurationMs = useMemo(
-    () => getStoredOrComputedJourneyDurationMs(journey, timelineNowTs),
-    [journey, timelineNowTs],
+    () => getStoredOrComputedJourneyDurationMs(journey, replaySessionPointTs),
+    [journey, replaySessionPointTs],
   );
   const recordedDistanceMeters = useMemo(() => {
     if (journey?.status === "completed" && journey.recorded_distance != null) {
@@ -452,7 +474,7 @@ export default function JourneyDetailsScreen() {
   return (
     <ScrollView
       className="flex-1 bg-white px-6 pt-12"
-      contentContainerStyle={{ paddingBottom: 24 }}
+      contentContainerStyle={{ paddingBottom: Math.max(insets.bottom + 24, 40) }}
       keyboardShouldPersistTaps="handled"
       nestedScrollEnabled
       waitFor={mapGestureRef}
