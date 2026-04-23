@@ -11,6 +11,8 @@ import { copyImageToAppDocuments } from "../../../files/imageCopy";
 type Params = {
   journeyId: number;
   refreshJourneyData: () => Promise<void>;
+  /** Defaults to local clock fields via formatLocalDateTime (live journey screen). */
+  formatEditLocalDateTime?: (ts: number | null) => string;
 };
 
 export type UseMediaEditFlowResult = {
@@ -128,6 +130,7 @@ function parseLocalDateTime(value: string): number | null {
 export function useMediaEditFlow({
   journeyId,
   refreshJourneyData,
+  formatEditLocalDateTime = formatLocalDateTime,
 }: Params): UseMediaEditFlowResult {
   const [addVisible, setAddVisible] = useState(false);
   const [addText, setAddText] = useState("");
@@ -310,14 +313,17 @@ export function useMediaEditFlow({
     }
   }, [editBusy, editTarget, refreshJourneyData]);
 
-  const openEditFor = useCallback((item: MediaRow) => {
-    setEditTarget(item);
-    setEditText(item.text ?? "");
-    setEditTimestampEpochMs(item.timestamp != null ? String(item.timestamp) : "");
-    setEditLocalDateTime(formatLocalDateTime(item.timestamp));
-    setEditLat(item.lat != null ? String(item.lat) : "");
-    setEditLng(item.lng != null ? String(item.lng) : "");
-  }, []);
+  const openEditFor = useCallback(
+    (item: MediaRow) => {
+      setEditTarget(item);
+      setEditText(item.text ?? "");
+      setEditTimestampEpochMs(item.timestamp != null ? String(item.timestamp) : "");
+      setEditLocalDateTime(formatEditLocalDateTime(item.timestamp));
+      setEditLat(item.lat != null ? String(item.lat) : "");
+      setEditLng(item.lng != null ? String(item.lng) : "");
+    },
+    [formatEditLocalDateTime],
+  );
 
   return {
     addModal: {
