@@ -12,6 +12,10 @@ import { AppHeaderMenu } from "../../src/components/AppHeaderMenu";
 import { HeaderBackButton } from "../../src/components/HeaderBackButton";
 import { JourneyAddMediaModal } from "../../src/features/journey/components/JourneyAddMediaModal";
 import { JourneyAddNoteController } from "../../src/features/journey/components/JourneyAddNoteController";
+import {
+  JourneyActionConfirmModal,
+  type JourneyActionConfirmKind,
+} from "../../src/features/journey/components/JourneyActionConfirmModal";
 import { JourneyMapPanel } from "../../src/features/journey/components/JourneyMapPanel";
 import { JourneyMediaEditModal } from "../../src/features/journey/components/JourneyMediaEditModal";
 import { JourneyNoteEditModal } from "../../src/features/journey/components/JourneyNoteEditModal";
@@ -50,6 +54,7 @@ export default function JourneyScreen() {
   });
 
   const [noteModalVisible, setNoteModalVisible] = useState(false);
+  const [journeyActionConfirmOpen, setJourneyActionConfirmOpen] = useState(false);
 
   const displayError =
     journeyData.error ??
@@ -58,6 +63,19 @@ export default function JourneyScreen() {
     mediaEditFlow.addModal.error;
 
   const actionLabel = getJourneyActionLabel(journeyData.statusLabel);
+  const actionConfirmKind = useMemo((): JourneyActionConfirmKind | null => {
+    const s = journeyData.statusLabel;
+    if (s === "scheduled") {
+      return "start";
+    }
+    if (s === "ongoing") {
+      return "pause";
+    }
+    if (s === "paused") {
+      return "continue";
+    }
+    return null;
+  }, [journeyData.statusLabel]);
   const pauseWindows = useMemo(
     () => getJourneyPauseWindows(journeyData.journey),
     [journeyData.journey],
@@ -175,7 +193,7 @@ export default function JourneyScreen() {
             className={`mt-4 rounded-md px-4 py-3 ${journeyControls.busy ? "bg-neutral-300" : "bg-emerald-600"}`}
             disabled={journeyControls.busy}
             onPress={() => {
-              void journeyControls.onJourneyActionPress();
+              setJourneyActionConfirmOpen(true);
             }}
           >
             <Text className="text-center font-semibold text-white">
@@ -220,6 +238,18 @@ export default function JourneyScreen() {
           onLongPressMedia={mediaEditFlow.editModal.openFor}
         />
       </ScrollView>
+
+      {actionConfirmKind != null ? (
+        <JourneyActionConfirmModal
+          visible={journeyActionConfirmOpen}
+          actionKind={actionConfirmKind}
+          onCancel={() => setJourneyActionConfirmOpen(false)}
+          onConfirmHoldComplete={() => {
+            setJourneyActionConfirmOpen(false);
+            void journeyControls.onJourneyActionPress();
+          }}
+        />
+      ) : null}
 
       {rerecordFlow.session ? (
         <RerecordOverlayBar

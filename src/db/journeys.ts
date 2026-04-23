@@ -7,7 +7,11 @@ import {
 } from "../storage/activeJourney";
 import { unlinkIfExists } from "../files/fsCleanup";
 
+import { computeRecordedDurationMs } from "../features/journey/replay";
+import { sumPathDistanceMeters } from "../features/journey/journeyMetrics";
+
 import type { JourneyRow, JourneyStatus } from "./schema";
+import { listLocationPointsForJourney } from "./locationPoints";
 
 export type JourneyPauseWindow = {
   startTs: number;
@@ -52,6 +56,34 @@ export type JourneyListFilters = {
   inputDateTs?: number | null;
 };
 
+const JOURNEY_SELECT = `id, name, description, start_ts, end_ts, status, metadata, journey_duration_ms, recorded_duration_ms, recorded_distance`;
+
+function mapJourneyRow(row: {
+  id: number;
+  name: string;
+  description: string | null;
+  start_ts: number | null;
+  end_ts: number | null;
+  status: JourneyStatus;
+  metadata: string | null;
+  journey_duration_ms: number | null;
+  recorded_duration_ms: number | null;
+  recorded_distance: number | null;
+}): JourneyRow {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    start_ts: row.start_ts,
+    end_ts: row.end_ts,
+    status: row.status,
+    metadata: row.metadata,
+    journey_duration_ms: row.journey_duration_ms ?? null,
+    recorded_duration_ms: row.recorded_duration_ms ?? null,
+    recorded_distance: row.recorded_distance ?? null,
+  };
+}
+
 export async function getJourneyById(
   db: SQLite.SQLiteDatabase,
   id: number,
@@ -64,18 +96,29 @@ export async function getJourneyById(
     end_ts: number | null;
     status: JourneyStatus;
     metadata: string | null;
-  }>(
-    `SELECT id, name, description, start_ts, end_ts, status, metadata FROM journey WHERE id = ?`,
-    [id],
-  );
-  return row ?? null;
+    journey_duration_ms: number | null;
+    recorded_duration_ms: number | null;
+    recorded_distance: number | null;
+  }>(`SELECT ${JOURNEY_SELECT} FROM journey WHERE id = ?`, [id]);
+  return row ? mapJourneyRow(row) : null;
 }
 
 export async function getMainScreenJourneyCandidate(
   db: SQLite.SQLiteDatabase,
 ): Promise<JourneyRow | null> {
-  const row = await db.getFirstAsync<JourneyRow>(
-    `SELECT id, name, description, start_ts, end_ts, status, metadata
+  const row = await db.getFirstAsync<{
+    id: number;
+    name: string;
+    description: string | null;
+    start_ts: number | null;
+    end_ts: number | null;
+    status: JourneyStatus;
+    metadata: string | null;
+    journey_duration_ms: number | null;
+    recorded_duration_ms: number | null;
+    recorded_distance: number | null;
+  }>(
+    `SELECT ${JOURNEY_SELECT}
      FROM journey
      WHERE status IN ('ongoing', 'paused', 'scheduled')
      ORDER BY CASE status
@@ -86,7 +129,7 @@ export async function getMainScreenJourneyCandidate(
      END, id DESC
      LIMIT 1`,
   );
-  return row ?? null;
+  return row ? mapJourneyRow(row) : null;
 }
 
 export async function createJourney(
@@ -138,14 +181,25 @@ export async function listJourneysWithFilters(
   const whereSql =
     whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
-  const rows = await db.getAllAsync<JourneyRow>(
-    `SELECT id, name, description, start_ts, end_ts, status, metadata
+  const rows = await db.getAllAsync<{
+    id: number;
+    name: string;
+    description: string | null;
+    start_ts: number | null;
+    end_ts: number | null;
+    status: JourneyStatus;
+    metadata: string | null;
+    journey_duration_ms: number | null;
+    recorded_duration_ms: number | null;
+    recorded_distance: number | null;
+  }>(
+    `SELECT ${JOURNEY_SELECT}
      FROM journey
      ${whereSql}
      ORDER BY id DESC`,
     params,
   );
-  return rows;
+  return rows.map(mapJourneyRow);
 }
 
 export async function updateJourneyStatus(
@@ -187,10 +241,43 @@ export async function updateJourneyStatus(
   }
   const serializedMetadata = stringifyJourneyMetadata({ pauseWindows });
 
-  await db.runAsync(
-    `UPDATE journey SET status = ?, start_ts = ?, end_ts = ?, metadata = ? WHERE id = ?`,
-    [nextStatus, start_ts, end_ts, serializedMetadata, journeyId],
-  );
+  if (nextStatus === "completed" && start_ts != null && end_ts != null) {
+    const journey_duration_ms = Math.max(0, end_ts - start_ts);
+    const provisionalJourney: JourneyRow = {
+      id: current.id,
+      name: current.name,
+      description: current.description,
+      start_ts,
+      end_ts,
+      status: "completed",
+      metadata: serializedMetadata,
+      journey_duration_ms: null,
+      recorded_duration_ms: null,
+      recorded_distance: null,
+    };
+    const recorded_duration_ms = computeRecordedDurationMs(provisionalJourney, end_ts);
+    const points = await listLocationPointsForJourney(db, journeyId);
+    const recorded_distance = sumPathDistanceMeters(points);
+
+    await db.runAsync(
+      `UPDATE journey SET status = ?, start_ts = ?, end_ts = ?, metadata = ?, journey_duration_ms = ?, recorded_duration_ms = ?, recorded_distance = ? WHERE id = ?`,
+      [
+        nextStatus,
+        start_ts,
+        end_ts,
+        serializedMetadata,
+        journey_duration_ms,
+        recorded_duration_ms,
+        recorded_distance,
+        journeyId,
+      ],
+    );
+  } else {
+    await db.runAsync(
+      `UPDATE journey SET status = ?, start_ts = ?, end_ts = ?, metadata = ? WHERE id = ?`,
+      [nextStatus, start_ts, end_ts, serializedMetadata, journeyId],
+    );
+  }
 
   syncActiveJourneySession(journeyId, nextStatus);
   await syncBackgroundTrackingForJourneyStatus(nextStatus);

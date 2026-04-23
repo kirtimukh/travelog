@@ -19,6 +19,12 @@ export type JourneyRow = {
   end_ts: number | null;
   status: JourneyStatus;
   metadata: string | null;
+  /** Wall-clock span from start to end at completion; null for legacy rows. */
+  journey_duration_ms: number | null;
+  /** Active time excluding pauses at completion; null for legacy rows. */
+  recorded_duration_ms: number | null;
+  /** Sum of segment distances between committed points (meters); null for legacy rows. */
+  recorded_distance: number | null;
 };
 
 export type LocationPointRow = {

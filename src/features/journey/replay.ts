@@ -78,7 +78,8 @@ function getNormalizedPauseWindows(
     .sort((a, b) => a.startTs - b.startTs);
 }
 
-export function getReplayRecordedDurationMs(journey: JourneyRow | null, nowTs: number): number {
+/** Active (non-paused) duration from journey bounds; shared with completion persistence. */
+export function computeRecordedDurationMs(journey: JourneyRow | null, nowTs: number): number {
   if (!journey?.start_ts) {
     return 0;
   }
@@ -92,6 +93,30 @@ export function getReplayRecordedDurationMs(journey: JourneyRow | null, nowTs: n
     0,
   );
   return Math.max(0, journeyEndTs - journeyStartTs - totalPauseMs);
+}
+
+export function getReplayRecordedDurationMs(journey: JourneyRow | null, nowTs: number): number {
+  if (journey?.status === "completed" && journey.recorded_duration_ms != null) {
+    return journey.recorded_duration_ms;
+  }
+  return computeRecordedDurationMs(journey, nowTs);
+}
+
+export function getStoredOrComputedJourneyDurationMs(
+  journey: JourneyRow | null,
+  nowTs: number,
+): number {
+  if (!journey) {
+    return 0;
+  }
+  if (journey.status === "completed" && journey.journey_duration_ms != null) {
+    return journey.journey_duration_ms;
+  }
+  const bounds = getReplayTimeBounds(journey, nowTs);
+  if (!bounds) {
+    return 0;
+  }
+  return Math.max(0, bounds.endTs - bounds.startTs);
 }
 
 export function mapWallTsToRecordedElapsedMs(
@@ -117,7 +142,14 @@ export function mapWallTsToRecordedElapsedMs(
     const overlapEnd = Math.min(clampedTs, window.endTs);
     pauseBefore += Math.max(0, overlapEnd - window.startTs);
   }
-  return Math.max(0, clampedTs - journeyStartTs - pauseBefore);
+  let elapsed = Math.max(0, clampedTs - journeyStartTs - pauseBefore);
+  if (journey.status === "completed" && journey.recorded_duration_ms != null) {
+    if (clampedTs >= journeyEndTs) {
+      return journey.recorded_duration_ms;
+    }
+    elapsed = Math.min(elapsed, journey.recorded_duration_ms);
+  }
+  return elapsed;
 }
 
 export function mapRecordedElapsedMsToWallTs(

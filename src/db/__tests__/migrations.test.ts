@@ -16,7 +16,7 @@ describe("runMigrations", () => {
     const { runMigrations } = require("../migrations") as typeof import("../migrations");
     await runMigrations(db as never);
 
-    expect(execAsync).toHaveBeenCalledTimes(10);
+    expect(execAsync).toHaveBeenCalledTimes(12);
     expect(execAsync).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining("CREATE TABLE IF NOT EXISTS journey"),
@@ -42,10 +42,15 @@ describe("runMigrations", () => {
       expect.stringContaining("ALTER TABLE journey ADD COLUMN metadata"),
     );
     expect(execAsync).toHaveBeenNthCalledWith(10, "PRAGMA user_version = 5");
+    expect(execAsync).toHaveBeenNthCalledWith(
+      11,
+      expect.stringContaining("ALTER TABLE journey ADD COLUMN journey_duration_ms"),
+    );
+    expect(execAsync).toHaveBeenNthCalledWith(12, "PRAGMA user_version = 6");
   });
 
   it("does nothing when already at latest version", async () => {
-    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 5 });
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 6 });
     const execAsync = jest.fn().mockResolvedValue(undefined);
     const db = { getFirstAsync, execAsync };
 
@@ -118,5 +123,19 @@ describe("runMigrations", () => {
 
     const v5Sql = String(execAsync.mock.calls[8]?.[0] ?? "");
     expect(v5Sql).toContain("ALTER TABLE journey ADD COLUMN metadata");
+  });
+
+  it("adds journey metrics columns in migration v6", async () => {
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 0 });
+    const execAsync = jest.fn().mockResolvedValue(undefined);
+    const db = { getFirstAsync, execAsync };
+
+    const { runMigrations } = require("../migrations") as typeof import("../migrations");
+    await runMigrations(db as never);
+
+    const v6Sql = String(execAsync.mock.calls[10]?.[0] ?? "");
+    expect(v6Sql).toContain("journey_duration_ms");
+    expect(v6Sql).toContain("recorded_duration_ms");
+    expect(v6Sql).toContain("recorded_distance");
   });
 });

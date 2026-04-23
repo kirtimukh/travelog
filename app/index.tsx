@@ -182,6 +182,10 @@ export default function HomeScreen() {
         start_ts: null,
         end_ts: null,
         status: "scheduled",
+        metadata: null,
+        journey_duration_ms: null,
+        recorded_duration_ms: null,
+        recorded_distance: null,
       });
       setName("");
       setDescription("");

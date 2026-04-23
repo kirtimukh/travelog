@@ -22,6 +22,7 @@ import { deleteNoteById, updateNoteText } from "../../../src/db/notes";
 import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../src/db/schema";
 import { unlinkIfExists } from "../../../src/files/fsCleanup";
 import { loadJourneyBundle } from "../../../src/features/journey/bundle";
+import { formatDurationSeconds } from "../../../src/features/journey/formatDuration";
 import { JourneyMapPanel } from "../../../src/features/journey/components/JourneyMapPanel";
 import { JourneyMediaEditModal } from "../../../src/features/journey/components/JourneyMediaEditModal";
 import { JourneyNoteEditModal } from "../../../src/features/journey/components/JourneyNoteEditModal";
@@ -33,8 +34,10 @@ import {
   getReplayHeading,
   getReplayPointAtTimestamp,
   getReplayRecordedDurationMs,
+  getStoredOrComputedJourneyDurationMs,
   mapRecordedElapsedMsToWallTs,
 } from "../../../src/features/journey/replay";
+import { sumPathDistanceMeters } from "../../../src/features/journey/journeyMetrics";
 import { canEditInDetails } from "../../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../../src/features/journey/useOngoingJourneyCandidate";
 import { AppHeaderMenu } from "../../../src/components/AppHeaderMenu";
@@ -358,6 +361,17 @@ export default function JourneyDetailsScreen() {
   const heading = getReplayHeading(replayPoint);
   const speed = replayPoint?.speed ?? null;
 
+  const journeyDurationMs = useMemo(
+    () => getStoredOrComputedJourneyDurationMs(journey, timelineNowTs),
+    [journey, timelineNowTs],
+  );
+  const recordedDistanceMeters = useMemo(() => {
+    if (journey?.status === "completed" && journey.recorded_distance != null) {
+      return journey.recorded_distance;
+    }
+    return sumPathDistanceMeters(points);
+  }, [journey, points]);
+
   const clampReplayTs = useCallback(
     (value: number): number => {
       return Math.max(0, Math.min(replayDurationMs, value));
@@ -471,7 +485,19 @@ export default function JourneyDetailsScreen() {
                 timeStyle: "medium",
               })}
         </Text>
-        <Text className="text-xs text-neutral-700">
+        <Text className="mt-1 text-xs text-neutral-700">
+          Journey duration:{" "}
+          {journeyDurationMs <= 0 ? "—" : formatDurationSeconds(journeyDurationMs / 1000)}
+        </Text>
+        <Text className="mt-1 text-xs text-neutral-700">
+          Recorded duration:{" "}
+          {replayDurationMs <= 0 ? "—" : formatDurationSeconds(replayDurationMs / 1000)}
+        </Text>
+        <Text className="mt-1 text-xs text-neutral-700">
+          Recorded distance:{" "}
+          {recordedDistanceMeters <= 0 ? "—" : `${(recordedDistanceMeters / 1000).toFixed(2)} km`}
+        </Text>
+        <Text className="mt-1 text-xs text-neutral-700">
           Speed: {speed == null ? "—" : `${(speed * 3.6).toFixed(2)} km/h`}
         </Text>
         <Text className="mt-1 text-xs text-neutral-700">

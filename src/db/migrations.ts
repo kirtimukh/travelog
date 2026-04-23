@@ -71,6 +71,12 @@ const MIGRATIONS: string[] = [
   `
   ALTER TABLE journey ADD COLUMN metadata TEXT;
   `,
+  // version 6 — persisted journey metrics (set on completion).
+  `
+  ALTER TABLE journey ADD COLUMN journey_duration_ms INTEGER;
+  ALTER TABLE journey ADD COLUMN recorded_duration_ms INTEGER;
+  ALTER TABLE journey ADD COLUMN recorded_distance REAL;
+  `,
 ];
 
 /**
