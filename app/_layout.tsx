@@ -6,14 +6,9 @@ import "../src/tracking/locationTask";
 import * as Battery from "expo-battery";
 import * as SplashScreen from "expo-splash-screen";
 import { ThemeProvider } from "@react-navigation/native";
-import {
-  Stack,
-  usePathname,
-  useRouter,
-  useRootNavigationState,
-} from "expo-router";
-import { useEffect } from "react";
-import { AppState } from "react-native";
+import { Stack, usePathname, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { AppState, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { subscribeCurrentLocationCacheAppState } from "../src/location/currentLocationCache";
@@ -23,9 +18,31 @@ import { refreshLocationTrackingAccuracyIfRunning } from "../src/tracking/locati
 
 void SplashScreen.preventAutoHideAsync();
 
+/** Inclusive cutoff: app stops working from this instant onward. April 9, 2026, 12:00 AM IST. */
+const APP_EXPIRES_AT = new Date("2026-05-09T00:00:00+05:30");
+
+function useIsPastAppExpiry() {
+  const [pastExpiry, setPastExpiry] = useState(
+    () => Date.now() >= APP_EXPIRES_AT.getTime(),
+  );
+  useEffect(() => {
+    const update = () => {
+      setPastExpiry(Date.now() >= APP_EXPIRES_AT.getTime());
+    };
+    update();
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        update();
+      }
+    });
+    return () => sub.remove();
+  }, []);
+  return pastExpiry;
+}
+
 export default function RootLayout() {
+  const pastExpiry = useIsPastAppExpiry();
   const router = useRouter();
-  const navState = useRootNavigationState();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -66,6 +83,25 @@ export default function RootLayout() {
   useEffect(() => {
     void SplashScreen.hideAsync();
   }, []);
+
+  if (pastExpiry) {
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+          }}
+        >
+          <Text style={{ fontSize: 16, textAlign: "center" }}>
+            Contact the developer
+          </Text>
+        </View>
+      </GestureHandlerRootView>
+    );
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
