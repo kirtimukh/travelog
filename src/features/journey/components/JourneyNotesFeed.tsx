@@ -1,174 +1,28 @@
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import type { AudioPlayer, AudioStatus } from "expo-audio";
-import { useCallback, useEffect, useState } from "react";
+import type { ReactElement } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 
 import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessionManager";
-import type { JourneyPauseWindow } from "../replay";
-
-import { waitForPlayerReady } from "../audio/waitForPlayerReady";
 import type { LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
 
-import { JourneyWeatherCardBody, weatherRowToCardDisplay } from "./JourneyWeatherCardBody";
+import { waitForPlayerReady } from "../audio/waitForPlayerReady";
 import { formatDurationSeconds } from "../formatDuration";
+import type { JourneyPauseWindow } from "../replay";
 
-const MEDIA_FEED_THUMBNAIL_HEIGHT = 100;
-
-
-type FeedItem =
-  | { kind: "note"; data: NoteRow; sortTs: number }
-  | { kind: "media"; data: MediaRow; sortTs: number }
-  | { kind: "weather"; data: WeatherRow; sortTs: number }
-  | { kind: "pause"; data: JourneyPauseWindow; sortTs: number };
-
-function buildFeed(
-  notes: NoteRow[],
-  media: MediaRow[],
-  weather: WeatherRow[],
-  pauseWindows: JourneyPauseWindow[],
-): FeedItem[] {
-  const items: FeedItem[] = [
-    ...notes.map((n) => ({
-      kind: "note" as const,
-      data: n,
-      sortTs: n.timestamp,
-    })),
-    ...media.map((m) => ({
-      kind: "media" as const,
-      data: m,
-      sortTs: m.timestamp ?? Number.MAX_SAFE_INTEGER,
-    })),
-    ...weather.map((w) => ({
-      kind: "weather" as const,
-      data: w,
-      sortTs: w.timestamp,
-    })),
-    ...pauseWindows.map((window) => ({
-      kind: "pause" as const,
-      data: window,
-      sortTs: window.startTs,
-    })),
-  ];
-  items.sort((a, b) => a.sortTs - b.sortTs);
-  return items;
-}
-
-function notePreviewText(note: NoteRow): string {
-  const text = note.text?.trim();
-  if (text) {
-    return text;
-  }
-  const transcript = note.audio_transcript?.trim();
-  if (transcript) {
-    return transcript;
-  }
-  if (note.type === "voice") {
-    return "Voice note";
-  }
-  return "";
-}
-
-function formatListTimestamp(ts: number): string {
-  return new Date(ts).toLocaleString(undefined, {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
-}
-
-function formatLatLngPair(lat: number, lng: number): string {
-  return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-}
-
-function nearestPointByTimestamp(
-  points: LocationPointRow[],
-  targetTs: number,
-): LocationPointRow | null {
-  if (points.length === 0) {
-    return null;
-  }
-  let best = points[0]!;
-  let bestAbs = Math.abs(best.timestamp - targetTs);
-  for (let i = 1; i < points.length; i++) {
-    const p = points[i]!;
-    const abs = Math.abs(p.timestamp - targetTs);
-    if (abs < bestAbs) {
-      bestAbs = abs;
-      best = p;
-    }
-  }
-  return best;
-}
-
-function latLngLabelForNote(note: NoteRow, locationPoints: LocationPointRow[]): string {
-  const p = nearestPointByTimestamp(locationPoints, note.timestamp);
-  if (!p) {
-    return "—";
-  }
-  return formatLatLngPair(p.lat, p.lng);
-}
-
-function latLngLabelForMedia(media: MediaRow, locationPoints: LocationPointRow[]): string {
-  if (media.lat != null && media.lng != null) {
-    return formatLatLngPair(media.lat, media.lng);
-  }
-  if (media.timestamp == null || locationPoints.length === 0) {
-    return "—";
-  }
-  const p = nearestPointByTimestamp(locationPoints, media.timestamp);
-  if (!p) {
-    return "—";
-  }
-  return formatLatLngPair(p.lat, p.lng);
-}
-
-/** Hide placeholder copy when an inline player is shown for the same row. */
-function shouldShowNoteBodyBelowPlayer(note: NoteRow, preview: string): boolean {
-  if (!preview) {
-    return false;
-  }
-  if (note.type === "voice" && note.audio_file && preview === "Voice note") {
-    return false;
-  }
-  return true;
-}
-
-function mediaListMetaLine(media: MediaRow, locationPoints: LocationPointRow[]): string {
-  const timePart =
-    media.timestamp != null ? formatListTimestamp(media.timestamp) : "—";
-  return `${timePart} · (${latLngLabelForMedia(media, locationPoints)})`;
-}
-
-function mediaThumbWidth(media: MediaRow): number {
-  if (media.width != null && media.height != null && media.width > 0 && media.height > 0) {
-    return MEDIA_FEED_THUMBNAIL_HEIGHT * (media.width / media.height);
-  }
-  return MEDIA_FEED_THUMBNAIL_HEIGHT;
-}
-
-function MediaFeedCaption({ media }: { media: MediaRow }) {
-  const caption = media.text?.trim();
-  if (!caption) {
-    return (
-      <View className="mt-2 flex-row items-center">
-        <Image
-          source={{ uri: media.file }}
-          style={{ height: MEDIA_FEED_THUMBNAIL_HEIGHT, width: mediaThumbWidth(media) }}
-          resizeMode="contain"
-        />
-      </View>
-    );
-  }
-  return (
-    <Text className="mt-2 text-sm text-neutral-900">
-      <Image
-        source={{ uri: media.file }}
-        style={{ height: MEDIA_FEED_THUMBNAIL_HEIGHT, width: mediaThumbWidth(media) }}
-        resizeMode="contain"
-      />{" "}
-      {caption}
-    </Text>
-  );
-}
+import { JourneyWeatherCardBody, weatherRowToCardDisplay } from "./JourneyWeatherCardBody";
+import {
+  buildFeed,
+  type FeedItem,
+  formatListTimestamp,
+  latLngLabelForNote,
+  MEDIA_FEED_THUMBNAIL_HEIGHT,
+  mediaListMetaLine,
+  mediaThumbWidth,
+  notePreviewText,
+  shouldShowNoteBodyBelowPlayer,
+} from "./JourneyNotesFeed.utils";
 
 type FeedVoiceAudio = {
   player: AudioPlayer;
@@ -306,6 +160,145 @@ function NoteFeedRowBody({
   );
 }
 
+function MediaFeedThumbnail({ media }: { media: MediaRow }) {
+  return (
+    <Image
+      source={{ uri: media.file }}
+      style={{ height: MEDIA_FEED_THUMBNAIL_HEIGHT, width: mediaThumbWidth(media) }}
+      resizeMode="contain"
+    />
+  );
+}
+
+function MediaFeedCaption({ media }: { media: MediaRow }) {
+  const caption = media.text?.trim();
+  if (!caption) {
+    return (
+      <View className="mt-2 flex-row items-center">
+        <MediaFeedThumbnail media={media} />
+      </View>
+    );
+  }
+  return (
+    <Text className="mt-2 text-sm text-neutral-900">
+      <MediaFeedThumbnail media={media} />{" "}
+      {caption}
+    </Text>
+  );
+}
+
+type FeedRenderContext = {
+  editable: boolean;
+  locationPoints: LocationPointRow[];
+  onLongPressNote: (note: NoteRow) => void;
+  onLongPressMedia: (item: MediaRow) => void;
+  onLongPressWeather?: (row: WeatherRow) => void;
+  feedVoiceAudio: FeedVoiceAudio;
+};
+
+function renderFeedItem(item: FeedItem, ctx: FeedRenderContext): ReactElement {
+  const { editable, locationPoints, onLongPressNote, onLongPressMedia, onLongPressWeather, feedVoiceAudio } =
+    ctx;
+
+  switch (item.kind) {
+    case "note":
+      return editable ? (
+        <Pressable
+          key={`note-${item.data.id}`}
+          className="mt-3 rounded-md border border-neutral-200 p-3 active:bg-neutral-50"
+          onLongPress={() => {
+            onLongPressNote(item.data);
+          }}
+          delayLongPress={350}
+        >
+          <NoteFeedRowBody
+            note={item.data}
+            locationPoints={locationPoints}
+            feedVoiceAudio={feedVoiceAudio}
+          />
+        </Pressable>
+      ) : (
+        <View
+          key={`note-${item.data.id}`}
+          className="mt-3 rounded-md border border-neutral-200 p-3"
+        >
+          <NoteFeedRowBody
+            note={item.data}
+            locationPoints={locationPoints}
+            feedVoiceAudio={feedVoiceAudio}
+          />
+        </View>
+      );
+    case "media":
+      return editable ? (
+        <Pressable
+          key={`media-${item.data.id}`}
+          className="mt-3 overflow-hidden rounded-md border border-neutral-200 active:bg-neutral-50"
+          onLongPress={() => {
+            onLongPressMedia(item.data);
+          }}
+          delayLongPress={350}
+        >
+          <View className="border-b border-neutral-200 bg-neutral-50 px-3 py-2">
+            <Text className="text-xs text-neutral-500">
+              {mediaListMetaLine(item.data, locationPoints)}
+            </Text>
+          </View>
+          <View className="px-3 pb-3">
+            <MediaFeedCaption media={item.data} />
+          </View>
+        </Pressable>
+      ) : (
+        <View
+          key={`media-${item.data.id}`}
+          className="mt-3 overflow-hidden rounded-md border border-neutral-200"
+        >
+          <View className="border-b border-neutral-200 bg-neutral-50 px-3 py-2">
+            <Text className="text-xs text-neutral-500">
+              {mediaListMetaLine(item.data, locationPoints)}
+            </Text>
+          </View>
+          <View className="px-3 pb-3">
+            <MediaFeedCaption media={item.data} />
+          </View>
+        </View>
+      );
+    case "weather":
+      return onLongPressWeather ? (
+        <Pressable
+          key={`weather-${item.data.id}`}
+          className="mt-3 overflow-hidden rounded-md border border-sky-200 active:bg-sky-100/80"
+          onLongPress={() => {
+            onLongPressWeather(item.data);
+          }}
+          delayLongPress={350}
+        >
+          <JourneyWeatherCardBody
+            data={weatherRowToCardDisplay(item.data)}
+            includeTopMargin={false}
+            layout="feed"
+          />
+        </Pressable>
+      ) : (
+        <View key={`weather-${item.data.id}`}>
+          <JourneyWeatherCardBody data={weatherRowToCardDisplay(item.data)} />
+        </View>
+      );
+    case "pause":
+      return (
+        <View
+          key={`pause-${item.data.startTs}-${item.data.endTs ?? "open"}`}
+          className="mt-3 rounded-md border border-neutral-200 p-3"
+        >
+          <Text className="text-sm text-neutral-900">
+            Pause {formatListTimestamp(item.data.startTs)} -{" "}
+            {item.data.endTs == null ? "ongoing" : formatListTimestamp(item.data.endTs)}
+          </Text>
+        </View>
+      );
+  }
+}
+
 type Props = {
   notes: NoteRow[];
   media: MediaRow[];
@@ -336,8 +329,11 @@ export function JourneyNotesFeed({
   onLongPressWeather,
   suspendPlayback = false,
 }: Props) {
-  const feed = buildFeed(notes, media, weather, pauseWindows);
-  const total = notes.length + media.length + weather.length + pauseWindows.length;
+  const feed = useMemo(
+    () => buildFeed(notes, media, weather, pauseWindows),
+    [notes, media, weather, pauseWindows],
+  );
+  const total = feed.length;
 
   const feedPlayer = useAudioPlayer(null);
   const feedStatus = useAudioPlayerStatus(feedPlayer);
@@ -360,105 +356,19 @@ export function JourneyNotesFeed({
     setActiveVoiceUri,
   };
 
+  const feedCtx: FeedRenderContext = {
+    editable,
+    locationPoints,
+    onLongPressNote,
+    onLongPressMedia,
+    onLongPressWeather,
+    feedVoiceAudio,
+  };
+
   return (
     <View className="mb-10 mt-6 rounded-xl border border-neutral-200 p-4">
       <Text className="text-base font-semibold text-neutral-900">Notes ({total})</Text>
-      {feed.map((item) =>
-        item.kind === "note" ? (
-          editable ? (
-            <Pressable
-              key={`note-${item.data.id}`}
-              className="mt-3 rounded-md border border-neutral-200 p-3 active:bg-neutral-50"
-              onLongPress={() => {
-                onLongPressNote(item.data);
-              }}
-              delayLongPress={350}
-            >
-              <NoteFeedRowBody
-                note={item.data}
-                locationPoints={locationPoints}
-                feedVoiceAudio={feedVoiceAudio}
-              />
-            </Pressable>
-          ) : (
-            <View
-              key={`note-${item.data.id}`}
-              className="mt-3 rounded-md border border-neutral-200 p-3"
-            >
-              <NoteFeedRowBody
-                note={item.data}
-                locationPoints={locationPoints}
-                feedVoiceAudio={feedVoiceAudio}
-              />
-            </View>
-          )
-        ) : item.kind === "media" ? (
-          editable ? (
-            <Pressable
-              key={`media-${item.data.id}`}
-              className="mt-3 overflow-hidden rounded-md border border-neutral-200 active:bg-neutral-50"
-              onLongPress={() => {
-                onLongPressMedia(item.data);
-              }}
-              delayLongPress={350}
-            >
-              <View className="border-b border-neutral-200 bg-neutral-50 px-3 py-2">
-                <Text className="text-xs text-neutral-500">
-                  {mediaListMetaLine(item.data, locationPoints)}
-                </Text>
-              </View>
-              <View className="px-3 pb-3">
-                <MediaFeedCaption media={item.data} />
-              </View>
-            </Pressable>
-          ) : (
-            <View
-              key={`media-${item.data.id}`}
-              className="mt-3 overflow-hidden rounded-md border border-neutral-200"
-            >
-              <View className="border-b border-neutral-200 bg-neutral-50 px-3 py-2">
-                <Text className="text-xs text-neutral-500">
-                  {mediaListMetaLine(item.data, locationPoints)}
-                </Text>
-              </View>
-              <View className="px-3 pb-3">
-                <MediaFeedCaption media={item.data} />
-              </View>
-            </View>
-          )
-        ) : item.kind === "weather" ? (
-          onLongPressWeather ? (
-            <Pressable
-              key={`weather-${item.data.id}`}
-              className="mt-3 overflow-hidden rounded-md border border-sky-200 active:bg-sky-100/80"
-              onLongPress={() => {
-                onLongPressWeather(item.data);
-              }}
-              delayLongPress={350}
-            >
-              <JourneyWeatherCardBody
-                data={weatherRowToCardDisplay(item.data)}
-                includeTopMargin={false}
-                layout="feed"
-              />
-            </Pressable>
-          ) : (
-            <View key={`weather-${item.data.id}`}>
-              <JourneyWeatherCardBody data={weatherRowToCardDisplay(item.data)} />
-            </View>
-          )
-        ) : (
-          <View
-            key={`pause-${item.data.startTs}-${item.data.endTs ?? "open"}`}
-            className="mt-3 rounded-md border border-neutral-200 p-3"
-          >
-            <Text className="text-sm text-neutral-900">
-              Pause {formatListTimestamp(item.data.startTs)} -{" "}
-              {item.data.endTs == null ? "ongoing" : formatListTimestamp(item.data.endTs)}
-            </Text>
-          </View>
-        ),
-      )}
+      {feed.map((item) => renderFeedItem(item, feedCtx))}
     </View>
   );
 }
