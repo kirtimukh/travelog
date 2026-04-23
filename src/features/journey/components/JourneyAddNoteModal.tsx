@@ -1,11 +1,12 @@
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import type { NoteType } from "../../../db/schema";
 import type { VoiceRecorder } from "../../../files/voiceRecording";
 import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
 import { VoiceNoteDraftPlayback } from "./VoiceNoteDraftPlayback";
 import { VoiceNoteRecorderElapsed } from "./VoiceNoteRecorderElapsed";
+
+export type AddNoteModalMode = "text" | "voice";
 
 type VoiceNoteDraft = {
   uri: string;
@@ -14,13 +15,12 @@ type VoiceNoteDraft = {
 
 type Props = {
   visible: boolean;
-  newNoteMode: NoteType;
+  mode: AddNoteModalMode;
   newNoteText: string;
   newAudioRecorder: VoiceRecorder | null;
   newAudioDraft: VoiceNoteDraft | null;
   busy: boolean;
   onClose: () => void;
-  onSwitchAddNoteMode: (next: NoteType) => void;
   onChangeNewNoteText: (text: string) => void;
   onAddTextNote: () => void;
   onStartVoiceRecording: () => void;
@@ -31,13 +31,12 @@ type Props = {
 
 export function JourneyAddNoteModal({
   visible,
-  newNoteMode,
+  mode,
   newNoteText,
   newAudioRecorder,
   newAudioDraft,
   busy,
   onClose,
-  onSwitchAddNoteMode,
   onChangeNewNoteText,
   onAddTextNote,
   onStartVoiceRecording,
@@ -71,40 +70,20 @@ export function JourneyAddNoteModal({
               transform: [{ translateY: -modalKeyboardInset }],
             }}
           >
-            <Text className="text-base font-semibold text-neutral-900">Add note</Text>
-            <View className="mt-3 flex-row rounded-lg border border-neutral-300 p-0.5">
-              <Pressable
-                className={`flex-1 rounded-md py-2 ${newNoteMode === "text" ? "bg-blue-600" : "bg-transparent"}`}
-                onPress={() => {
-                  onSwitchAddNoteMode("text");
-                }}
-              >
-                <Text
-                  className={`text-center text-sm font-semibold ${newNoteMode === "text" ? "text-white" : "text-neutral-700"}`}
-                >
-                  Text
-                </Text>
-              </Pressable>
-              <Pressable
-                className={`flex-1 rounded-md py-2 ${newNoteMode === "voice" ? "bg-emerald-600" : "bg-transparent"}`}
-                onPress={() => {
-                  onSwitchAddNoteMode("voice");
-                }}
-              >
-                <Text
-                  className={`text-center text-sm font-semibold ${newNoteMode === "voice" ? "text-white" : "text-neutral-700"}`}
-                >
-                  Voice
-                </Text>
-              </Pressable>
-            </View>
-            {newNoteMode === "text" ? (
+            <Text className="text-base font-semibold text-neutral-900">
+              {mode === "voice" ? "Add voice note" : "Add note"}
+            </Text>
+            {mode === "text" ? (
               <>
                 <TextInput
                   className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
                   placeholder="Note text"
                   value={newNoteText}
                   onChangeText={onChangeNewNoteText}
+                  multiline
+                  numberOfLines={3}
+                  textAlignVertical="top"
+                  style={{ minHeight: 84 }}
                 />
                 <Pressable
                   className="mt-3 rounded-md bg-blue-600 px-4 py-2"

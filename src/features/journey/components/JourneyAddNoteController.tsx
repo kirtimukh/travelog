@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { openAppDatabase } from "../../../db/client";
 import { createNote } from "../../../db/notes";
-import type { NoteType } from "../../../db/schema";
 import { unlinkIfExists } from "../../../files/fsCleanup";
 import {
   createPreparedVoiceRecorder,
@@ -10,7 +9,7 @@ import {
   stopRecordingAndCopyToAppDocuments,
   type VoiceRecorder,
 } from "../../../files/voiceRecording";
-import { JourneyAddNoteModal } from "./JourneyAddNoteModal";
+import { JourneyAddNoteModal, type AddNoteModalMode } from "./JourneyAddNoteModal";
 
 type VoiceNoteDraft = {
   uri: string;
@@ -19,6 +18,7 @@ type VoiceNoteDraft = {
 
 type Props = {
   journeyId: number;
+  mode: AddNoteModalMode;
   onClose: () => void;
   onSaved: () => Promise<void>;
 };
@@ -28,8 +28,7 @@ type Props = {
  * Conditionally mounted by the screen so that every recording session
  * starts from a clean state — the key fix for flat-tone on 2nd recording.
  */
-export function JourneyAddNoteController({ journeyId, onClose, onSaved }: Props) {
-  const [newNoteMode, setNewNoteMode] = useState<NoteType>("text");
+export function JourneyAddNoteController({ journeyId, mode, onClose, onSaved }: Props) {
   const [newNoteText, setNewNoteText] = useState<string>("");
   const [newAudioRecorder, setNewAudioRecorder] = useState<VoiceRecorder | null>(null);
   const newAudioRecorderRef = useRef<VoiceRecorder | null>(null);
@@ -55,28 +54,6 @@ export function JourneyAddNoteController({ journeyId, onClose, onSaved }: Props)
       }
     };
   }, []);
-
-  function switchAddNoteMode(next: NoteType): void {
-    if (next === "text") {
-      setNewAudioDraft((prev) => {
-        if (prev) {
-          void unlinkIfExists(prev.uri);
-        }
-        return null;
-      });
-      setNewAudioRecorder((rec) => {
-        if (rec) {
-          setTimeout(() => {
-            void interruptVoiceRecording(rec);
-          }, 0);
-        }
-        return null;
-      });
-    } else {
-      setNewNoteText("");
-    }
-    setNewNoteMode(next);
-  }
 
   async function addTextNote(): Promise<void> {
     if (!newNoteText.trim() || busy || newAudioRecorder || newAudioDraft) {
@@ -180,13 +157,12 @@ export function JourneyAddNoteController({ journeyId, onClose, onSaved }: Props)
   return (
     <JourneyAddNoteModal
       visible
-      newNoteMode={newNoteMode}
+      mode={mode}
       newNoteText={newNoteText}
       newAudioRecorder={newAudioRecorder}
       newAudioDraft={newAudioDraft}
       busy={busy}
       onClose={onClose}
-      onSwitchAddNoteMode={switchAddNoteMode}
       onChangeNewNoteText={setNewNoteText}
       onAddTextNote={() => {
         void addTextNote();

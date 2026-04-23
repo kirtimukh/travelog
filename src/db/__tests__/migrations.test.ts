@@ -16,7 +16,7 @@ describe("runMigrations", () => {
     const { runMigrations } = require("../migrations") as typeof import("../migrations");
     await runMigrations(db as never);
 
-    expect(execAsync).toHaveBeenCalledTimes(12);
+    expect(execAsync).toHaveBeenCalledTimes(14);
     expect(execAsync).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining("CREATE TABLE IF NOT EXISTS journey"),
@@ -47,10 +47,15 @@ describe("runMigrations", () => {
       expect.stringContaining("ALTER TABLE journey ADD COLUMN journey_duration_ms"),
     );
     expect(execAsync).toHaveBeenNthCalledWith(12, "PRAGMA user_version = 6");
+    expect(execAsync).toHaveBeenNthCalledWith(
+      13,
+      expect.stringContaining("CREATE TABLE IF NOT EXISTS weather"),
+    );
+    expect(execAsync).toHaveBeenNthCalledWith(14, "PRAGMA user_version = 7");
   });
 
   it("does nothing when already at latest version", async () => {
-    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 6 });
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 7 });
     const execAsync = jest.fn().mockResolvedValue(undefined);
     const db = { getFirstAsync, execAsync };
 
@@ -137,5 +142,22 @@ describe("runMigrations", () => {
     expect(v6Sql).toContain("journey_duration_ms");
     expect(v6Sql).toContain("recorded_duration_ms");
     expect(v6Sql).toContain("recorded_distance");
+  });
+
+  it("adds weather table and weather index in migration v7", async () => {
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 0 });
+    const execAsync = jest.fn().mockResolvedValue(undefined);
+    const db = { getFirstAsync, execAsync };
+
+    const { runMigrations } = require("../migrations") as typeof import("../migrations");
+    await runMigrations(db as never);
+
+    const v7Sql = String(execAsync.mock.calls[12]?.[0] ?? "");
+    expect(v7Sql).toContain("CREATE TABLE IF NOT EXISTS weather");
+    expect(v7Sql).toContain("journey_id INTEGER NOT NULL");
+    expect(v7Sql).toContain("weather_condition_icon TEXT");
+    expect(v7Sql).toContain("full_data TEXT NOT NULL");
+    expect(v7Sql).toContain("FOREIGN KEY (journey_id) REFERENCES journey(id) ON DELETE CASCADE");
+    expect(v7Sql).toContain("CREATE INDEX IF NOT EXISTS idx_weather_journey_ts");
   });
 });

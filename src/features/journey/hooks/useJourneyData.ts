@@ -10,6 +10,7 @@ import type {
   LocationPointRow,
   MediaRow,
   NoteRow,
+  WeatherRow,
 } from "../../../db/schema";
 import { syncActiveJourneySession } from "../../../storage/activeJourney";
 import { hasValidPmtilesPackage } from "../../../storage/pmtilesGuard";
@@ -23,6 +24,7 @@ export type UseJourneyDataResult = {
   points: LocationPointRow[];
   notes: NoteRow[];
   media: MediaRow[];
+  weather: WeatherRow[];
   error: string | null;
   locationPermission: "unknown" | "granted" | "denied";
   needsBackgroundLocationSettings: boolean;
@@ -38,6 +40,7 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
   const [points, setPoints] = useState<LocationPointRow[]>([]);
   const [notes, setNotes] = useState<NoteRow[]>([]);
   const [media, setMedia] = useState<MediaRow[]>([]);
+  const [weather, setWeather] = useState<WeatherRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [locationPermission, setLocationPermission] = useState<
     "unknown" | "granted" | "denied"
@@ -53,13 +56,20 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
     if (!bundle) {
       return;
     }
-    const { journey, points: loadedPoints, notes: loadedNotes, media: loadedMedia } = bundle;
+    const {
+      journey,
+      points: loadedPoints,
+      notes: loadedNotes,
+      media: loadedMedia,
+      weather: loadedWeather,
+    } = bundle;
     setJourney(journey);
     setName(journey.name);
     setStatusLabel(journey.status);
     setPoints(loadedPoints);
     setNotes(loadedNotes);
     setMedia(loadedMedia);
+    setWeather(loadedWeather);
     syncActiveJourneySession(journey.id, journey.status);
     const trackingSync = await syncBackgroundTrackingForJourneyStatus(journey.status);
     if (journey.status === "ongoing" && !trackingSync.started) {
@@ -130,6 +140,7 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
     points,
     notes,
     media,
+    weather,
     error,
     locationPermission,
     needsBackgroundLocationSettings,

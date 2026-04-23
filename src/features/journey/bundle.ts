@@ -3,13 +3,21 @@ import { getJourneyById } from "../../db/journeys";
 import { listLocationPointsForJourney } from "../../db/locationPoints";
 import { listMediaForJourney } from "../../db/media";
 import { listNotesForJourney } from "../../db/notes";
-import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../db/schema";
+import { listWeatherForJourney } from "../../db/weather";
+import type {
+  JourneyRow,
+  LocationPointRow,
+  MediaRow,
+  NoteRow,
+  WeatherRow,
+} from "../../db/schema";
 
 export type JourneyBundle = {
   journey: JourneyRow;
   points: LocationPointRow[];
   notes: NoteRow[];
   media: MediaRow[];
+  weather: WeatherRow[];
 };
 
 export async function loadJourneyBundle(
@@ -21,10 +29,11 @@ export async function loadJourneyBundle(
     return null;
   }
 
-  const [points, notes, media] = await Promise.all([
+  const [points, notes, media, weather] = await Promise.all([
     listLocationPointsForJourney(db, journeyId),
     listNotesForJourney(db, journeyId),
     listMediaForJourney(db, journeyId),
+    listWeatherForJourney(db, journeyId),
   ]);
 
   return {
@@ -32,5 +41,6 @@ export async function loadJourneyBundle(
     points,
     notes,
     media,
+    weather,
   };
 }

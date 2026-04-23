@@ -21,12 +21,14 @@ import { JourneyMapPanel } from "../../src/features/journey/components/JourneyMa
 import { JourneyMediaEditModal } from "../../src/features/journey/components/JourneyMediaEditModal";
 import { JourneyNoteEditModal } from "../../src/features/journey/components/JourneyNoteEditModal";
 import { JourneyNotesFeed } from "../../src/features/journey/components/JourneyNotesFeed";
+import { JourneyWeatherModal } from "../../src/features/journey/components/JourneyWeatherModal";
 import { RerecordOverlayBar } from "../../src/features/journey/components/RerecordOverlayBar";
 import { useJourneyControls } from "../../src/features/journey/hooks/useJourneyControls";
 import { useJourneyData } from "../../src/features/journey/hooks/useJourneyData";
 import { useMediaEditFlow } from "../../src/features/journey/hooks/useMediaEditFlow";
 import { useNoteEditFlow } from "../../src/features/journey/hooks/useNoteEditFlow";
 import { useRerecordFlow } from "../../src/features/journey/hooks/useRerecordFlow";
+import { useWeatherCaptureFlow } from "../../src/features/journey/hooks/useWeatherCaptureFlow";
 import { getJourneyPauseWindows } from "../../src/features/journey/replay";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
@@ -53,8 +55,13 @@ export default function JourneyScreen() {
     journeyId,
     refreshJourneyData: journeyData.refreshJourneyData,
   });
+  const weatherCaptureFlow = useWeatherCaptureFlow({
+    journeyId,
+    refreshJourneyData: journeyData.refreshJourneyData,
+  });
 
-  const [noteModalVisible, setNoteModalVisible] = useState(false);
+  const [textNoteModalVisible, setTextNoteModalVisible] = useState(false);
+  const [voiceNoteModalVisible, setVoiceNoteModalVisible] = useState(false);
   const [journeyActionConfirmOpen, setJourneyActionConfirmOpen] = useState(false);
   const insets = useSafeAreaInsets();
 
@@ -211,28 +218,55 @@ export default function JourneyScreen() {
         <View className="mt-6 flex-row gap-3">
           <Pressable
             className={`flex-1 rounded-xl border border-neutral-200 px-4 py-3 ${rerecordFlow.session ? "bg-neutral-200" : "bg-neutral-50"}`}
-            disabled={rerecordFlow.session !== null}
+            accessibilityLabel="Weather"
+            accessibilityRole="button"
             onPress={() => {
-              setNoteModalVisible(true);
+              weatherCaptureFlow.modal.open();
             }}
           >
-            <Text className="text-center font-semibold text-neutral-900">Add note</Text>
+            <Text className="text-center text-lg font-semibold text-neutral-900">☁️</Text>
           </Pressable>
           <Pressable
             className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3"
+            accessibilityLabel="Add media"
+            accessibilityRole="button"
             onPress={mediaEditFlow.addModal.onOpen}
           >
-            <Text className="text-center font-semibold text-neutral-900">Add media</Text>
+            <Text className="text-center text-lg font-semibold text-neutral-900">📷</Text>
+          </Pressable>
+          <Pressable
+            className={`flex-1 rounded-xl border border-neutral-200 px-4 py-3 ${rerecordFlow.session ? "bg-neutral-200" : "bg-neutral-50"}`}
+            disabled={rerecordFlow.session !== null}
+            accessibilityLabel="Add text note"
+            accessibilityRole="button"
+            onPress={() => {
+              setTextNoteModalVisible(true);
+            }}
+          >
+            <Text className="text-center text-lg font-semibold text-neutral-900">T</Text>
+          </Pressable>
+          <Pressable
+            className={`flex-1 rounded-xl border border-neutral-200 px-4 py-3 ${rerecordFlow.session ? "bg-neutral-200" : "bg-neutral-50"}`}
+            disabled={rerecordFlow.session !== null}
+            accessibilityLabel="Add voice note"
+            accessibilityRole="button"
+            onPress={() => {
+              setVoiceNoteModalVisible(true);
+            }}
+          >
+            <Text className="text-center text-lg font-semibold text-neutral-900">🔴</Text>
           </Pressable>
         </View>
 
         <JourneyNotesFeed
           notes={journeyData.notes}
           media={journeyData.media}
+          weather={journeyData.weather}
           pauseWindows={pauseWindows}
           locationPoints={journeyData.points}
           suspendPlayback={
-            noteModalVisible ||
+            textNoteModalVisible ||
+            voiceNoteModalVisible ||
             noteEditFlow.target !== null ||
             rerecordFlow.session !== null
           }
@@ -263,11 +297,23 @@ export default function JourneyScreen() {
         />
       ) : null}
 
-      {noteModalVisible ? (
+      {textNoteModalVisible ? (
         <JourneyAddNoteController
           journeyId={journeyId}
+          mode="text"
           onClose={() => {
-            setNoteModalVisible(false);
+            setTextNoteModalVisible(false);
+          }}
+          onSaved={journeyData.refreshJourneyData}
+        />
+      ) : null}
+
+      {voiceNoteModalVisible ? (
+        <JourneyAddNoteController
+          journeyId={journeyId}
+          mode="voice"
+          onClose={() => {
+            setVoiceNoteModalVisible(false);
           }}
           onSaved={journeyData.refreshJourneyData}
         />
@@ -342,6 +388,23 @@ export default function JourneyScreen() {
           }}
         />
       ) : null}
+
+      <JourneyWeatherModal
+        visible={weatherCaptureFlow.modal.visible}
+        busy={weatherCaptureFlow.modal.busy}
+        offline={weatherCaptureFlow.modal.offline}
+        error={weatherCaptureFlow.modal.error}
+        success={weatherCaptureFlow.modal.success}
+        quotaLabel={weatherCaptureFlow.modal.quotaLabel}
+        canRequest={weatherCaptureFlow.modal.canRequest}
+        onRetry={() => {
+          void weatherCaptureFlow.modal.retryAvailability();
+        }}
+        onRequestWeather={() => {
+          void weatherCaptureFlow.modal.requestWeather();
+        }}
+        onClose={weatherCaptureFlow.modal.close}
+      />
     </View>
   );
 }

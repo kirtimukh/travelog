@@ -20,7 +20,13 @@ import { openAppDatabase } from "../../../src/db/client";
 import { deleteJourneyWithFileGc } from "../../../src/db/journeys";
 import { deleteMediaById, updateMediaDetails } from "../../../src/db/media";
 import { deleteNoteById, updateNoteText } from "../../../src/db/notes";
-import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../src/db/schema";
+import type {
+  JourneyRow,
+  LocationPointRow,
+  MediaRow,
+  NoteRow,
+  WeatherRow,
+} from "../../../src/db/schema";
 import { unlinkIfExists } from "../../../src/files/fsCleanup";
 import { loadJourneyBundle } from "../../../src/features/journey/bundle";
 import { formatDurationSeconds } from "../../../src/features/journey/formatDuration";
@@ -61,6 +67,7 @@ export default function JourneyDetailsScreen() {
   const [points, setPoints] = useState<LocationPointRow[]>([]);
   const [notes, setNotes] = useState<NoteRow[]>([]);
   const [media, setMedia] = useState<MediaRow[]>([]);
+  const [weather, setWeather] = useState<WeatherRow[]>([]);
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
   const [screenError, setScreenError] = useState<string | null>(null);
   const [busy, setBusy] = useState<boolean>(false);
@@ -132,6 +139,7 @@ export default function JourneyDetailsScreen() {
     setPoints(bundle.points);
     setNotes(bundle.notes);
     setMedia(bundle.media);
+    setWeather(bundle.weather);
   }, [journeyId]);
 
   const requestDeleteJourney = useCallback((): void => {
@@ -614,6 +622,7 @@ export default function JourneyDetailsScreen() {
       <JourneyNotesFeed
         notes={notes}
         media={media}
+        weather={weather}
         pauseWindows={replayPauseWindows}
         locationPoints={points}
         editable={editable}

@@ -7,7 +7,7 @@ import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessio
 import type { JourneyPauseWindow } from "../replay";
 
 import { waitForPlayerReady } from "../audio/waitForPlayerReady";
-import type { LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
+import type { LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
 import { formatDurationSeconds } from "../formatDuration";
 
 const MEDIA_FEED_THUMBNAIL_HEIGHT = 100;
@@ -16,11 +16,13 @@ const MEDIA_FEED_THUMBNAIL_HEIGHT = 100;
 type FeedItem =
   | { kind: "note"; data: NoteRow; sortTs: number }
   | { kind: "media"; data: MediaRow; sortTs: number }
+  | { kind: "weather"; data: WeatherRow; sortTs: number }
   | { kind: "pause"; data: JourneyPauseWindow; sortTs: number };
 
 function buildFeed(
   notes: NoteRow[],
   media: MediaRow[],
+  weather: WeatherRow[],
   pauseWindows: JourneyPauseWindow[],
 ): FeedItem[] {
   const items: FeedItem[] = [
@@ -33,6 +35,11 @@ function buildFeed(
       kind: "media" as const,
       data: m,
       sortTs: m.timestamp ?? Number.MAX_SAFE_INTEGER,
+    })),
+    ...weather.map((w) => ({
+      kind: "weather" as const,
+      data: w,
+      sortTs: w.timestamp,
     })),
     ...pauseWindows.map((window) => ({
       kind: "pause" as const,
@@ -300,6 +307,7 @@ function NoteFeedRowBody({
 type Props = {
   notes: NoteRow[];
   media: MediaRow[];
+  weather: WeatherRow[];
   pauseWindows?: JourneyPauseWindow[];
   locationPoints?: LocationPointRow[];
   editable?: boolean;
@@ -316,6 +324,7 @@ type Props = {
 export function JourneyNotesFeed({
   notes,
   media,
+  weather,
   pauseWindows = [],
   locationPoints = [],
   editable = true,
@@ -323,8 +332,8 @@ export function JourneyNotesFeed({
   onLongPressMedia,
   suspendPlayback = false,
 }: Props) {
-  const feed = buildFeed(notes, media, pauseWindows);
-  const total = notes.length + media.length + pauseWindows.length;
+  const feed = buildFeed(notes, media, weather, pauseWindows);
+  const total = notes.length + media.length + weather.length + pauseWindows.length;
 
   const feedPlayer = useAudioPlayer(null);
   const feedStatus = useAudioPlayerStatus(feedPlayer);
@@ -413,6 +422,41 @@ export function JourneyNotesFeed({
               </View>
             </View>
           )
+        ) : item.kind === "weather" ? (
+          <View
+            key={`weather-${item.data.id}`}
+            className="mt-3 overflow-hidden rounded-md border border-sky-200 bg-sky-50"
+          >
+            <View className="border-b border-sky-200 px-3 py-2">
+              <Text className="text-xs text-neutral-600">
+                {formatListTimestamp(item.data.timestamp)} · (
+                {formatLatLngPair(item.data.lat, item.data.lng)})
+              </Text>
+            </View>
+            <View className="flex-row items-center px-3 py-3">
+              {item.data.weather_condition_icon ? (
+                <Image
+                  source={{ uri: item.data.weather_condition_icon }}
+                  style={{ width: 40, height: 40 }}
+                  resizeMode="contain"
+                />
+              ) : null}
+              <View className="ml-3 flex-1">
+                <Text className="text-sm font-semibold text-neutral-900">
+                  {item.data.weather_condition ?? "Weather update"}
+                </Text>
+                <Text className="mt-1 text-sm text-neutral-700">
+                  Temperature: {item.data.temperature != null ? `${item.data.temperature}°` : "—"}
+                </Text>
+                <Text className="text-sm text-neutral-700">
+                  Feels like:{" "}
+                  {item.data.feels_like_temperature != null
+                    ? `${item.data.feels_like_temperature}°`
+                    : "—"}
+                </Text>
+              </View>
+            </View>
+          </View>
         ) : (
           <View
             key={`pause-${item.data.startTs}-${item.data.endTs ?? "open"}`}

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Travelog",
+    "slug": "Travelog",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,7 +19,7 @@
         "backgroundColor": "#ffffff"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.mobile",
+      "package": "com.ubfoundry.travelog",
       "permissions": [
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.ACCESS_BACKGROUND_LOCATION",

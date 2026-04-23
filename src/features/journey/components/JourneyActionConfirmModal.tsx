@@ -1,7 +1,7 @@
 import { type ReactElement, useCallback, useEffect, useRef, useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 
-const HOLD_MS = 3000;
+const HOLD_MS = 2000;
 
 export type JourneyActionConfirmKind = "start" | "pause" | "continue";
 
