@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { NoteRow } from "../../../db/schema";
 import { formatDurationSeconds } from "../formatDuration";
+import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
 
 export type JourneyNoteEditModalProps = {
   visible: boolean;
@@ -12,7 +13,6 @@ export type JourneyNoteEditModalProps = {
   text: string;
   onChangeText: (text: string) => void;
   busy: boolean;
-  keyboardInset: number;
   onRequestClose: () => void;
   onSave: () => void;
   onDelete: () => void;
@@ -25,7 +25,6 @@ export function JourneyNoteEditModal({
   text,
   onChangeText,
   busy,
-  keyboardInset,
   onRequestClose,
   onSave,
   onDelete,
@@ -39,6 +38,7 @@ export function JourneyNoteEditModal({
   const [loadError, setLoadError] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
   const modalPaddingBottom = Math.max(insets.bottom + 16, 32);
+  const keyboardInset = useModalKeyboardInset();
 
   useEffect(() => {
     if (!visible) {

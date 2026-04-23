@@ -1,12 +1,13 @@
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
+
 export type JourneyMediaEditModalProps = {
   visible: boolean;
   text: string;
   onChangeText: (text: string) => void;
   busy: boolean;
-  keyboardInset: number;
   onRequestClose: () => void;
   onSave: () => void;
   onDelete: () => void;
@@ -17,13 +18,13 @@ export function JourneyMediaEditModal({
   text,
   onChangeText,
   busy,
-  keyboardInset,
   onRequestClose,
   onSave,
   onDelete,
 }: JourneyMediaEditModalProps) {
   const insets = useSafeAreaInsets();
   const modalPaddingBottom = Math.max(insets.bottom + 16, 32);
+  const keyboardInset = useModalKeyboardInset();
 
   return (
     <Modal

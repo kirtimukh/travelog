@@ -1,7 +1,9 @@
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { NoteType } from "../../../db/schema";
 import type { VoiceRecorder } from "../../../files/voiceRecording";
+import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
 import { VoiceNoteDraftPlayback } from "./VoiceNoteDraftPlayback";
 import { VoiceNoteRecorderElapsed } from "./VoiceNoteRecorderElapsed";
 
@@ -12,8 +14,6 @@ type VoiceNoteDraft = {
 
 type Props = {
   visible: boolean;
-  modalPaddingBottom: number;
-  modalKeyboardInset: number;
   newNoteMode: NoteType;
   newNoteText: string;
   newAudioRecorder: VoiceRecorder | null;
@@ -31,8 +31,6 @@ type Props = {
 
 export function JourneyAddNoteModal({
   visible,
-  modalPaddingBottom,
-  modalKeyboardInset,
   newNoteMode,
   newNoteText,
   newAudioRecorder,
@@ -47,6 +45,9 @@ export function JourneyAddNoteModal({
   onSaveVoiceNote,
   onDiscardVoiceRecording,
 }: Props) {
+  const insets = useSafeAreaInsets();
+  const modalPaddingBottom = Math.max(insets.bottom + 16, 32);
+  const modalKeyboardInset = useModalKeyboardInset();
   return (
     <Modal
       transparent
