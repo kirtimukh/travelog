@@ -1,7 +1,9 @@
-import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
+import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import type { AudioPlayer, AudioStatus } from "expo-audio";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+
+import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessionManager";
 
 import { waitForPlayerReady } from "../audio/waitForPlayerReady";
 import type { LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
@@ -171,7 +173,7 @@ function VoiceNoteFeedRowPlayer({
       }
     }
 
-    await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
+    await enterPlaybackSession();
     player.play();
   }, [
     activeVoiceUri,
@@ -280,6 +282,10 @@ export function JourneyNotesFeed({
   const feedPlayer = useAudioPlayer(null);
   const feedStatus = useAudioPlayerStatus(feedPlayer);
   const [activeVoiceUri, setActiveVoiceUri] = useState<string | null>(null);
+
+  useEffect(() => {
+    return registerPlayer(feedPlayer);
+  }, [feedPlayer]);
 
   useEffect(() => {
     if (suspendPlayback) {

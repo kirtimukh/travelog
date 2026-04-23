@@ -1,9 +1,10 @@
-import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
+import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useCallback, useEffect, useState } from "react";
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { NoteRow } from "../../../db/schema";
+import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessionManager";
 import { formatDurationSeconds } from "../formatDuration";
 import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
 
@@ -41,6 +42,10 @@ export function JourneyNoteEditModal({
   const keyboardInset = useModalKeyboardInset();
 
   useEffect(() => {
+    return registerPlayer(player);
+  }, [player]);
+
+  useEffect(() => {
     if (!visible) {
       player.pause();
     }
@@ -65,7 +70,7 @@ export function JourneyNoteEditModal({
     if (nearEnd) {
       await player.seekTo(0);
     }
-    await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
+    await enterPlaybackSession();
     try {
       player.play();
     } catch (e) {

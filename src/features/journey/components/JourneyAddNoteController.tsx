@@ -106,7 +106,7 @@ export function JourneyAddNoteController({ journeyId, onClose, onSaved }: Props)
     let prepared: VoiceRecorder | null = null;
     try {
       prepared = await createPreparedVoiceRecorder();
-      prepared.record();
+      await prepared.record();
       setNewAudioRecorder(prepared);
       prepared = null;
     } catch {

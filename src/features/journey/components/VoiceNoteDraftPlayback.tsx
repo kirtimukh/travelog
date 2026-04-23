@@ -1,6 +1,8 @@
-import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
+import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+
+import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessionManager";
 
 import { formatDurationSeconds } from "../formatDuration";
 
@@ -31,9 +33,11 @@ export function VoiceNoteDraftPlayback({
   useEffect(() => {
     console.log("VoiceNoteDraftPlayback:useEffect", { uri, playerId: player.id });
     setLoadError(null);
-    return () => {
-    };
   }, [player.id, uri]);
+
+  useEffect(() => {
+    return registerPlayer(player);
+  }, [player]);
 
   const togglePlayback = useCallback(async () => {
     setLoadError(null);
@@ -47,7 +51,7 @@ export function VoiceNoteDraftPlayback({
     if (nearEnd) {
       await player.seekTo(0);
     }
-    await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
+    await enterPlaybackSession();
     try {
       player.play();
     } catch (e) {

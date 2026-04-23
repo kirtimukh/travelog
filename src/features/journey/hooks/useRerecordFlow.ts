@@ -60,7 +60,7 @@ export function useRerecordFlow({ refreshJourneyData }: Params): UseRerecordFlow
       let prepared: VoiceRecorder | null = null;
       try {
         prepared = await createPreparedVoiceRecorder();
-        prepared.record();
+        await prepared.record();
         setSession({ noteId: note.id, recorder: prepared });
         prepared = null;
       } catch (err) {

@@ -1,14 +1,35 @@
-import {
-  AudioModule,
-  RecordingPresets,
-  requestRecordingPermissionsAsync,
-  setAudioModeAsync,
-} from "expo-audio";
+import { AudioModule, AudioQuality, IOSOutputFormat, RecordingPresets, requestRecordingPermissionsAsync } from "expo-audio";
 import type { AudioRecorder } from "expo-audio";
 
+import {
+  claimRecorderSession,
+  enterPlaybackSession,
+  enterRecordingSession,
+  releaseRecorderSession,
+} from "../audio/audioSessionManager";
 import { copyIntoAppDocumentsWithUuid } from "./appDocuments";
 
 export type VoiceRecorder = AudioRecorder;
+
+/**
+ * Voice-optimised recording preset: mono 16 kHz, 32 kbps AAC.
+ * Produces smaller files than the stereo 44.1 kHz HIGH_QUALITY preset while
+ * retaining sufficient clarity for spoken voice notes.
+ */
+export const VOICE_NOTE_RECORDING_OPTIONS = {
+  ...RecordingPresets.HIGH_QUALITY,
+  sampleRate: 16000,
+  numberOfChannels: 1,
+  bitRate: 32000,
+  ios: {
+    ...(RecordingPresets.HIGH_QUALITY.ios ?? {}),
+    outputFormat: IOSOutputFormat.MPEG4AAC,
+    audioQuality: AudioQuality.HIGH,
+    linearPCMBitDepth: 16 as const,
+    linearPCMIsBigEndian: false,
+    linearPCMIsFloat: false,
+  },
+} as const;
 
 /** Detaches native recorder; safe if already released. */
 export function releaseVoiceRecorderSafe(recorder: VoiceRecorder): void {
@@ -24,11 +45,16 @@ export function releaseVoiceRecorderSafe(recorder: VoiceRecorder): void {
 
 /** Stops capture then releases native resources (discard / interrupt paths). */
 export async function interruptVoiceRecording(recorder: VoiceRecorder): Promise<void> {
-  await recorder.stop().catch(() => {});
-  console.log("\ninterruptVoiceRecording:after_stop", {
-    recorderId: recorder.id,
-  });
-  releaseVoiceRecorderSafe(recorder);
+  try {
+    await recorder.stop().catch(() => {});
+    console.log("\ninterruptVoiceRecording:after_stop", {
+      recorderId: recorder.id,
+    });
+  } finally {
+    releaseVoiceRecorderSafe(recorder);
+    releaseRecorderSession(recorder);
+    await enterPlaybackSession();
+  }
 }
 
 
@@ -67,26 +93,27 @@ export function secondsFromRecordingMillis(durationMillis: number): number {
 }
 
 /**
- * Requests microphone permission, sets audio mode for recording, prepares a high-quality
- * `expo-audio` recorder. Caller invokes `record()` on the returned instance.
+ * Requests microphone permission, transitions the audio session to recording
+ * mode via audioSessionManager (which also pauses all active players), then
+ * prepares a voice-optimised mono 16 kHz recorder. Caller invokes `record()`
+ * on the returned instance.
  */
 export async function createPreparedVoiceRecorder(): Promise<VoiceRecorder> {
   const { granted } = await requestRecordingPermissionsAsync();
   if (!granted) {
     throw new Error("Microphone permission denied");
   }
-  await setAudioModeAsync({
-    allowsRecording: true,
-    playsInSilentMode: true,
-  });
-  const recorder = new AudioModule.AudioRecorder(RecordingPresets.HIGH_QUALITY);
+  await enterRecordingSession();
+  const recorder = new AudioModule.AudioRecorder(VOICE_NOTE_RECORDING_OPTIONS);
+  claimRecorderSession(recorder);
   await recorder.prepareToRecordAsync();
   return recorder;
 }
 
 /**
- * Stops the recorder, copies output to app documents as UUID `.m4a`, switches to playback
- * audio mode (`allowsRecording: false`), and returns path + duration for DB insert.
+ * Stops the recorder, copies output to app documents as UUID `.m4a`, switches
+ * to playback mode via audioSessionManager, and returns path + duration for DB
+ * insert.
  */
 export async function stopRecordingAndCopyToAppDocuments(
   recorder: VoiceRecorder,
@@ -99,16 +126,13 @@ export async function stopRecordingAndCopyToAppDocuments(
       throw new Error("Recording produced no file URI");
     }
     const fileUri = await copyIntoAppDocumentsWithUuid(uri, ".m4a");
-    await setAudioModeAsync({
-      allowsRecording: false,
-      playsInSilentMode: true,
-    });
+    await enterPlaybackSession();
     return {
       fileUri,
       durationSeconds: secondsFromRecordingMillis(durationMillis),
     };
   } finally {
-
+    releaseRecorderSession(recorder);
     releaseVoiceRecorderSafe(recorder);
   }
 }
