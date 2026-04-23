@@ -49,6 +49,8 @@ export type MediaRow = {
   lat: number | null;
   lng: number | null;
   exif: string | null;
+  width: number | null;
+  height: number | null;
   text: string | null;
   type: MediaType;
   file: string;

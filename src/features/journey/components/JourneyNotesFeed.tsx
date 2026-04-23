@@ -1,7 +1,7 @@
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import type { AudioPlayer, AudioStatus } from "expo-audio";
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessionManager";
 
@@ -114,6 +114,38 @@ function mediaListMetaLine(media: MediaRow, locationPoints: LocationPointRow[]):
   const timePart =
     media.timestamp != null ? formatListTimestamp(media.timestamp) : "—";
   return `${timePart} · (${latLngLabelForMedia(media, locationPoints)})`;
+}
+
+function mediaThumbWidth(media: MediaRow): number {
+  if (media.width != null && media.height != null && media.width > 0 && media.height > 0) {
+    return 15 * (media.width / media.height);
+  }
+  return 15;
+}
+
+function MediaFeedCaption({ media }: { media: MediaRow }) {
+  const caption = media.text?.trim();
+  if (!caption) {
+    return (
+      <View className="mt-2 flex-row items-center">
+        <Image
+          source={{ uri: media.file }}
+          style={{ height: 15, width: mediaThumbWidth(media) }}
+          resizeMode="contain"
+        />
+      </View>
+    );
+  }
+  return (
+    <Text className="mt-2 text-sm text-neutral-900">
+      <Image
+        source={{ uri: media.file }}
+        style={{ height: 15, width: mediaThumbWidth(media) }}
+        resizeMode="contain"
+      />{" "}
+      {caption}
+    </Text>
+  );
 }
 
 type FeedVoiceAudio = {
@@ -346,12 +378,9 @@ export function JourneyNotesFeed({
                 {mediaListMetaLine(item.data, locationPoints)}
               </Text>
             </View>
-            <View className="aspect-video w-full items-center justify-center bg-neutral-200">
-              <Text className="text-xs font-medium text-neutral-500">Image</Text>
+            <View className="px-3 pb-3">
+              <MediaFeedCaption media={item.data} />
             </View>
-            {item.data.text?.trim() ? (
-              <Text className="p-3 text-sm text-neutral-900">{item.data.text.trim()}</Text>
-            ) : null}
           </Pressable>
         ) : (
           <View
@@ -363,12 +392,9 @@ export function JourneyNotesFeed({
                 {mediaListMetaLine(item.data, locationPoints)}
               </Text>
             </View>
-            <View className="aspect-video w-full items-center justify-center bg-neutral-200">
-              <Text className="text-xs font-medium text-neutral-500">Image</Text>
+            <View className="px-3 pb-3">
+              <MediaFeedCaption media={item.data} />
             </View>
-            {item.data.text?.trim() ? (
-              <Text className="p-3 text-sm text-neutral-900">{item.data.text.trim()}</Text>
-            ) : null}
           </View>
         ),
       )}

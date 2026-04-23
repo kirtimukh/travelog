@@ -58,6 +58,11 @@ const MIGRATIONS: string[] = [
   `
   ALTER TABLE note ADD COLUMN audio_duration INTEGER;
   `,
+  // version 3 — image dimensions to support deterministic thumbnail aspect ratio.
+  `
+  ALTER TABLE media ADD COLUMN width REAL;
+  ALTER TABLE media ADD COLUMN height REAL;
+  `,
 ];
 
 /**

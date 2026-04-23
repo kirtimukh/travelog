@@ -17,7 +17,7 @@ import {
 
 import { openAppDatabase } from "../../../src/db/client";
 import { deleteJourneyWithFileGc } from "../../../src/db/journeys";
-import { deleteMediaById, updateMediaText } from "../../../src/db/media";
+import { deleteMediaById, updateMediaDetails } from "../../../src/db/media";
 import { deleteNoteById, updateNoteText } from "../../../src/db/notes";
 import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../src/db/schema";
 import { unlinkIfExists } from "../../../src/files/fsCleanup";
@@ -26,7 +26,6 @@ import { JourneyMapPanel } from "../../../src/features/journey/components/Journe
 import { JourneyMediaEditModal } from "../../../src/features/journey/components/JourneyMediaEditModal";
 import { JourneyNoteEditModal } from "../../../src/features/journey/components/JourneyNoteEditModal";
 import { JourneyNotesFeed } from "../../../src/features/journey/components/JourneyNotesFeed";
-import { useModalKeyboardInset } from "../../../src/features/journey/hooks/useModalKeyboardInset";
 import {
   buildReplayEvents,
   getLatestReplayEvent,
@@ -62,7 +61,10 @@ export default function JourneyDetailsScreen() {
   const [noteEditText, setNoteEditText] = useState<string>("");
   const [mediaEditTarget, setMediaEditTarget] = useState<MediaRow | null>(null);
   const [mediaEditText, setMediaEditText] = useState<string>("");
-  const modalKeyboardInset = useModalKeyboardInset();
+  const [mediaEditEpochTs, setMediaEditEpochTs] = useState<string>("");
+  const [mediaEditLocalTs, setMediaEditLocalTs] = useState<string>("");
+  const [mediaEditLat, setMediaEditLat] = useState<string>("");
+  const [mediaEditLng, setMediaEditLng] = useState<string>("");
 
   const replayBounds = useMemo(() => getReplayTimeBounds(journey, Date.now()), [journey]);
   const replayEvents = useMemo(() => buildReplayEvents(notes, media), [media, notes]);
@@ -251,8 +253,32 @@ export default function JourneyDetailsScreen() {
   }
 
   async function updateMediaTextById(item: MediaRow, text: string): Promise<void> {
+    const parsedEpoch = Number(mediaEditEpochTs.trim());
+    const epochValue =
+      mediaEditEpochTs.trim().length > 0 && Number.isFinite(parsedEpoch) ? parsedEpoch : null;
+    const localValue = (() => {
+      const trimmed = mediaEditLocalTs.trim();
+      if (!trimmed) {
+        return null;
+      }
+      const parsed = Date.parse(trimmed.replace(" ", "T"));
+      return Number.isFinite(parsed) ? parsed : null;
+    })();
+    const parseGeo = (value: string, existing: number | null): number | null => {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return null;
+      }
+      const parsed = Number(trimmed);
+      return Number.isFinite(parsed) ? parsed : existing;
+    };
     const db = await openAppDatabase();
-    await updateMediaText(db, item.id, text.trim() || null);
+    await updateMediaDetails(db, item.id, {
+      text: text.trim() || null,
+      timestamp: localValue ?? epochValue ?? null,
+      lat: parseGeo(mediaEditLat, item.lat),
+      lng: parseGeo(mediaEditLng, item.lng),
+    });
     await refresh();
   }
 
@@ -409,6 +435,14 @@ export default function JourneyDetailsScreen() {
           }
           setMediaEditTarget(item);
           setMediaEditText(item.text ?? "");
+          setMediaEditEpochTs(item.timestamp != null ? String(item.timestamp) : "");
+          setMediaEditLocalTs(
+            item.timestamp != null
+              ? new Date(item.timestamp).toISOString().replace("T", " ").slice(0, 19)
+              : "",
+          );
+          setMediaEditLat(item.lat != null ? String(item.lat) : "");
+          setMediaEditLng(item.lng != null ? String(item.lng) : "");
         }}
       />
 
@@ -418,7 +452,6 @@ export default function JourneyDetailsScreen() {
         text={noteEditText}
         onChangeText={setNoteEditText}
         busy={busy}
-        keyboardInset={modalKeyboardInset}
         onRequestClose={() => {
           setNoteEditTarget(null);
         }}
@@ -446,10 +479,21 @@ export default function JourneyDetailsScreen() {
 
       <JourneyMediaEditModal
         visible={mediaEditTarget !== null}
+        file={mediaEditTarget?.file ?? ""}
+        width={mediaEditTarget?.width ?? null}
+        height={mediaEditTarget?.height ?? null}
         text={mediaEditText}
         onChangeText={setMediaEditText}
+        timestampEpochMs={mediaEditEpochTs}
+        onChangeTimestampEpochMs={setMediaEditEpochTs}
+        localDateTime={mediaEditLocalTs}
+        onChangeLocalDateTime={setMediaEditLocalTs}
+        lat={mediaEditLat}
+        onChangeLat={setMediaEditLat}
+        lng={mediaEditLng}
+        onChangeLng={setMediaEditLng}
+        exif={mediaEditTarget?.exif ?? null}
         busy={busy}
-        keyboardInset={modalKeyboardInset}
         onRequestClose={() => {
           setMediaEditTarget(null);
         }}

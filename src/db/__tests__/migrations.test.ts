@@ -16,7 +16,7 @@ describe("runMigrations", () => {
     const { runMigrations } = require("../migrations") as typeof import("../migrations");
     await runMigrations(db as never);
 
-    expect(execAsync).toHaveBeenCalledTimes(4);
+    expect(execAsync).toHaveBeenCalledTimes(6);
     expect(execAsync).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining("CREATE TABLE IF NOT EXISTS journey"),
@@ -27,10 +27,15 @@ describe("runMigrations", () => {
       expect.stringContaining("ALTER TABLE note ADD COLUMN audio_duration"),
     );
     expect(execAsync).toHaveBeenNthCalledWith(4, "PRAGMA user_version = 2");
+    expect(execAsync).toHaveBeenNthCalledWith(
+      5,
+      expect.stringContaining("ALTER TABLE media ADD COLUMN width"),
+    );
+    expect(execAsync).toHaveBeenNthCalledWith(6, "PRAGMA user_version = 3");
   });
 
   it("does nothing when already at latest version", async () => {
-    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 2 });
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 3 });
     const execAsync = jest.fn().mockResolvedValue(undefined);
     const db = { getFirstAsync, execAsync };
 
@@ -66,5 +71,18 @@ describe("runMigrations", () => {
     const v2Sql = String(execAsync.mock.calls[2]?.[0] ?? "");
     expect(v2Sql).toContain("ALTER TABLE note");
     expect(v2Sql).toContain("audio_duration");
+  });
+
+  it("adds media dimensions in migration v3", async () => {
+    const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 0 });
+    const execAsync = jest.fn().mockResolvedValue(undefined);
+    const db = { getFirstAsync, execAsync };
+
+    const { runMigrations } = require("../migrations") as typeof import("../migrations");
+    await runMigrations(db as never);
+
+    const v3Sql = String(execAsync.mock.calls[4]?.[0] ?? "");
+    expect(v3Sql).toContain("ALTER TABLE media ADD COLUMN width");
+    expect(v3Sql).toContain("ALTER TABLE media ADD COLUMN height");
   });
 });

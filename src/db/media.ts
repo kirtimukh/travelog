@@ -12,17 +12,21 @@ export async function createMedia(
     lat?: number | null;
     lng?: number | null;
     exif?: string | null;
+    width?: number | null;
+    height?: number | null;
   },
 ): Promise<number> {
   const result = await db.runAsync(
-    `INSERT INTO media (journey_id, timestamp, lat, lng, exif, text, type, file)
-     VALUES (?, ?, ?, ?, ?, ?, 'image', ?)`,
+    `INSERT INTO media (journey_id, timestamp, lat, lng, exif, width, height, text, type, file)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'image', ?)`,
     [
       input.journeyId,
       input.timestamp ?? Date.now(),
       input.lat ?? null,
       input.lng ?? null,
       input.exif ?? null,
+      input.width ?? null,
+      input.height ?? null,
       input.text ?? null,
       input.file,
     ],
@@ -35,7 +39,7 @@ export async function listMediaForJourney(
   journeyId: number,
 ): Promise<MediaRow[]> {
   const rows = await db.getAllAsync<MediaRow>(
-    `SELECT id, journey_id, timestamp, lat, lng, exif, text, type, file
+    `SELECT id, journey_id, timestamp, lat, lng, exif, width, height, text, type, file
      FROM media
      WHERE journey_id = ?
      ORDER BY timestamp DESC, id DESC`,
@@ -44,12 +48,22 @@ export async function listMediaForJourney(
   return rows;
 }
 
-export async function updateMediaText(
+export async function updateMediaDetails(
   db: SQLite.SQLiteDatabase,
   mediaId: number,
-  text: string | null,
+  input: {
+    text: string | null;
+    timestamp: number | null;
+    lat: number | null;
+    lng: number | null;
+  },
 ): Promise<void> {
-  await db.runAsync(`UPDATE media SET text = ? WHERE id = ?`, [text, mediaId]);
+  await db.runAsync(
+    `UPDATE media
+     SET text = ?, timestamp = ?, lat = ?, lng = ?
+     WHERE id = ?`,
+    [input.text, input.timestamp, input.lat, input.lng, mediaId],
+  );
 }
 
 export async function deleteMediaById(

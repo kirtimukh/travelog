@@ -1,4 +1,4 @@
-import { Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
+import { Image, Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
@@ -6,18 +6,26 @@ import { useModalKeyboardInset } from "../hooks/useModalKeyboardInset";
 export type JourneyAddMediaModalProps = {
   visible: boolean;
   text: string;
+  selectedFile: string | null;
+  selectedWidth: number | null;
+  selectedHeight: number | null;
   onChangeText: (text: string) => void;
   busy: boolean;
   onPickImage: () => void;
+  onSave: () => void;
   onRequestClose: () => void;
 };
 
 export function JourneyAddMediaModal({
   visible,
   text,
+  selectedFile,
+  selectedWidth,
+  selectedHeight,
   onChangeText,
   busy,
   onPickImage,
+  onSave,
   onRequestClose,
 }: JourneyAddMediaModalProps) {
   const insets = useSafeAreaInsets();
@@ -48,6 +56,24 @@ export function JourneyAddMediaModal({
             }}
           >
             <Text className="text-base font-semibold text-neutral-900">Add media</Text>
+            {selectedFile ? (
+              <View className="mt-3 flex-row items-start">
+                <Image
+                  source={{ uri: selectedFile }}
+                  style={{
+                    height: 15,
+                    width:
+                      selectedWidth != null &&
+                      selectedHeight != null &&
+                      selectedHeight > 0 &&
+                      selectedWidth > 0
+                        ? 15 * (selectedWidth / selectedHeight)
+                        : 15,
+                  }}
+                  resizeMode="contain"
+                />
+              </View>
+            ) : null}
             <TextInput
               className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
               placeholder="Caption (optional)"
@@ -60,6 +86,15 @@ export function JourneyAddMediaModal({
               onPress={onPickImage}
             >
               <Text className="text-center font-semibold text-white">Pick image</Text>
+            </Pressable>
+            <Pressable
+              className={`mt-2 rounded-md px-4 py-2 ${
+                busy || !selectedFile ? "bg-neutral-300" : "bg-emerald-600"
+              }`}
+              disabled={busy || !selectedFile}
+              onPress={onSave}
+            >
+              <Text className="text-center font-semibold text-white">Save media</Text>
             </Pressable>
           </View>
         </View>

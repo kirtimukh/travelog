@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Linking, Pressable, Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Alert, Linking, Pressable, Text, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -64,6 +64,38 @@ export default function JourneyScreen() {
   );
 
   const { endJourney, busy: controlsBusy } = journeyControls;
+  const requestEndJourney = useCallback((): void => {
+    if (!journeyData.statusLabel || journeyData.statusLabel === "completed" || controlsBusy) {
+      return;
+    }
+    Alert.alert(
+      "End journey?",
+      `This will mark "${journeyData.name}" as complete and stop live updates.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Continue",
+          style: "destructive",
+          onPress: () => {
+            Alert.alert(
+              "Final confirmation",
+              "Ending this journey cannot be undone. End this journey now?",
+              [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "End journey",
+                  style: "destructive",
+                  onPress: () => {
+                    void endJourney();
+                  },
+                },
+              ],
+            );
+          },
+        },
+      ],
+    );
+  }, [controlsBusy, endJourney, journeyData.name, journeyData.statusLabel]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -75,21 +107,19 @@ export default function JourneyScreen() {
           showHistory
           ongoingJourneyId={ongoingJourneyId}
           hideOngoing={ongoingJourneyId === journeyId}
-          onEndJourney={() => {
-            void endJourney();
-          }}
+          onEndJourney={requestEndJourney}
           endJourneyDisabled={journeyData.statusLabel === "completed" || controlsBusy}
         />
       ),
     });
   }, [
     controlsBusy,
-    endJourney,
     journeyData.name,
     journeyData.statusLabel,
     journeyId,
     navigation,
     ongoingJourneyId,
+    requestEndJourney,
   ]);
 
   return (
@@ -205,10 +235,16 @@ export default function JourneyScreen() {
         <JourneyAddMediaModal
           visible
           text={mediaEditFlow.addModal.text}
+          selectedFile={mediaEditFlow.addModal.selectedFile}
+          selectedWidth={mediaEditFlow.addModal.selectedWidth}
+          selectedHeight={mediaEditFlow.addModal.selectedHeight}
           onChangeText={mediaEditFlow.addModal.onChangeText}
           busy={mediaEditFlow.addModal.busy}
           onPickImage={() => {
             void mediaEditFlow.addModal.onPickImage();
+          }}
+          onSave={() => {
+            void mediaEditFlow.addModal.onSave();
           }}
           onRequestClose={mediaEditFlow.addModal.onClose}
         />
@@ -241,8 +277,20 @@ export default function JourneyScreen() {
       {mediaEditFlow.editModal.target ? (
         <JourneyMediaEditModal
           visible
+          file={mediaEditFlow.editModal.target.file}
+          width={mediaEditFlow.editModal.target.width}
+          height={mediaEditFlow.editModal.target.height}
           text={mediaEditFlow.editModal.text}
           onChangeText={mediaEditFlow.editModal.onChangeText}
+          timestampEpochMs={mediaEditFlow.editModal.timestampEpochMs}
+          onChangeTimestampEpochMs={mediaEditFlow.editModal.onChangeTimestampEpochMs}
+          localDateTime={mediaEditFlow.editModal.localDateTime}
+          onChangeLocalDateTime={mediaEditFlow.editModal.onChangeLocalDateTime}
+          lat={mediaEditFlow.editModal.lat}
+          onChangeLat={mediaEditFlow.editModal.onChangeLat}
+          lng={mediaEditFlow.editModal.lng}
+          onChangeLng={mediaEditFlow.editModal.onChangeLng}
+          exif={mediaEditFlow.editModal.exif}
           busy={mediaEditFlow.editModal.busy}
           onRequestClose={mediaEditFlow.editModal.close}
           onSave={() => {
