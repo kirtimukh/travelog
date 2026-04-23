@@ -8,6 +8,9 @@ type Props = {
   recorder: VoiceRecorder;
 };
 
+/**
+ * Live elapsed time while a native `expo-audio` recorder is active.
+ */
 export function VoiceNoteRecorderElapsed({ recorder }: Props) {
   const state = useAudioRecorderState(recorder, 250);
   const elapsed = formatDurationSeconds(state.durationMillis / 1000);

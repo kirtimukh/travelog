@@ -35,6 +35,8 @@ export type NoteRow = {
   journey_id: number;
   timestamp: number;
   audio_file: string | null;
+  /** Whole seconds for voice clips; null for text notes or legacy rows without backfill. */
+  audio_duration: number | null;
   audio_transcript: string | null;
   text: string | null;
   type: NoteType;

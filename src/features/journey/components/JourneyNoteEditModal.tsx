@@ -1,5 +1,5 @@
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -36,6 +36,7 @@ export function JourneyNoteEditModal({
   const audioSource = note?.type === "voice" && note.audio_file ? note.audio_file : null;
   const player = useAudioPlayer(audioSource);
   const status = useAudioPlayerStatus(player);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
   const modalPaddingBottom = Math.max(insets.bottom + 16, 32);
 
@@ -45,7 +46,12 @@ export function JourneyNoteEditModal({
     }
   }, [visible, player]);
 
+  useEffect(() => {
+    setLoadError(null);
+  }, [audioSource]);
+
   const togglePlayback = useCallback(async () => {
+    setLoadError(null);
     if (!audioSource) {
       return;
     }
@@ -60,7 +66,11 @@ export function JourneyNoteEditModal({
       await player.seekTo(0);
     }
     await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
-    player.play();
+    try {
+      player.play();
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Playback failed");
+    }
   }, [
     audioSource,
     player,
@@ -69,6 +79,12 @@ export function JourneyNoteEditModal({
     status.duration,
     status.playing,
   ]);
+
+  const storedSeconds =
+    note?.audio_duration != null && note.audio_duration > 0 ? note.audio_duration : 0;
+  const totalSeconds =
+    status.duration > 0 ? status.duration : storedSeconds > 0 ? storedSeconds : 0;
+  const totalLabel = totalSeconds > 0 ? formatDurationSeconds(totalSeconds) : "—:—";
 
   return (
     <Modal
@@ -110,12 +126,14 @@ export function JourneyNoteEditModal({
                 {note?.audio_file ? (
                   <View className="mt-3">
                     <Text className="mb-2 text-center text-sm tabular-nums text-neutral-700">
-                      {formatDurationSeconds(status.currentTime)} /{" "}
-                      {status.duration > 0 ? formatDurationSeconds(status.duration) : "—:—"}
+                      {formatDurationSeconds(status.currentTime)} / {totalLabel}
                     </Text>
+                    {loadError ? (
+                      <Text className="mb-2 text-center text-xs text-red-600">{loadError}</Text>
+                    ) : null}
                     <Pressable
-                      className={`rounded-md px-3 py-2 ${busy || !status.isLoaded ? "bg-neutral-300" : "bg-neutral-700"}`}
-                      disabled={busy || !status.isLoaded}
+                      className={`rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-neutral-700"}`}
+                      disabled={busy}
                       onPress={() => {
                         void togglePlayback();
                       }}

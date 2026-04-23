@@ -38,6 +38,7 @@ import { unlinkIfExists } from "../../src/files/fsCleanup";
 import { copyImageToAppDocuments } from "../../src/files/imageCopy";
 import {
   createPreparedVoiceRecorder,
+  interruptVoiceRecording,
   stopRecordingAndCopyToAppDocuments,
   type VoiceRecorder,
 } from "../../src/files/voiceRecording";
@@ -46,17 +47,22 @@ import { hasValidPmtilesPackage } from "../../src/storage/pmtilesGuard";
 import { syncBackgroundTrackingForJourneyStatus } from "../../src/tracking/locationTracking";
 import { loadJourneyBundle as loadJourneyBundleData } from "../../src/features/journey/bundle";
 import { JourneyMapPanel } from "../../src/features/journey/components/JourneyMapPanel";
+import { JourneyAddNoteModal } from "../../src/features/journey/components/JourneyAddNoteModal";
 import { JourneyMediaEditModal } from "../../src/features/journey/components/JourneyMediaEditModal";
 import { JourneyNoteEditModal } from "../../src/features/journey/components/JourneyNoteEditModal";
-import { VoiceNoteDraftPlayback } from "../../src/features/journey/components/VoiceNoteDraftPlayback";
-import { VoiceNoteRecorderElapsed } from "../../src/features/journey/components/VoiceNoteRecorderElapsed";
 import { JourneyNotesFeed } from "../../src/features/journey/components/JourneyNotesFeed";
+import { VoiceNoteRecorderElapsed } from "../../src/features/journey/components/VoiceNoteRecorderElapsed";
 import { useModalKeyboardInset } from "../../src/features/journey/hooks/useModalKeyboardInset";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
 import { AppHeaderMenu } from "../../src/components/AppHeaderMenu";
 import { HeaderBackButton } from "../../src/components/HeaderBackButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+type VoiceNoteDraft = {
+  uri: string;
+  durationSeconds: number;
+};
 
 export default function JourneyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -78,9 +84,16 @@ export default function JourneyScreen() {
   const [newAudioRecorder, setNewAudioRecorder] = useState<VoiceRecorder | null>(
     null,
   );
-  const [newAudioPendingFile, setNewAudioPendingFile] = useState<string | null>(
-    null,
-  );
+  /** Latest recorder for effect cleanup on journey change / unmount only (not in effect deps). */
+  const newAudioRecorderRef = useRef<VoiceRecorder | null>(null);
+  newAudioRecorderRef.current = newAudioRecorder;
+  const [newAudioDraft, setNewAudioDraft] = useState<VoiceNoteDraft | null>(null);
+  const [rerecordSession, setRerecordSession] = useState<{
+    noteId: number;
+    recorder: VoiceRecorder;
+  } | null>(null);
+  const rerecordSessionRef = useRef<typeof rerecordSession>(null);
+  rerecordSessionRef.current = rerecordSession;
   const [busy, setBusy] = useState<boolean>(false);
   const [needsBackgroundLocationSettings, setNeedsBackgroundLocationSettings] =
     useState<boolean>(false);
@@ -122,15 +135,17 @@ export default function JourneyScreen() {
     }
     setNewNoteText("");
     setNewNoteMode("text");
-    setNewAudioPendingFile((prev) => {
+    setNewAudioDraft((prev) => {
       if (prev) {
-        void unlinkIfExists(prev);
+        void unlinkIfExists(prev.uri);
       }
       return null;
     });
     setNewAudioRecorder((rec) => {
       if (rec) {
-        void rec.stop().catch(() => {});
+        setTimeout(() => {
+          void interruptVoiceRecording(rec);
+        }, 0);
       }
       return null;
     });
@@ -138,15 +153,17 @@ export default function JourneyScreen() {
 
   function switchAddNoteMode(next: NoteType): void {
     if (next === "text") {
-      setNewAudioPendingFile((prev) => {
+      setNewAudioDraft((prev) => {
         if (prev) {
-          void unlinkIfExists(prev);
+          void unlinkIfExists(prev.uri);
         }
         return null;
       });
       setNewAudioRecorder((rec) => {
         if (rec) {
-          void rec.stop().catch(() => {});
+          setTimeout(() => {
+            void interruptVoiceRecording(rec);
+          }, 0);
         }
         return null;
       });
@@ -219,11 +236,20 @@ export default function JourneyScreen() {
     })();
     return () => {
       cancelled = true;
-      if (newAudioRecorder) {
-        void newAudioRecorder.stop().catch(() => {});
+      const rec = newAudioRecorderRef.current;
+      const rerecord = rerecordSessionRef.current;
+      if (rec) {
+        setTimeout(() => {
+          void interruptVoiceRecording(rec);
+        }, 0);
+      }
+      if (rerecord?.recorder) {
+        setTimeout(() => {
+          void interruptVoiceRecording(rerecord.recorder);
+        }, 0);
       }
     };
-  }, [journeyId, loadJourneyBundle, newAudioRecorder, requestMapPermission, router]);
+  }, [journeyId, loadJourneyBundle, requestMapPermission, router]);
 
   async function refreshJourneyData(): Promise<void> {
     await loadJourneyBundle();
@@ -317,7 +343,7 @@ export default function JourneyScreen() {
     if (!newNoteText.trim() || busy) {
       return;
     }
-    if (newAudioRecorder || newAudioPendingFile) {
+    if (newAudioRecorder || newAudioDraft) {
       return;
     }
     setBusy(true);
@@ -336,64 +362,111 @@ export default function JourneyScreen() {
     }
   }
 
+  /**
+   * Arms the journey “add voice note” flow: permission, `setAudioModeAsync` for recording,
+   * `createPreparedVoiceRecorder` + `record()`, then `setNewAudioRecorder`.
+   * @see voice_note_brd.md §4.1
+   */
   async function startNewVoiceNoteRecording(): Promise<void> {
-    if (newAudioPendingFile || newAudioRecorder || busy) {
+    if (newAudioDraft || newAudioRecorder || busy || rerecordSession) {
       return;
     }
     setBusy(true);
+    setScreenError(null);
+    let prepared: VoiceRecorder | null = null;
     try {
-      const recorder = await createPreparedVoiceRecorder();
-      await recorder.record();
-      setNewAudioRecorder(recorder);
+      prepared = await createPreparedVoiceRecorder();
+      prepared.record();
+      const armedRecorder = prepared;
+      setNewAudioRecorder(armedRecorder);
+      prepared = null;
+    } catch (error) {
+      if (prepared !== null) {
+        await interruptVoiceRecording(prepared);
+      }
+      setScreenError(
+        error instanceof Error ? error.message : "Could not start voice recording.",
+      );
     } finally {
       setBusy(false);
     }
   }
 
+  /**
+   * Stops capture, finalizes file (`stopRecordingAndCopyToAppDocuments`), switches session to
+   * playback mode, computes `audio_duration`, sets draft for preview.
+   * @see voice_note_brd.md §4.1–4.2
+   */
   async function stopNewVoiceNoteRecordingAndSave(): Promise<void> {
     if (!newAudioRecorder || busy) {
       return;
     }
+    const rec = newAudioRecorder;
     setBusy(true);
+    setScreenError(null);
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 0);
+    });
     try {
-      const file = await stopRecordingAndCopyToAppDocuments(newAudioRecorder);
-      setNewAudioPendingFile(file);
-      setNewAudioRecorder(null);
+      const result = await stopRecordingAndCopyToAppDocuments(rec);
+      setNewAudioDraft({
+        uri: result.fileUri,
+        durationSeconds: result.durationSeconds,
+      });
+    } catch (error) {
+      setScreenError(
+        error instanceof Error ? error.message : "Could not stop voice recording.",
+      );
     } finally {
+      setNewAudioRecorder(null);
       setBusy(false);
     }
   }
 
+  /**
+   * Persists a voice `note` row with `audio_file` and `audio_duration` (same transaction as BRD).
+   */
   async function saveNewVoiceNote(): Promise<void> {
-    if (!newAudioPendingFile || busy) {
+    if (!newAudioDraft || busy) {
       return;
     }
     setBusy(true);
+    setScreenError(null);
+    const draft = newAudioDraft;
     try {
       const db = await openAppDatabase();
       await createNote(db, {
         journeyId,
         type: "voice",
         text: null,
-        audioFile: newAudioPendingFile,
+        audioFile: draft.uri,
+        audioDurationSeconds: draft.durationSeconds,
       });
       setNewNoteText("");
-      setNewAudioPendingFile(null);
+      setNewAudioDraft(null);
       await refreshJourneyData();
       setNoteModalVisible(false);
+    } catch (error) {
+      await unlinkIfExists(draft.uri);
+      setScreenError(
+        error instanceof Error ? error.message : "Could not save voice note.",
+      );
     } finally {
       setBusy(false);
     }
   }
 
+  /**
+   * Deletes the pending copied file from disk and clears draft state.
+   */
   async function discardPendingVoiceRecording(): Promise<void> {
-    if (!newAudioPendingFile || busy) {
+    if (!newAudioDraft || busy) {
       return;
     }
     setBusy(true);
     try {
-      await unlinkIfExists(newAudioPendingFile);
-      setNewAudioPendingFile(null);
+      await unlinkIfExists(newAudioDraft.uri);
+      setNewAudioDraft(null);
     } finally {
       setBusy(false);
     }
@@ -405,8 +478,12 @@ export default function JourneyScreen() {
     await refreshJourneyData();
   }
 
+  /**
+   * For a voice note missing `audio_file`, starts capture; user stops via `stopRerecordAndSave`.
+   * @see voice_note_brd.md §4.1
+   */
   async function rerecordNoteAudio(note: NoteRow): Promise<void> {
-    if (busy) {
+    if (busy || rerecordSession || newAudioRecorder || newAudioDraft) {
       return;
     }
     if (note.audio_file) {
@@ -414,24 +491,54 @@ export default function JourneyScreen() {
       return;
     }
     setBusy(true);
+    setScreenError(null);
+    let prepared: VoiceRecorder | null = null;
     try {
-      const recorder = await createPreparedVoiceRecorder();
-      await recorder.record();
-      setTimeout(async () => {
-        try {
-          const file = await stopRecordingAndCopyToAppDocuments(recorder);
-          const db = await openAppDatabase();
-          await updateNoteAudio(db, note.id, file, null);
-          await refreshJourneyData();
-        } catch {
-          setScreenError("Could not save re-recorded audio.");
-        } finally {
-          setBusy(false);
-        }
-      }, 1000);
-    } catch {
+      prepared = await createPreparedVoiceRecorder();
+      prepared.record();
+      setRerecordSession({ noteId: note.id, recorder: prepared });
+      prepared = null;
+    } catch (error) {
+      if (prepared !== null) {
+        await interruptVoiceRecording(prepared);
+      }
+      setScreenError(
+        error instanceof Error ? error.message : "Could not start re-recording.",
+      );
+    } finally {
       setBusy(false);
-      setScreenError("Could not start voice recording.");
+    }
+  }
+
+  async function stopRerecordAndSave(): Promise<void> {
+    if (!rerecordSession || busy) {
+      return;
+    }
+    const { recorder, noteId } = rerecordSession;
+    setRerecordSession(null);
+    setBusy(true);
+    setScreenError(null);
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 0);
+    });
+    let copiedFile: string | null = null;
+    try {
+      const { fileUri, durationSeconds } = await stopRecordingAndCopyToAppDocuments(
+        recorder,
+      );
+      copiedFile = fileUri;
+      const db = await openAppDatabase();
+      await updateNoteAudio(db, noteId, fileUri, null, durationSeconds);
+      await refreshJourneyData();
+    } catch (error) {
+      if (copiedFile) {
+        await unlinkIfExists(copiedFile);
+      }
+      setScreenError(
+        error instanceof Error ? error.message : "Could not save re-recorded audio.",
+      );
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -576,7 +683,8 @@ export default function JourneyScreen() {
 
         <View className="mt-6 flex-row gap-3">
           <Pressable
-            className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3"
+            className={`flex-1 rounded-xl border border-neutral-200 px-4 py-3 ${rerecordSession ? "bg-neutral-200" : "bg-neutral-50"}`}
+            disabled={rerecordSession !== null}
             onPress={() => {
               setNoteModalVisible(true);
             }}
@@ -593,153 +701,83 @@ export default function JourneyScreen() {
           </Pressable>
         </View>
 
-        <JourneyNotesFeed
-          notes={notes}
-          media={media}
-          locationPoints={points}
-          onLongPressNote={(note) => {
-            setNoteEditTarget(note);
-            setNoteEditText(note.text ?? "");
-          }}
-          onLongPressMedia={(item) => {
-            setMediaEditTarget(item);
-            setMediaEditText(item.text ?? "");
-          }}
-        />
+        {newAudioRecorder === null ? (
+          <JourneyNotesFeed
+            notes={notes}
+            media={media}
+            locationPoints={points}
+            suspendPlayback={
+              noteModalVisible || noteEditTarget !== null || rerecordSession !== null
+            }
+            onLongPressNote={(note) => {
+              setNoteEditTarget(note);
+              setNoteEditText(note.text ?? "");
+            }}
+            onLongPressMedia={(item) => {
+              setMediaEditTarget(item);
+              setMediaEditText(item.text ?? "");
+            }}
+          />
+        ) : null}
       </ScrollView>
 
-      <Modal
-        transparent
-        visible={noteModalVisible}
-        animationType="slide"
-        onRequestClose={() => {
-          setNoteModalVisible(false);
-        }}
-      >
-        <View className="flex-1">
-          <View className="flex-1 justify-end">
-            <Pressable
-              className="absolute inset-0 bg-black/50"
-              onPress={() => {
-                Keyboard.dismiss();
-                setNoteModalVisible(false);
-              }}
-            />
-            <View
-              className="rounded-t-2xl border-t border-neutral-200 bg-white px-4 pt-4"
-              style={{
-                paddingBottom: modalPaddingBottom,
-                transform: [{ translateY: -modalKeyboardInset }],
-              }}
-            >
-              <Text className="text-base font-semibold text-neutral-900">Add note</Text>
-              <View className="mt-3 flex-row rounded-lg border border-neutral-300 p-0.5">
-                <Pressable
-                  className={`flex-1 rounded-md py-2 ${newNoteMode === "text" ? "bg-blue-600" : "bg-transparent"}`}
-                  onPress={() => {
-                    switchAddNoteMode("text");
-                  }}
-                >
-                  <Text
-                    className={`text-center text-sm font-semibold ${newNoteMode === "text" ? "text-white" : "text-neutral-700"}`}
-                  >
-                    Text
-                  </Text>
-                </Pressable>
-                <Pressable
-                  className={`flex-1 rounded-md py-2 ${newNoteMode === "voice" ? "bg-emerald-600" : "bg-transparent"}`}
-                  onPress={() => {
-                    switchAddNoteMode("voice");
-                  }}
-                >
-                  <Text
-                    className={`text-center text-sm font-semibold ${newNoteMode === "voice" ? "text-white" : "text-neutral-700"}`}
-                  >
-                    Voice
-                  </Text>
-                </Pressable>
-              </View>
-              {newNoteMode === "text" ? (
-                <>
-                  <TextInput
-                    className="mt-3 rounded-md border border-neutral-300 px-3 py-2 text-sm"
-                    placeholder="Note text"
-                    value={newNoteText}
-                    onChangeText={setNewNoteText}
-                  />
-                  <Pressable
-                    className="mt-3 rounded-md bg-blue-600 px-4 py-2"
-                    disabled={busy}
-                    onPress={() => {
-                      void addTextNote();
-                    }}
-                  >
-                    <Text className="text-center font-semibold text-white">Save text note</Text>
-                  </Pressable>
-                </>
-              ) : (
-                <>
-                  {newAudioRecorder ? (
-                    <>
-                      <Pressable
-                        className="mt-3 rounded-md bg-red-600 px-4 py-2"
-                        disabled={busy}
-                        onPress={() => {
-                          void stopNewVoiceNoteRecordingAndSave();
-                        }}
-                      >
-                        <Text className="text-center font-semibold text-white">
-                          Stop recording
-                        </Text>
-                      </Pressable>
-                      <VoiceNoteRecorderElapsed recorder={newAudioRecorder} />
-                    </>
-                  ) : (
-                    <Pressable
-                      className={`mt-3 rounded-md px-4 py-2 ${newAudioPendingFile ? "bg-neutral-300" : "bg-emerald-600"}`}
-                      disabled={Boolean(newAudioPendingFile) || busy}
-                      onPress={() => {
-                        void startNewVoiceNoteRecording();
-                      }}
-                    >
-                      <Text className="text-center font-semibold text-white">
-                        Start voice recording
-                      </Text>
-                    </Pressable>
-                  )}
-                  {newAudioPendingFile ? (
-                    <View className="mt-3 gap-2">
-                      <VoiceNoteDraftPlayback uri={newAudioPendingFile} busy={busy} />
-                      <Pressable
-                        className="rounded-md bg-emerald-700 px-4 py-2"
-                        disabled={busy}
-                        onPress={() => {
-                          void saveNewVoiceNote();
-                        }}
-                      >
-                        <Text className="text-center font-semibold text-white">
-                          Save voice note
-                        </Text>
-                      </Pressable>
-                      <Pressable
-                        className="rounded-md bg-neutral-600 px-4 py-2"
-                        disabled={busy}
-                        onPress={() => {
-                          void discardPendingVoiceRecording();
-                        }}
-                      >
-                        <Text className="text-center font-semibold text-white">
-                          Discard recording
-                        </Text>
-                      </Pressable>
-                    </View>
-                  ) : null}
-                </>
-              )}
-            </View>
-          </View>
+      {rerecordSession ? (
+        <View
+          className="border-t border-neutral-200 bg-white px-4 pt-3 shadow-md"
+          style={{ paddingBottom: Math.max(insets.bottom + 12, 20) }}
+        >
+          <Text className="text-center text-sm font-semibold text-neutral-900">
+            Re-recording voice note
+          </Text>
+          <VoiceNoteRecorderElapsed recorder={rerecordSession.recorder} />
+          <Pressable
+            className={`mt-2 rounded-md px-4 py-3 ${busy ? "bg-neutral-300" : "bg-red-600"}`}
+            disabled={busy}
+            onPress={() => {
+              void stopRerecordAndSave();
+            }}
+          >
+            <Text className="text-center font-semibold text-white">
+              {busy ? "Working…" : "Stop and save"}
+            </Text>
+          </Pressable>
         </View>
-      </Modal>
+      ) : null}
+
+      {
+        noteModalVisible ? 
+        <JourneyAddNoteModal
+          visible={noteModalVisible}
+          modalPaddingBottom={modalPaddingBottom}
+          modalKeyboardInset={modalKeyboardInset}
+          newNoteMode={newNoteMode}
+          newNoteText={newNoteText}
+          newAudioRecorder={newAudioRecorder}
+          newAudioDraft={newAudioDraft}
+          busy={busy}
+          onClose={() => {
+            setNoteModalVisible(false);
+          }}
+          onSwitchAddNoteMode={switchAddNoteMode}
+          onChangeNewNoteText={setNewNoteText}
+          onAddTextNote={() => {
+            void addTextNote();
+          }}
+          onStartVoiceRecording={() => {
+            void startNewVoiceNoteRecording();
+          }}
+          onStopVoiceRecording={() => {
+            void stopNewVoiceNoteRecordingAndSave();
+          }}
+          onSaveVoiceNote={() => {
+            void saveNewVoiceNote();
+          }}
+          onDiscardVoiceRecording={() => {
+            void discardPendingVoiceRecording();
+          }}
+        />
+        : null
+      }
 
       <Modal
         transparent
@@ -785,40 +823,45 @@ export default function JourneyScreen() {
         </View>
       </Modal>
 
-      <JourneyNoteEditModal
-        visible={noteEditTarget !== null}
-        note={noteEditTarget}
-        text={noteEditText}
-        onChangeText={setNoteEditText}
-        busy={busy}
-        keyboardInset={modalKeyboardInset}
-        onRequestClose={() => {
-          setNoteEditTarget(null);
-        }}
-        onSave={() => {
-          if (!noteEditTarget || noteEditTarget.type !== "text") {
-            return;
-          }
-          void updateNoteTextById(noteEditTarget, noteEditText).then(() => {
+      {
+        noteEditTarget !== null ? 
+        <JourneyNoteEditModal
+          visible={noteEditTarget !== null}
+          note={noteEditTarget}
+          text={noteEditText}
+          onChangeText={setNoteEditText}
+          busy={busy}
+          keyboardInset={modalKeyboardInset}
+          onRequestClose={() => {
             setNoteEditTarget(null);
-          });
-        }}
-        onDelete={() => {
-          if (!noteEditTarget) {
-            return;
-          }
-          void deleteNote(noteEditTarget).then(() => {
+          }}
+          onSave={() => {
+            if (!noteEditTarget || noteEditTarget.type !== "text") {
+              return;
+            }
+            void updateNoteTextById(noteEditTarget, noteEditText).then(() => {
+              setNoteEditTarget(null);
+            });
+          }}
+          onDelete={() => {
+            if (!noteEditTarget) {
+              return;
+            }
+            void deleteNote(noteEditTarget).then(() => {
+              setNoteEditTarget(null);
+            });
+          }}
+          onRerecordAudio={() => {
+            if (!noteEditTarget) {
+              return;
+            }
+            void rerecordNoteAudio(noteEditTarget);
             setNoteEditTarget(null);
-          });
-        }}
-        onRerecordAudio={() => {
-          if (!noteEditTarget) {
-            return;
-          }
-          void rerecordNoteAudio(noteEditTarget);
-          setNoteEditTarget(null);
-        }}
-      />
+          }}
+        />
+        : null
+      }
+      
 
       <JourneyMediaEditModal
         visible={mediaEditTarget !== null}

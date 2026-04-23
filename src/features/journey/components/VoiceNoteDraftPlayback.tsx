@@ -1,5 +1,5 @@
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { formatDurationSeconds } from "../formatDuration";
@@ -7,19 +7,36 @@ import { formatDurationSeconds } from "../formatDuration";
 type Props = {
   uri: string;
   busy: boolean;
+  /** From finalize step; shown as total until player metadata loads. */
+  totalSecondsHint?: number;
+  playLabel?: string;
+  pauseLabel?: string;
 };
 
-export function VoiceNoteDraftPlayback({ uri, busy }: Props) {
+/**
+ * Preview playback for a pending voice file before DB save (dedicated player; session already
+ * switched to playback mode after finalize per voice_note_brd.md).
+ */
+export function VoiceNoteDraftPlayback({
+  uri,
+  busy,
+  totalSecondsHint,
+  playLabel = "Play preview",
+  pauseLabel = "Pause preview",
+}: Props) {
   const player = useAudioPlayer(uri);
   const status = useAudioPlayerStatus(player);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log("VoiceNoteDraftPlayback:useEffect", { uri, playerId: player.id });
+    setLoadError(null);
     return () => {
-      player.pause();
     };
-  }, [player, uri]);
+  }, [player.id, uri]);
 
   const togglePlayback = useCallback(async () => {
+    setLoadError(null);
     if (status.playing) {
       player.pause();
       return;
@@ -31,7 +48,11 @@ export function VoiceNoteDraftPlayback({ uri, busy }: Props) {
       await player.seekTo(0);
     }
     await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
-    player.play();
+    try {
+      player.play();
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Playback failed");
+    }
   }, [
     player,
     status.currentTime,
@@ -40,7 +61,13 @@ export function VoiceNoteDraftPlayback({ uri, busy }: Props) {
     status.playing,
   ]);
 
-  const totalLabel = status.duration > 0 ? formatDurationSeconds(status.duration) : "—:—";
+  const totalSeconds =
+    status.duration > 0
+      ? status.duration
+      : totalSecondsHint != null
+        ? totalSecondsHint
+        : 0;
+  const totalLabel = totalSeconds > 0 ? formatDurationSeconds(totalSeconds) : "—:—";
   const currentLabel = formatDurationSeconds(status.currentTime);
 
   return (
@@ -48,15 +75,18 @@ export function VoiceNoteDraftPlayback({ uri, busy }: Props) {
       <Text className="text-center text-sm tabular-nums text-neutral-700">
         {currentLabel} / {totalLabel}
       </Text>
+      {loadError ? (
+        <Text className="mt-1 text-center text-xs text-red-600">{loadError}</Text>
+      ) : null}
       <Pressable
-        className={`mt-2 rounded-md px-3 py-2 ${busy || !status.isLoaded ? "bg-neutral-300" : "bg-neutral-700"}`}
-        disabled={busy || !status.isLoaded}
+        className={`mt-2 rounded-md px-3 py-2 ${busy ? "bg-neutral-300" : "bg-neutral-700"}`}
+        disabled={busy}
         onPress={() => {
           void togglePlayback();
         }}
       >
         <Text className="text-center font-semibold text-white">
-          {status.playing ? "Pause preview" : "Play preview"}
+          {status.playing ? pauseLabel : playLabel}
         </Text>
       </Pressable>
     </View>

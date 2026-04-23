@@ -395,6 +395,7 @@ export default function JourneyDetailsScreen() {
         media={media}
         locationPoints={points}
         editable={editable}
+        suspendPlayback={noteEditTarget !== null || mediaEditTarget !== null}
         onLongPressNote={(note) => {
           if (!editable) {
             return;

@@ -9,17 +9,20 @@ export async function createNote(
     type: NoteType;
     text?: string | null;
     audioFile?: string | null;
+    /** Required for new voice saves; null for text. */
+    audioDurationSeconds?: number | null;
     audioTranscript?: string | null;
     timestamp?: number;
   },
 ): Promise<number> {
   const result = await db.runAsync(
-    `INSERT INTO note (journey_id, timestamp, audio_file, audio_transcript, text, type)
-     VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO note (journey_id, timestamp, audio_file, audio_duration, audio_transcript, text, type)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [
       input.journeyId,
       input.timestamp ?? Date.now(),
       input.audioFile ?? null,
+      input.audioDurationSeconds ?? null,
       input.audioTranscript ?? null,
       input.text ?? null,
       input.type,
@@ -33,7 +36,7 @@ export async function listNotesForJourney(
   journeyId: number,
 ): Promise<NoteRow[]> {
   const rows = await db.getAllAsync<NoteRow>(
-    `SELECT id, journey_id, timestamp, audio_file, audio_transcript, text, type
+    `SELECT id, journey_id, timestamp, audio_file, audio_duration, audio_transcript, text, type
      FROM note
      WHERE journey_id = ?
      ORDER BY timestamp DESC, id DESC`,
@@ -58,10 +61,11 @@ export async function updateNoteAudio(
   noteId: number,
   audioFile: string | null,
   audioTranscript: string | null,
+  audioDurationSeconds: number | null,
 ): Promise<void> {
   await db.runAsync(
-    `UPDATE note SET audio_file = ?, audio_transcript = ? WHERE id = ?`,
-    [audioFile, audioTranscript, noteId],
+    `UPDATE note SET audio_file = ?, audio_transcript = ?, audio_duration = ? WHERE id = ?`,
+    [audioFile, audioTranscript, audioDurationSeconds, noteId],
   );
 }
 

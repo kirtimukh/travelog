@@ -54,6 +54,10 @@ const MIGRATIONS: string[] = [
 
   CREATE INDEX IF NOT EXISTS idx_media_journey_ts ON media (journey_id, timestamp);
   `,
+  // version 2 — voice note duration (seconds); legacy voice rows may keep NULL until backfilled.
+  `
+  ALTER TABLE note ADD COLUMN audio_duration INTEGER;
+  `,
 ];
 
 /**
