@@ -7,15 +7,25 @@ type Props = {
   points: LocationPointRow[];
   hasLocationPermission: boolean;
   onGrantLocation: () => void;
+  markerHead?: LocationPointRow | null;
+  fallbackLngLat?: { lat: number; lng: number } | null;
 };
 
 export function JourneyMapPanel({
   points,
   hasLocationPermission,
   onGrantLocation,
+  markerHead,
+  fallbackLngLat,
 }: Props) {
   if (hasLocationPermission) {
-    return <OfflineJourneyMap points={points} />;
+    return (
+      <OfflineJourneyMap
+        points={points}
+        markerHead={markerHead}
+        fallbackLngLat={fallbackLngLat}
+      />
+    );
   }
 
   return (

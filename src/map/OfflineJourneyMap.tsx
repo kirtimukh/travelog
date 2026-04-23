@@ -17,6 +17,8 @@ import { getPmtilesConfig } from "../storage/pmtilesConfig";
 
 type Props = {
   points: LocationPointRow[];
+  markerHead?: LocationPointRow | null;
+  fallbackLngLat?: { lat: number; lng: number } | null;
 };
 
 const DEFAULT_CENTER: [number, number] = [91.750605, 26.129195];
@@ -167,15 +169,36 @@ function buildOfflineStyle(pmtilesPath: string | undefined): StyleSpecification 
   };
 }
 
-export function OfflineJourneyMap({ points }: Props) {
-  const lastPoint = points[points.length - 1] ?? null;
+export function OfflineJourneyMap({ points, markerHead, fallbackLngLat }: Props) {
+  const lastPathPoint = points[points.length - 1] ?? null;
   const lineFeature = useMemo(
     () => (points.length > 1 ? toLineFeature(points) : null),
     [points],
   );
+  const resolvedMarkerPoint = useMemo((): LocationPointRow | null => {
+    if (markerHead !== undefined) {
+      return markerHead;
+    }
+    if (lastPathPoint) {
+      return lastPathPoint;
+    }
+    if (fallbackLngLat) {
+      return {
+        id: -1,
+        journey_id: -1,
+        lat: fallbackLngLat.lat,
+        lng: fallbackLngLat.lng,
+        timestamp: 0,
+        metadata: null,
+        speed: null,
+        heading: null,
+      };
+    }
+    return null;
+  }, [markerHead, lastPathPoint, fallbackLngLat]);
   const pointFeature = useMemo(
-    () => (lastPoint ? toPointFeature(lastPoint) : null),
-    [lastPoint],
+    () => (resolvedMarkerPoint ? toPointFeature(resolvedMarkerPoint) : null),
+    [resolvedMarkerPoint],
   );
   const pmtilesConfig = getPmtilesConfig();
   const mapStyle = useMemo(
@@ -193,22 +216,39 @@ export function OfflineJourneyMap({ points }: Props) {
   const [autoFollowRoute, setAutoFollowRoute] = useState(true);
 
   const initialCenter = useMemo((): [number, number] => {
-    if (lastPoint) {
-      return [lastPoint.lng, lastPoint.lat];
+    if (points.length >= 1) {
+      const p = points[points.length - 1]!;
+      return [p.lng, p.lat];
+    }
+    if (markerHead !== undefined && markerHead !== null) {
+      return [markerHead.lng, markerHead.lat];
+    }
+    if (fallbackLngLat) {
+      return [fallbackLngLat.lng, fallbackLngLat.lat];
     }
     return DEFAULT_CENTER;
-  }, [lastPoint]);
+  }, [points, markerHead, fallbackLngLat]);
 
   const fitCameraToRoute = useCallback(() => {
     if (!mapReadyRef.current) {
       return;
     }
     const cam = cameraRef.current;
-    if (!cam || points.length === 0) {
+    if (!cam) {
       return;
     }
     ignoreUserViewportUntilRef.current = Date.now() + PROGRAMMATIC_FIT_SUPPRESS_MS;
     try {
+      if (points.length >= 2) {
+        const bounds = boundsFromPoints(points);
+        if (bounds) {
+          cam.fitBounds(bounds, {
+            padding: FIT_PADDING,
+            duration: 420,
+          });
+        }
+        return;
+      }
       if (points.length === 1) {
         cam.easeTo({
           center: [points[0].lng, points[0].lat],
@@ -217,17 +257,25 @@ export function OfflineJourneyMap({ points }: Props) {
         });
         return;
       }
-      const bounds = boundsFromPoints(points);
-      if (bounds) {
-        cam.fitBounds(bounds, {
-          padding: FIT_PADDING,
-          duration: 420,
+      if (markerHead !== undefined && markerHead !== null) {
+        cam.easeTo({
+          center: [markerHead.lng, markerHead.lat],
+          zoom: 14,
+          duration: 320,
+        });
+        return;
+      }
+      if (fallbackLngLat) {
+        cam.easeTo({
+          center: [fallbackLngLat.lng, fallbackLngLat.lat],
+          zoom: 14,
+          duration: 320,
         });
       }
     } catch {
       // Camera not attached yet
     }
-  }, [points]);
+  }, [points, markerHead, fallbackLngLat]);
 
   const syncZoomFromMap = useCallback(() => {
     void mapRef.current?.getZoom().then((z) => {
@@ -371,8 +419,18 @@ export function OfflineJourneyMap({ points }: Props) {
           accessibilityLabel="Recenter map on route"
           accessibilityRole="button"
           accessibilityState={{ disabled: points.length < 1 }}
-          className={`min-h-11 min-w-11 items-center justify-center rounded-lg border border-neutral-200 bg-white/90 ${points.length < 1 ? "opacity-40" : ""}`}
-          disabled={points.length < 1}
+          className={`min-h-11 min-w-11 items-center justify-center rounded-lg border border-neutral-200 bg-white/90 ${
+            points.length < 1 &&
+            !(markerHead !== undefined && markerHead !== null) &&
+            !fallbackLngLat
+              ? "opacity-40"
+              : ""
+          }`}
+          disabled={
+            points.length < 1 &&
+            !(markerHead !== undefined && markerHead !== null) &&
+            !fallbackLngLat
+          }
           onPress={() => {
             const wasFollowing = autoFollowRoute;
             setAutoFollowRoute(true);

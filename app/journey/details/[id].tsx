@@ -508,6 +508,7 @@ export default function JourneyDetailsScreen() {
           <View collapsable={false}>
             <JourneyMapPanel
               points={replayPath}
+              markerHead={replayPoint}
               hasLocationPermission={locationPermission}
               onGrantLocation={() => {
                 void requestPermission();

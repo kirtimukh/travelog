@@ -1,6 +1,6 @@
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Linking, Pressable, Text, View } from "react-native";
+import { Alert, AppState, Linking, Pressable, Text, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -32,6 +32,7 @@ import { useWeatherCaptureFlow } from "../../src/features/journey/hooks/useWeath
 import { getJourneyPauseWindows } from "../../src/features/journey/replay";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
+import { getCachedCurrentLocation } from "../../src/location/currentLocationCache";
 
 export default function JourneyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -95,6 +96,32 @@ export default function JourneyScreen() {
     () => Gesture.Native().disallowInterruption(false).withRef(mapGestureRef),
     [],
   );
+
+  const [mapCacheTick, setMapCacheTick] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      setMapCacheTick((t) => t + 1);
+    }, []),
+  );
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (next) => {
+      if (next === "active") {
+        setMapCacheTick((t) => t + 1);
+      }
+    });
+    return () => {
+      sub.remove();
+    };
+  }, []);
+
+  const liveMapFallbackLngLat = useMemo(() => {
+    if (journeyData.points.length > 0) {
+      return null;
+    }
+    void mapCacheTick;
+    const c = getCachedCurrentLocation();
+    return c ? { lat: c.lat, lng: c.lng } : null;
+  }, [journeyData.points.length, mapCacheTick]);
 
   const { endJourney, busy: controlsBusy } = journeyControls;
   const requestEndJourney = useCallback((): void => {
@@ -188,6 +215,7 @@ export default function JourneyScreen() {
             <View collapsable={false}>
               <JourneyMapPanel
                 points={journeyData.points}
+                fallbackLngLat={liveMapFallbackLngLat}
                 hasLocationPermission={journeyData.locationPermission === "granted"}
                 onGrantLocation={() => {
                   void journeyData.requestMapPermission();
