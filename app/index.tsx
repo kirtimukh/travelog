@@ -1,4 +1,5 @@
 import * as DocumentPicker from "expo-document-picker";
+import * as Sharing from "expo-sharing";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
@@ -20,6 +21,7 @@ import {
 } from "../src/storage/pmtilesConfig";
 import { AppHeaderMenu } from "../src/components/AppHeaderMenu";
 import { HeaderBackButton } from "../src/components/HeaderBackButton";
+import { writeExportJsonFile } from "../src/diagnostics/errorLogStore";
 import { useOngoingJourneyCandidate } from "../src/features/journey/useOngoingJourneyCandidate";
 
 export default function HomeScreen() {
@@ -38,6 +40,8 @@ export default function HomeScreen() {
   const [description, setDescription] = useState<string>("");
   const [journeyError, setJourneyError] = useState<string | null>(null);
   const [creatingJourney, setCreatingJourney] = useState<boolean>(false);
+  const [exportingDiagnostics, setExportingDiagnostics] = useState<boolean>(false);
+  const [exportDiagnosticsError, setExportDiagnosticsError] = useState<string | null>(null);
 
   const refreshCandidateJourney = useCallback(async (): Promise<void> => {
     setCandidateLoading(true);
@@ -88,6 +92,30 @@ export default function HomeScreen() {
       ),
     });
   }, [navigation, ongoingJourneyId]);
+
+  const shareErrorLog = useCallback(async (): Promise<void> => {
+    setExportDiagnosticsError(null);
+    setExportingDiagnostics(true);
+    try {
+      const uri = await writeExportJsonFile();
+      if (!uri) {
+        setExportDiagnosticsError("Could not write export file.");
+        return;
+      }
+      if (!(await Sharing.isAvailableAsync())) {
+        setExportDiagnosticsError("Sharing is not available on this device.");
+        return;
+      }
+      await Sharing.shareAsync(uri, {
+        mimeType: "application/json",
+        UTI: "public.json",
+      });
+    } catch (e) {
+      setExportDiagnosticsError(e instanceof Error ? e.message : "Export failed.");
+    } finally {
+      setExportingDiagnostics(false);
+    }
+  }, []);
 
   async function pickPmtilesFile(): Promise<void> {
     if (submitting) {
@@ -206,6 +234,23 @@ export default function HomeScreen() {
       <Text className="mt-2 text-sm text-neutral-700">
         Upload {REQUIRED_PMTILES_FILENAME} to unlock map-enabled journeys.
       </Text>
+      <Text className="mt-3 text-xs text-neutral-500">
+        Diagnostics: logs JavaScript and React errors only (not native crashes).
+      </Text>
+      <Pressable
+        className="mt-2 self-start rounded-md border border-neutral-300 bg-white px-4 py-2"
+        disabled={exportingDiagnostics}
+        onPress={() => {
+          void shareErrorLog();
+        }}
+      >
+        <Text className="font-semibold text-neutral-800">
+          {exportingDiagnostics ? "Preparing export..." : "Export JS error log (JSON)"}
+        </Text>
+      </Pressable>
+      {exportDiagnosticsError ? (
+        <Text className="mt-2 text-sm text-red-700">{exportDiagnosticsError}</Text>
+      ) : null}
       {ready ? (
         <Pressable
           className="mt-4 self-start rounded-md bg-neutral-800 px-4 py-2"
