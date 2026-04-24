@@ -16,7 +16,6 @@ import {
 } from "../src/files/pmtilesPackage";
 import {
   getPmtilesConfig,
-  REQUIRED_PMTILES_FILENAME,
   setPmtilesConfig,
 } from "../src/storage/pmtilesConfig";
 import { AppHeaderMenu } from "../src/components/AppHeaderMenu";
@@ -61,7 +60,7 @@ export default function HomeScreen() {
     if (!cfg?.pmtilesPath) {
       setReady(false);
       setStatus(
-        `Upload ${REQUIRED_PMTILES_FILENAME} to continue to map-enabled journeys.`,
+        "Upload a .pmtiles file to continue to map-enabled journeys.",
       );
       return;
     }
@@ -131,10 +130,10 @@ export default function HomeScreen() {
         return;
       }
       const selected = result.assets[0];
-      if (selected.name !== REQUIRED_PMTILES_FILENAME) {
+      if (!selected.name.toLowerCase().endsWith(".pmtiles")) {
         setSelectedFile(null);
         setFormSuccess(null);
-        setFormError(`Please select exactly ${REQUIRED_PMTILES_FILENAME}.`);
+        setFormError("Please select a file ending in .pmtiles.");
         return;
       }
       setFormError(null);
@@ -156,14 +155,17 @@ export default function HomeScreen() {
     setFormError(null);
     setFormSuccess(null);
     try {
-      const copied = await copyRequiredPmtilesIntoAppDocuments(selectedFile.uri);
+      const copied = await copyRequiredPmtilesIntoAppDocuments(
+        selectedFile.uri,
+        selectedFile.name,
+      );
       const validation = await validateRequiredPmtiles(copied.destUri);
       if (!validation.valid) {
         throw new Error(validation.reason ?? "Invalid PMTiles package");
       }
       setPmtilesConfig({
         pmtilesPath: copied.destUri,
-        pmtilesFileName: REQUIRED_PMTILES_FILENAME,
+        pmtilesFileName: selectedFile.name,
         pmtilesSize: copied.size,
         pmtilesValidatedAt: Date.now(),
         pmtilesHash: copied.hash,
@@ -232,7 +234,7 @@ export default function HomeScreen() {
     <View className="flex-1 bg-white px-6 pt-12">
       <Text className="text-xl font-bold text-blue-600">Home</Text>
       <Text className="mt-2 text-sm text-neutral-700">
-        Upload {REQUIRED_PMTILES_FILENAME} to unlock map-enabled journeys.
+        Upload a .pmtiles file to unlock map-enabled journeys.
       </Text>
       <Text className="mt-3 text-xs text-neutral-500">
         Diagnostics: logs JavaScript and React errors only (not native crashes).
@@ -283,7 +285,7 @@ export default function HomeScreen() {
           }}
         >
           <Text className="text-center font-semibold text-white">
-            Choose {REQUIRED_PMTILES_FILENAME}
+            Choose a .pmtiles file
           </Text>
         </Pressable>
         <Pressable

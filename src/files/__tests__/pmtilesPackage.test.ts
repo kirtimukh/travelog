@@ -9,10 +9,6 @@ jest.mock("expo-file-system/legacy", () => ({
   makeDirectoryAsync: (...args: unknown[]) => mockMakeDirectoryAsync(...args),
 }));
 
-jest.mock("../../storage/pmtilesConfig", () => ({
-  REQUIRED_PMTILES_FILENAME: "india-ne.pmtiles",
-}));
-
 describe("pmtiles package helpers", () => {
   beforeEach(() => {
     mockGetInfoAsync.mockReset();
@@ -20,13 +16,13 @@ describe("pmtiles package helpers", () => {
     mockMakeDirectoryAsync.mockReset();
   });
 
-  it("rejects path with unexpected filename", async () => {
+  it("rejects path with non-pmtiles filename", async () => {
     const { validateRequiredPmtiles } = require("../pmtilesPackage") as typeof import("../pmtilesPackage");
     await expect(
-      validateRequiredPmtiles("file:///app-docs/maptiles/wrong.pmtiles"),
+      validateRequiredPmtiles("file:///app-docs/maptiles/wrong.mbtiles"),
     ).resolves.toEqual({
       valid: false,
-      reason: "PMTiles filename is not india-ne.pmtiles",
+      reason: "PMTiles filename must end with .pmtiles",
     });
   });
 
@@ -41,7 +37,7 @@ describe("pmtiles package helpers", () => {
     });
   });
 
-  it("copies expected filename into app documents", async () => {
+  it("copies selected pmtiles filename into app documents", async () => {
     const { copyRequiredPmtilesIntoAppDocuments } = require("../pmtilesPackage") as typeof import("../pmtilesPackage");
     mockGetInfoAsync
       .mockResolvedValueOnce({ exists: false })
@@ -49,6 +45,7 @@ describe("pmtiles package helpers", () => {
 
     const result = await copyRequiredPmtilesIntoAppDocuments(
       "file:///downloads/india-ne.pmtiles",
+      "india-ne.pmtiles",
     );
 
     expect(mockMakeDirectoryAsync).toHaveBeenCalledWith("file:///app-docs/maptiles", {

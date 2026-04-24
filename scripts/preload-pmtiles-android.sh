@@ -3,10 +3,15 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC_FILE="${1:-$ROOT_DIR/../maptiles/india-ne.pmtiles}"
-DEST_FILE="/sdcard/Download/india-ne.pmtiles"
+SRC_BASENAME="$(basename "$SRC_FILE")"
+DEST_FILE="/sdcard/Download/$SRC_BASENAME"
 
 if [[ ! -f "$SRC_FILE" ]]; then
   echo "Source file not found: $SRC_FILE" >&2
+  exit 1
+fi
+if [[ "${SRC_FILE,,}" != *.pmtiles ]]; then
+  echo "Source file must end with .pmtiles: $SRC_FILE" >&2
   exit 1
 fi
 
@@ -18,4 +23,4 @@ fi
 adb devices
 adb push "$SRC_FILE" "$DEST_FILE"
 echo "Preloaded PMTiles to emulator: $DEST_FILE"
-echo "Now open the app and upload india-ne.pmtiles from Files/Downloads."
+echo "Now open the app and upload $SRC_BASENAME from Files/Downloads."

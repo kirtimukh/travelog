@@ -31,11 +31,11 @@ Then start Metro with `npx expo start --dev-client` and open the dev client on t
 
 ## Step 3: PMTiles upload + Android emulator preload
 
-- First launch is gated: app requires uploading `india-ne.pmtiles`.
+- First launch is gated: app requires uploading a `.pmtiles` file.
 - The file is copied into app-owned documents storage and validated.
 - If missing/corrupt later, map routes are blocked until re-upload.
 
-### Preload `india-ne.pmtiles` into Android emulator
+### Preload a `.pmtiles` file into Android emulator
 
 From `mobile/`:
 
@@ -46,8 +46,8 @@ From `mobile/`:
 Optional custom source file:
 
 ```bash
-./scripts/preload-pmtiles-android.sh /absolute/path/to/india-ne.pmtiles
+./scripts/preload-pmtiles-android.sh /absolute/path/to/your-map.pmtiles
 ```
 
-The script pushes the file to `/sdcard/Download/india-ne.pmtiles`.  
+The script pushes the file to `/sdcard/Download/<source-filename>.pmtiles`.  
 Then, in the app, tap upload and select that file from Downloads.
