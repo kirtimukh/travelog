@@ -62,6 +62,7 @@ export default function JourneyDetailsScreen() {
     points,
     notes,
     media,
+    weather,
   });
 
   const weatherCaptureFlow = useWeatherCaptureFlow({
@@ -120,19 +121,6 @@ export default function JourneyDetailsScreen() {
         <Text className="mt-4 text-sm text-neutral-600">
           Editing notes/media is disabled while journey is ongoing.
         </Text>
-      ) : null}
-
-      {editable ? (
-        <Pressable
-          className="mt-4 self-stretch rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3"
-          accessibilityLabel="Weather"
-          accessibilityRole="button"
-          onPress={() => {
-            weatherCaptureFlow.modal.open();
-          }}
-        >
-          <Text className="text-center text-lg font-semibold text-neutral-900">☁️</Text>
-        </Pressable>
       ) : null}
 
       <JourneyNotesFeed

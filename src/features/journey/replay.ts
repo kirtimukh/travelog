@@ -1,15 +1,23 @@
-import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../db/schema";
+import type { JourneyRow, LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../db/schema";
 
 export type JourneyPauseWindow = {
   startTs: number;
   endTs: number | null;
 };
 
-export type ReplayEvent = {
-  kind: "note" | "image";
-  timestamp: number;
-  text: string;
-};
+export type ReplayTimelineEntry =
+  | { kind: "text_note"; id: number; timestamp: number; preview100: string }
+  | { kind: "voice_note"; id: number; timestamp: number; durationSec: number | null }
+  | { kind: "image"; id: number; timestamp: number; media: MediaRow }
+  | { kind: "weather"; id: number; timestamp: number; condition: string | null; temperature: number | null };
+
+export function replayTimelineEntryKey(entry: ReplayTimelineEntry): string {
+  return `${entry.kind}:${entry.id}`;
+}
+
+function preview100(value: string | null): string {
+  return (value ?? "").slice(0, 100);
+}
 
 export function getJourneyPauseWindows(journey: JourneyRow | null): JourneyPauseWindow[] {
   if (!journey?.metadata) {
@@ -231,33 +239,56 @@ export function getReplayHeading(point: LocationPointRow | null): number | null 
   }
 }
 
-function previewText(value: string | null): string {
-  return (value ?? "").slice(0, 16);
-}
-
-export function buildReplayEvents(notes: NoteRow[], media: MediaRow[]): ReplayEvent[] {
-  const noteEvents: ReplayEvent[] = notes.map((note) => ({
-    kind: "note",
-    timestamp: note.timestamp,
-    text: `note: ${previewText(note.text)}`,
-  }));
-  const mediaEvents: ReplayEvent[] = media
+export function buildReplayTimeline(
+  notes: NoteRow[],
+  media: MediaRow[],
+  weather: WeatherRow[],
+): ReplayTimelineEntry[] {
+  const noteEntries: ReplayTimelineEntry[] = notes.map((note) =>
+    note.type === "voice"
+      ? {
+          kind: "voice_note" as const,
+          id: note.id,
+          timestamp: note.timestamp,
+          durationSec: note.audio_duration,
+        }
+      : {
+          kind: "text_note" as const,
+          id: note.id,
+          timestamp: note.timestamp,
+          preview100: preview100(note.text),
+        },
+  );
+  const mediaEntries: ReplayTimelineEntry[] = media
     .filter((item) => typeof item.timestamp === "number")
     .map((item) => ({
-      kind: "image",
+      kind: "image" as const,
+      id: item.id,
       timestamp: item.timestamp as number,
-      text: `image: ${previewText(item.text)}`,
+      media: item,
     }));
+  const weatherEntries: ReplayTimelineEntry[] = weather.map((row) => ({
+    kind: "weather" as const,
+    id: row.id,
+    timestamp: row.timestamp,
+    condition: row.weather_condition,
+    temperature: row.temperature,
+  }));
 
-  return [...noteEvents, ...mediaEvents].sort((a, b) => a.timestamp - b.timestamp);
+  return [...noteEntries, ...mediaEntries, ...weatherEntries].sort((a, b) => {
+    if (a.timestamp !== b.timestamp) {
+      return a.timestamp - b.timestamp;
+    }
+    return a.id - b.id;
+  });
 }
 
-export function getLatestReplayEvent(
-  events: ReplayEvent[],
+export function getLatestReplayTimelineEntry(
+  entries: ReplayTimelineEntry[],
   replayTs: number,
-): ReplayEvent | null {
-  let latest: ReplayEvent | null = null;
-  for (const event of events) {
+): ReplayTimelineEntry | null {
+  let latest: ReplayTimelineEntry | null = null;
+  for (const event of entries) {
     if (event.timestamp <= replayTs) {
       latest = event;
     } else {

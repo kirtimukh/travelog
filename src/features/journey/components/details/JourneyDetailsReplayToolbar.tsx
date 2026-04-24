@@ -1,10 +1,59 @@
-import { Pressable, ScrollView as RNScrollView, Text, View } from "react-native";
+import { Image, Pressable, ScrollView as RNScrollView, Text, View } from "react-native";
 
-import type { UseJourneyDetailsReplayResult } from "../../hooks/useJourneyDetailsReplay";
+import type { ReplayCard, UseJourneyDetailsReplayResult } from "../../hooks/useJourneyDetailsReplay";
+import { formatVoiceReplayDuration } from "../../formatDuration";
+import { MEDIA_FEED_THUMBNAIL_HEIGHT, mediaThumbWidth } from "../JourneyNotesFeed.utils";
 
 type Props = {
   replay: UseJourneyDetailsReplayResult;
 };
+
+function caption100(text: string | null): string {
+  return (text ?? "").slice(0, 100);
+}
+
+function ReplayCardContent({ card }: { card: ReplayCard }) {
+  const { entry } = card;
+  switch (entry.kind) {
+    case "text_note":
+      return (
+        <Text className="text-xs text-neutral-700">
+          {entry.preview100.length > 0 ? entry.preview100 : "—"}
+        </Text>
+      );
+    case "voice_note":
+      return (
+        <Text className="text-xs text-neutral-700">{formatVoiceReplayDuration(entry.durationSec)}</Text>
+      );
+    case "weather": {
+      const condition = entry.condition?.trim() || "—";
+      const temp =
+        entry.temperature != null && !Number.isNaN(entry.temperature)
+          ? String(entry.temperature)
+          : "—";
+      return (
+        <Text className="text-xs text-neutral-700">
+          {condition} : {temp}
+        </Text>
+      );
+    }
+    case "image": {
+      const cap = caption100(entry.media.text);
+      return (
+        <View>
+          <Image
+            source={{ uri: entry.media.file }}
+            style={{ height: MEDIA_FEED_THUMBNAIL_HEIGHT, width: mediaThumbWidth(entry.media) }}
+            resizeMode="contain"
+          />
+          {cap.length > 0 ? (
+            <Text className="mt-1 text-xs text-neutral-700">{cap}</Text>
+          ) : null}
+        </View>
+      );
+    }
+  }
+}
 
 export function JourneyDetailsReplayToolbar({ replay }: Props) {
   if (!replay.canReplay) {
@@ -63,17 +112,17 @@ export function JourneyDetailsReplayToolbar({ replay }: Props) {
         <Text className="text-sm font-semibold text-neutral-800">Replay events</Text>
         <RNScrollView
           ref={replay.eventScrollRef}
-          className="mt-2 max-h-24"
+          className="mt-2 max-h-40"
           nestedScrollEnabled
           keyboardShouldPersistTaps="handled"
         >
-          {replay.eventFeed.length === 0 ? (
+          {replay.replayCards.length === 0 ? (
             <Text className="text-xs text-neutral-500">No event at current replay time.</Text>
           ) : (
-            replay.eventFeed.map((entry, index) => (
-              <Text key={`${entry}-${index}`} className="mb-1 text-xs text-neutral-700">
-                {entry}
-              </Text>
+            replay.replayCards.map((card) => (
+              <View key={card.reactKey} className="mb-2 rounded-lg border border-neutral-100 bg-neutral-50 p-2">
+                <ReplayCardContent card={card} />
+              </View>
             ))
           )}
         </RNScrollView>

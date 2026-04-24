@@ -12,17 +12,19 @@ import {
 import { ScrollView as RNScrollView } from "react-native";
 import { Gesture, type GestureType } from "react-native-gesture-handler";
 
-import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
+import type { JourneyRow, LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
 import { sumPathDistanceMeters } from "../journeyMetrics";
 import {
-  buildReplayEvents,
+  buildReplayTimeline,
   getJourneyPauseWindows,
-  getLatestReplayEvent,
+  getLatestReplayTimelineEntry,
   getReplayHeading,
   getReplayPointAtTimestamp,
   getReplayRecordedDurationMs,
   getStoredOrComputedJourneyDurationMs,
   mapRecordedElapsedMsToWallTs,
+  replayTimelineEntryKey,
+  type ReplayTimelineEntry,
 } from "../replay";
 
 const NORMALIZED_REPLAY_DURATION_MS = 120_000;
@@ -30,6 +32,8 @@ const HOLD_TO_FAST_MS = 1_000;
 const TAP_JUMP_MAX_MS = 500;
 const FAST_HOLD_MULTIPLIER = 5;
 const REPLAY_TICK_MS = 100;
+const REPLAY_CARD_VISIBLE_MS = 3_000;
+const MAX_REPLAY_CARDS = 5;
 
 type Params = {
   journeyId: number;
@@ -37,6 +41,12 @@ type Params = {
   points: LocationPointRow[];
   notes: NoteRow[];
   media: MediaRow[];
+  weather: WeatherRow[];
+};
+
+export type ReplayCard = {
+  reactKey: string;
+  entry: ReplayTimelineEntry;
 };
 
 export type UseJourneyDetailsReplayResult = {
@@ -55,8 +65,7 @@ export type UseJourneyDetailsReplayResult = {
   isReplaying: boolean;
   setIsReplaying: Dispatch<SetStateAction<boolean>>;
   setHoldDirection: Dispatch<SetStateAction<-1 | 0 | 1>>;
-  eventFeed: string[];
-  setEventFeed: Dispatch<SetStateAction<string[]>>;
+  replayCards: ReplayCard[];
   eventScrollRef: RefObject<RNScrollView | null>;
   mapGestureRef: RefObject<GestureType | undefined>;
   mapNativeGesture: ReturnType<typeof Gesture.Native>;
@@ -74,17 +83,22 @@ export function useJourneyDetailsReplay({
   points,
   notes,
   media,
+  weather,
 }: Params): UseJourneyDetailsReplayResult {
   const [isReplaying, setIsReplaying] = useState<boolean>(false);
   const [holdDirection, setHoldDirection] = useState<-1 | 0 | 1>(0);
   const [replayElapsedMs, setReplayElapsedMs] = useState<number | null>(null);
   const [replaySessionPointTs, setReplaySessionPointTs] = useState<number | null>(null);
-  const [eventFeed, setEventFeed] = useState<string[]>([]);
+  const [replayCards, setReplayCards] = useState<ReplayCard[]>([]);
   const eventScrollRef = useRef<RNScrollView | null>(null);
   const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdActivatedRef = useRef<boolean>(false);
   const pressedDirectionRef = useRef<-1 | 0 | 1>(0);
   const pressStartTsRef = useRef<number | null>(null);
+  const cardTimeoutsRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const lastEnqueuedTimelineKeyRef = useRef<string | null>(null);
+  const prevReplayElapsedMsRef = useRef<number | null>(null);
+  const replayCardKeyCounterRef = useRef(0);
 
   const latestPointTs = useMemo(() => {
     if (points.length === 0) {
@@ -119,7 +133,23 @@ export function useJourneyDetailsReplay({
         : mapRecordedElapsedMsToWallTs(journey, replayElapsedMs, replaySessionPointTs),
     [journey, replayElapsedMs, replaySessionPointTs],
   );
-  const replayEvents = useMemo(() => buildReplayEvents(notes, media), [media, notes]);
+  const replayTimeline = useMemo(
+    () => buildReplayTimeline(notes, media, weather),
+    [media, notes, weather],
+  );
+
+  const clearReplayCardStack = useCallback(() => {
+    cardTimeoutsRef.current.forEach((timeoutId) => {
+      clearTimeout(timeoutId);
+    });
+    cardTimeoutsRef.current.clear();
+    lastEnqueuedTimelineKeyRef.current = null;
+    setReplayCards([]);
+  }, []);
+
+  useEffect(() => {
+    clearReplayCardStack();
+  }, [journeyId, clearReplayCardStack]);
 
   useEffect(() => {
     if (!journey?.start_ts || replayElapsedMs != null) {
@@ -164,6 +194,10 @@ export function useJourneyDetailsReplay({
       if (holdTimeoutRef.current != null) {
         clearTimeout(holdTimeoutRef.current);
       }
+      cardTimeoutsRef.current.forEach((timeoutId) => {
+        clearTimeout(timeoutId);
+      });
+      cardTimeoutsRef.current.clear();
       holdActivatedRef.current = false;
       pressedDirectionRef.current = 0;
       pressStartTsRef.current = null;
@@ -172,25 +206,57 @@ export function useJourneyDetailsReplay({
   );
 
   useEffect(() => {
+    if (replayElapsedMs == null) {
+      prevReplayElapsedMsRef.current = null;
+      return;
+    }
+    const prev = prevReplayElapsedMsRef.current;
+    prevReplayElapsedMsRef.current = replayElapsedMs;
+    if (prev != null && replayElapsedMs < prev) {
+      clearReplayCardStack();
+    }
+  }, [replayElapsedMs, clearReplayCardStack]);
+
+  useEffect(() => {
     if (replayTs == null) {
       return;
     }
-    const currentEvent = getLatestReplayEvent(replayEvents, replayTs);
-    if (!currentEvent) {
+    const latest = getLatestReplayTimelineEntry(replayTimeline, replayTs);
+    if (!latest) {
       return;
     }
-    setEventFeed((existing) => {
-      const last = existing[existing.length - 1];
-      if (last === currentEvent.text) {
-        return existing;
+    const timelineKey = replayTimelineEntryKey(latest);
+    if (timelineKey === lastEnqueuedTimelineKeyRef.current) {
+      return;
+    }
+    lastEnqueuedTimelineKeyRef.current = timelineKey;
+    replayCardKeyCounterRef.current += 1;
+    const reactKey = `replay-card-${replayCardKeyCounterRef.current}`;
+    const timeoutId = setTimeout(() => {
+      cardTimeoutsRef.current.delete(reactKey);
+      setReplayCards((current) => current.filter((card) => card.reactKey !== reactKey));
+    }, REPLAY_CARD_VISIBLE_MS);
+    cardTimeoutsRef.current.set(reactKey, timeoutId);
+
+    setReplayCards((current) => {
+      let next = [...current];
+      if (next.length >= MAX_REPLAY_CARDS) {
+        const dropped = next.shift();
+        if (dropped) {
+          const oldTimeout = cardTimeoutsRef.current.get(dropped.reactKey);
+          if (oldTimeout != null) {
+            clearTimeout(oldTimeout);
+          }
+          cardTimeoutsRef.current.delete(dropped.reactKey);
+        }
       }
-      return [...existing, currentEvent.text];
+      return [...next, { reactKey, entry: latest }];
     });
-  }, [replayEvents, replayTs]);
+  }, [replayTimeline, replayTs]);
 
   useEffect(() => {
     eventScrollRef.current?.scrollToEnd({ animated: true });
-  }, [eventFeed]);
+  }, [replayCards]);
 
   const replayPoint = useMemo(
     () => (replayTs == null ? null : getReplayPointAtTimestamp(points, replayTs)),
@@ -228,13 +294,14 @@ export function useJourneyDetailsReplay({
       if (!canReplay) {
         return;
       }
+      clearReplayCardStack();
       const stepMs = Math.max(1, Math.round(replayDurationMs * 0.05));
       setReplayElapsedMs((current) => {
         const anchor = current ?? 0;
         return clampReplayTs(anchor + direction * stepMs);
       });
     },
-    [canReplay, clampReplayTs, replayDurationMs],
+    [canReplay, clearReplayCardStack, clampReplayTs, replayDurationMs],
   );
 
   const handleDirectionalPressIn = useCallback(
@@ -304,9 +371,9 @@ export function useJourneyDetailsReplay({
       clearTimeout(holdTimeoutRef.current);
       holdTimeoutRef.current = null;
     }
+    clearReplayCardStack();
     setReplayElapsedMs(0);
-    setEventFeed([]);
-  }, []);
+  }, [clearReplayCardStack]);
 
   return {
     replayPauseWindows,
@@ -324,8 +391,7 @@ export function useJourneyDetailsReplay({
     isReplaying,
     setIsReplaying,
     setHoldDirection,
-    eventFeed,
-    setEventFeed,
+    replayCards,
     eventScrollRef,
     mapGestureRef,
     mapNativeGesture,
