@@ -32,7 +32,11 @@ import { useWeatherCaptureFlow } from "../../src/features/journey/hooks/useWeath
 import { getJourneyPauseWindows } from "../../src/features/journey/replay";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
-import { getCachedCurrentLocation } from "../../src/location/currentLocationCache";
+import {
+  getCachedCurrentLocation,
+  subscribeCachedCurrentLocation,
+  type CachedCurrentLocation,
+} from "../../src/location/currentLocationCache";
 
 export default function JourneyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -97,31 +101,48 @@ export default function JourneyScreen() {
     [],
   );
 
-  const [mapCacheTick, setMapCacheTick] = useState(0);
+  const [scheduledCachedLocation, setScheduledCachedLocation] =
+    useState<CachedCurrentLocation | null>(null);
   useFocusEffect(
     useCallback(() => {
-      setMapCacheTick((t) => t + 1);
-    }, []),
+      if (journeyData.statusLabel !== "scheduled") {
+        setScheduledCachedLocation(null);
+        return;
+      }
+      setScheduledCachedLocation(getCachedCurrentLocation());
+      const unsub = subscribeCachedCurrentLocation((coords) => {
+        setScheduledCachedLocation(coords);
+      });
+      return unsub;
+    }, [journeyData.statusLabel]),
   );
   useEffect(() => {
+    if (journeyData.statusLabel !== "scheduled") {
+      setScheduledCachedLocation(null);
+      return;
+    }
+    setScheduledCachedLocation(getCachedCurrentLocation());
     const sub = AppState.addEventListener("change", (next) => {
       if (next === "active") {
-        setMapCacheTick((t) => t + 1);
+        setScheduledCachedLocation(getCachedCurrentLocation());
       }
     });
     return () => {
       sub.remove();
     };
-  }, []);
+  }, [journeyData.statusLabel]);
 
   const liveMapFallbackLngLat = useMemo(() => {
+    if (journeyData.statusLabel !== "scheduled") {
+      return null;
+    }
     if (journeyData.points.length > 0) {
       return null;
     }
-    void mapCacheTick;
-    const c = getCachedCurrentLocation();
-    return c ? { lat: c.lat, lng: c.lng } : null;
-  }, [journeyData.points.length, mapCacheTick]);
+    return scheduledCachedLocation
+      ? { lat: scheduledCachedLocation.lat, lng: scheduledCachedLocation.lng }
+      : null;
+  }, [journeyData.points.length, journeyData.statusLabel, scheduledCachedLocation]);
 
   const { endJourney, busy: controlsBusy } = journeyControls;
   const requestEndJourney = useCallback((): void => {
@@ -216,6 +237,11 @@ export default function JourneyScreen() {
               <JourneyMapPanel
                 points={journeyData.points}
                 fallbackLngLat={liveMapFallbackLngLat}
+                fallbackMarkerVariant={
+                  journeyData.statusLabel === "scheduled"
+                    ? "scheduledCurrentLocation"
+                    : "default"
+                }
                 hasLocationPermission={journeyData.locationPermission === "granted"}
                 onGrantLocation={() => {
                   void journeyData.requestMapPermission();

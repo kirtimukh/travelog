@@ -17,6 +17,9 @@ export type CachedCurrentLocation = {
   fetchedAtMs: number;
 };
 
+type CurrentLocationListener = (coords: CachedCurrentLocation) => void;
+const currentLocationListeners = new Set<CurrentLocationListener>();
+
 function readNumber(key: string): number | null {
   try {
     const s = getAppStorage().getString(key);
@@ -57,9 +60,22 @@ export function writeCurrentLocationFromCoords(
     storage.set(KEY_LAT, String(lat));
     storage.set(KEY_LNG, String(lng));
     storage.set(KEY_AT, String(ts));
+    const coords = { lat, lng, fetchedAtMs: ts };
+    currentLocationListeners.forEach((listener) => {
+      listener(coords);
+    });
   } catch {
     // MMKV unavailable (e.g. some test envs) — ignore
   }
+}
+
+export function subscribeCachedCurrentLocation(
+  listener: CurrentLocationListener,
+): () => void {
+  currentLocationListeners.add(listener);
+  return () => {
+    currentLocationListeners.delete(listener);
+  };
 }
 
 export async function refreshCachedCurrentLocation(): Promise<CachedCurrentLocation | null> {

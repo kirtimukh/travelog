@@ -19,6 +19,7 @@ type Props = {
   points: LocationPointRow[];
   markerHead?: LocationPointRow | null;
   fallbackLngLat?: { lat: number; lng: number } | null;
+  fallbackMarkerVariant?: "default" | "scheduledCurrentLocation";
 };
 
 const DEFAULT_CENTER: [number, number] = [91.750605, 26.129195];
@@ -169,7 +170,12 @@ function buildOfflineStyle(pmtilesPath: string | undefined): StyleSpecification 
   };
 }
 
-export function OfflineJourneyMap({ points, markerHead, fallbackLngLat }: Props) {
+export function OfflineJourneyMap({
+  points,
+  markerHead,
+  fallbackLngLat,
+  fallbackMarkerVariant = "default",
+}: Props) {
   const lastPathPoint = points[points.length - 1] ?? null;
   const lineFeature = useMemo(
     () => (points.length > 1 ? toLineFeature(points) : null),
@@ -382,11 +388,28 @@ export function OfflineJourneyMap({ points, markerHead, fallbackLngLat }: Props)
         ) : null}
         {pointFeature ? (
           <GeoJSONSource id="journey-point" data={pointFeature}>
-            <Layer
-              id="journey-point-layer"
-              type="circle"
-              paint={{ "circle-color": "#DC2626", "circle-radius": 5 }}
-            />
+            {fallbackMarkerVariant === "scheduledCurrentLocation" &&
+            points.length === 0 &&
+            markerHead == null ? (
+              <>
+                <Layer
+                  id="journey-point-layer-outer"
+                  type="circle"
+                  paint={{ "circle-color": "#FFFFFF", "circle-radius": 8 }}
+                />
+                <Layer
+                  id="journey-point-layer-inner"
+                  type="circle"
+                  paint={{ "circle-color": "#374151", "circle-radius": 4.5 }}
+                />
+              </>
+            ) : (
+              <Layer
+                id="journey-point-layer"
+                type="circle"
+                paint={{ "circle-color": "#DC2626", "circle-radius": 5 }}
+              />
+            )}
           </GeoJSONSource>
         ) : null}
       </Map>

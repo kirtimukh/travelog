@@ -9,6 +9,7 @@ type Props = {
   onGrantLocation: () => void;
   markerHead?: LocationPointRow | null;
   fallbackLngLat?: { lat: number; lng: number } | null;
+  fallbackMarkerVariant?: "default" | "scheduledCurrentLocation";
 };
 
 export function JourneyMapPanel({
@@ -17,6 +18,7 @@ export function JourneyMapPanel({
   onGrantLocation,
   markerHead,
   fallbackLngLat,
+  fallbackMarkerVariant,
 }: Props) {
   if (hasLocationPermission) {
     return (
@@ -24,6 +26,7 @@ export function JourneyMapPanel({
         points={points}
         markerHead={markerHead}
         fallbackLngLat={fallbackLngLat}
+        fallbackMarkerVariant={fallbackMarkerVariant}
       />
     );
   }
