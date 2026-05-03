@@ -1,8 +1,6 @@
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { Alert } from "react-native";
-
 import { openAppDatabase } from "../../../db/client";
 import { deleteJourneyWithFileGc } from "../../../db/journeys";
 import type {
@@ -14,6 +12,7 @@ import type {
 } from "../../../db/schema";
 import { onPermissionGranted } from "../../../location/currentLocationCache";
 import { loadJourneyBundle } from "../bundle";
+import { confirmTwoStepDestructiveAction } from "../confirmTwoStepDestructive";
 
 type Params = {
   journeyId: number;
@@ -68,46 +67,28 @@ export function useJourneyDetailsData({
     if (!journey || deleteJourneyBusy || !Number.isFinite(journeyId)) {
       return;
     }
-    Alert.alert(
-      "Delete journey?",
-      `This will remove "${journey.name}" and all associated notes, media, and location points.`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Continue",
-          style: "destructive",
-          onPress: () => {
-            Alert.alert(
-              "Final confirmation",
-              "This action is permanent and cannot be undone. Delete this journey now?",
-              [
-                { text: "Cancel", style: "cancel" },
-                {
-                  text: "Delete permanently",
-                  style: "destructive",
-                  onPress: () => {
-                    void (async () => {
-                      setDeleteJourneyBusy(true);
-                      setScreenError(null);
-                      try {
-                        const db = await openAppDatabase();
-                        await deleteJourneyWithFileGc(db, journeyId);
-                        await refreshOngoingJourney();
-                        router.replace("/journeys");
-                      } catch {
-                        setScreenError("Failed to delete journey.");
-                      } finally {
-                        setDeleteJourneyBusy(false);
-                      }
-                    })();
-                  },
-                },
-              ],
-            );
-          },
-        },
-      ],
-    );
+    confirmTwoStepDestructiveAction({
+      firstTitle: "Delete journey?",
+      firstMessage: `This will remove "${journey.name}" and all associated notes, media, and location points.`,
+      secondTitle: "Final confirmation",
+      secondMessage:
+        "This action is permanent and cannot be undone. Delete this journey now?",
+      finalDestructiveLabel: "Delete permanently",
+      onFinalConfirm: async () => {
+        setDeleteJourneyBusy(true);
+        setScreenError(null);
+        try {
+          const db = await openAppDatabase();
+          await deleteJourneyWithFileGc(db, journeyId);
+          await refreshOngoingJourney();
+          router.replace("/journeys");
+        } catch {
+          setScreenError("Failed to delete journey.");
+        } finally {
+          setDeleteJourneyBusy(false);
+        }
+      },
+    });
   }, [deleteJourneyBusy, journey, journeyId, refreshOngoingJourney, router]);
 
   const requestPermission = useCallback(async (): Promise<void> => {

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Linking, Pressable, Text, View } from "react-native";
+import { Linking, Pressable, Text, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -30,6 +30,7 @@ import { useNoteEditFlow } from "../../src/features/journey/hooks/useNoteEditFlo
 import { useRerecordFlow } from "../../src/features/journey/hooks/useRerecordFlow";
 import { useScheduledMapFallbackLngLat } from "../../src/features/journey/hooks/useScheduledMapFallbackLngLat";
 import { useWeatherCaptureFlow } from "../../src/features/journey/hooks/useWeatherCaptureFlow";
+import { confirmTwoStepDestructiveAction } from "../../src/features/journey/confirmTwoStepDestructive";
 import { getJourneyPauseWindows } from "../../src/features/journey/replay";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
@@ -107,36 +108,17 @@ export default function JourneyScreen() {
     if (!journeyData.statusLabel || journeyData.statusLabel === "completed" || controlsBusy) {
       return;
     }
-    Alert.alert(
-      "End journey?",
-      `This will mark "${journeyData.name}" as complete and stop live updates.`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Continue",
-          style: "destructive",
-          onPress: () => {
-            Alert.alert(
-              "Final confirmation",
-              "Ending this journey cannot be undone. End this journey now?",
-              [
-                { text: "Cancel", style: "cancel" },
-                {
-                  text: "End journey",
-                  style: "destructive",
-                  onPress: () => {
-                    void (async () => {
-                      await endJourney();
-                      router.replace(`/journey/details/${journeyId}`);
-                    })();
-                  },
-                },
-              ],
-            );
-          },
-        },
-      ],
-    );
+    confirmTwoStepDestructiveAction({
+      firstTitle: "End journey?",
+      firstMessage: `This will mark "${journeyData.name}" as complete and stop live updates.`,
+      secondTitle: "Final confirmation",
+      secondMessage: "Ending this journey cannot be undone. End this journey now?",
+      finalDestructiveLabel: "End journey",
+      onFinalConfirm: async () => {
+        await endJourney();
+        router.replace(`/journey/details/${journeyId}`);
+      },
+    });
   }, [controlsBusy, endJourney, journeyData.name, journeyData.statusLabel, journeyId, router]);
 
   useEffect(() => {
