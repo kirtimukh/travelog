@@ -1,13 +1,11 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useCallback } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { JourneyMediaEditModal } from "../../../src/features/journey/components/JourneyMediaEditModal";
-import { JourneyNoteEditModal } from "../../../src/features/journey/components/JourneyNoteEditModal";
-import { JourneyNotesFeed } from "../../../src/features/journey/components/JourneyNotesFeed";
-import { JourneyWeatherModal } from "../../../src/features/journey/components/JourneyWeatherModal";
+import { JourneyArtifactsEditorModals } from "../../../src/features/journey/journeyArtifacts/JourneyArtifactsEditorModals";
+import { JourneyArtifactsFeed } from "../../../src/features/journey/journeyArtifacts/JourneyArtifactsFeed";
 import { JourneyDetailsMapSection } from "../../../src/features/journey/components/details/JourneyDetailsMapSection";
 import { JourneyDetailsReplayStatsCard } from "../../../src/features/journey/components/details/JourneyDetailsReplayStatsCard";
 import { JourneyDetailsReplayToolbar } from "../../../src/features/journey/components/details/JourneyDetailsReplayToolbar";
@@ -85,139 +83,68 @@ export default function JourneyDetailsScreen() {
   const editable = canEditInDetails(journey?.status ?? "");
 
   return (
-    <ScrollView
-      className="flex-1 bg-white px-6 pt-12"
-      contentContainerStyle={{ paddingBottom: Math.max(insets.bottom + 24, 40) }}
-      keyboardShouldPersistTaps="handled"
-      nestedScrollEnabled
-      waitFor={replay.mapGestureRef}
-    >
-      <Text className="text-xl font-bold">{journey?.name ?? "Journey details"}</Text>
-      <Text className="mt-2 text-neutral-600">Status: {journey?.status ?? "—"}</Text>
-      {screenError ? <Text className="mt-2 text-sm text-red-700">{screenError}</Text> : null}
+    <View className="flex-1 bg-white">
+      <ScrollView
+        className="flex-1 px-6 pt-12"
+        contentContainerStyle={{ paddingBottom: Math.max(insets.bottom + 24, 40) }}
+        keyboardShouldPersistTaps="handled"
+        nestedScrollEnabled
+        waitFor={replay.mapGestureRef}
+      >
+        <Text className="text-xl font-bold">{journey?.name ?? "Journey details"}</Text>
+        <Text className="mt-2 text-neutral-600">Status: {journey?.status ?? "—"}</Text>
+        {screenError ? <Text className="mt-2 text-sm text-red-700">{screenError}</Text> : null}
 
-      <JourneyDetailsMapSection
-        mapNativeGesture={replay.mapNativeGesture}
-        replayPath={replay.replayPath}
-        replayPoint={replay.replayPoint}
-        hasLocationPermission={locationPermission}
-        onGrantLocation={() => {
-          void requestPermission();
-        }}
-      />
+        <JourneyDetailsMapSection
+          mapNativeGesture={replay.mapNativeGesture}
+          replayPath={replay.replayPath}
+          replayPoint={replay.replayPoint}
+          hasLocationPermission={locationPermission}
+          onGrantLocation={() => {
+            void requestPermission();
+          }}
+        />
 
-      <JourneyDetailsReplayStatsCard
-        replayTs={replay.replayTs}
-        journeyDurationMs={replay.journeyDurationMs}
-        replayDurationMs={replay.replayDurationMs}
-        recordedDistanceMeters={replay.recordedDistanceMeters}
-        speed={replay.speed}
-        heading={replay.heading}
-      />
+        <JourneyDetailsReplayStatsCard
+          replayTs={replay.replayTs}
+          journeyDurationMs={replay.journeyDurationMs}
+          replayDurationMs={replay.replayDurationMs}
+          recordedDistanceMeters={replay.recordedDistanceMeters}
+          speed={replay.speed}
+          heading={replay.heading}
+        />
 
-      <JourneyDetailsReplayToolbar replay={replay} />
+        <JourneyDetailsReplayToolbar replay={replay} />
 
-      {!editable ? (
-        <Text className="mt-4 text-sm text-neutral-600">
-          Editing notes/media is disabled while journey is ongoing.
-        </Text>
-      ) : null}
+        {!editable ? (
+          <Text className="mt-4 text-sm text-neutral-600">
+            Editing notes/media is disabled while journey is ongoing.
+          </Text>
+        ) : null}
 
-      <JourneyNotesFeed
-        notes={notes}
-        media={media}
-        weather={weather}
-        pauseWindows={replay.replayPauseWindows}
-        locationPoints={points}
-        editable={editable}
-        suspendPlayback={
-          noteEditFlow.target !== null ||
-          mediaEditFlow.editModal.target !== null ||
-          weatherCaptureFlow.modal.visible
-        }
-        onLongPressNote={(note) => {
-          if (!editable) {
-            return;
-          }
-          noteEditFlow.openFor(note);
-        }}
-        onLongPressMedia={(item) => {
-          if (!editable) {
-            return;
-          }
-          mediaEditFlow.editModal.openFor(item);
-        }}
-        onLongPressWeather={(row) => {
-          weatherCaptureFlow.modal.openForWeather(row);
-        }}
-      />
+        <JourneyArtifactsFeed
+          notes={notes}
+          media={media}
+          weather={weather}
+          pauseWindows={replay.replayPauseWindows}
+          locationPoints={points}
+          editable={editable}
+          noteEdit={noteEditFlow}
+          mediaEdit={mediaEditFlow}
+          weatherCapture={weatherCaptureFlow}
+        />
+      </ScrollView>
 
-      <JourneyNoteEditModal
-        visible={noteEditFlow.target !== null}
-        note={noteEditFlow.target}
-        text={noteEditFlow.text}
-        onChangeText={noteEditFlow.onChangeText}
-        busy={noteEditFlow.busy}
-        onRequestClose={noteEditFlow.close}
-        onSave={() => {
-          void noteEditFlow.save();
-        }}
-        onDelete={() => {
-          void noteEditFlow.remove();
-        }}
+      <JourneyArtifactsEditorModals
+        noteEdit={noteEditFlow}
+        mediaEdit={mediaEditFlow}
+        weatherCapture={weatherCaptureFlow}
         onRerecordAudio={() => {
           setScreenError("Re-recording is only available on the live journey screen.");
           noteEditFlow.close();
         }}
+        weatherOnDelete={editable ? weatherCaptureFlow.modal.requestDeleteWeather : undefined}
       />
-
-      <JourneyMediaEditModal
-        visible={mediaEditFlow.editModal.target !== null}
-        file={mediaEditFlow.editModal.target?.file ?? ""}
-        width={mediaEditFlow.editModal.target?.width ?? null}
-        height={mediaEditFlow.editModal.target?.height ?? null}
-        text={mediaEditFlow.editModal.text}
-        onChangeText={mediaEditFlow.editModal.onChangeText}
-        timestampEpochMs={mediaEditFlow.editModal.timestampEpochMs}
-        onChangeTimestampEpochMs={mediaEditFlow.editModal.onChangeTimestampEpochMs}
-        localDateTime={mediaEditFlow.editModal.localDateTime}
-        onChangeLocalDateTime={mediaEditFlow.editModal.onChangeLocalDateTime}
-        lat={mediaEditFlow.editModal.lat}
-        onChangeLat={mediaEditFlow.editModal.onChangeLat}
-        lng={mediaEditFlow.editModal.lng}
-        onChangeLng={mediaEditFlow.editModal.onChangeLng}
-        busy={mediaEditFlow.editModal.busy}
-        onRequestClose={mediaEditFlow.editModal.close}
-        onSave={() => {
-          void mediaEditFlow.editModal.save();
-        }}
-        onDelete={() => {
-          void mediaEditFlow.editModal.remove();
-        }}
-      />
-
-      <JourneyWeatherModal
-        visible={weatherCaptureFlow.modal.visible}
-        mode={weatherCaptureFlow.modal.mode}
-        busy={weatherCaptureFlow.modal.busy}
-        offline={weatherCaptureFlow.modal.offline}
-        error={weatherCaptureFlow.modal.error}
-        quotaLabel={weatherCaptureFlow.modal.quotaLabel}
-        canRequest={weatherCaptureFlow.modal.canRequest}
-        weatherDisplay={weatherCaptureFlow.modal.weatherDisplay}
-        dismissButtonLabel={weatherCaptureFlow.modal.dismissButtonLabel}
-        onRetry={() => {
-          void weatherCaptureFlow.modal.retryAvailability();
-        }}
-        onRequestWeather={() => {
-          void weatherCaptureFlow.modal.requestWeather();
-        }}
-        onDismiss={weatherCaptureFlow.modal.close}
-        onSave={() => {
-          void weatherCaptureFlow.modal.savePreview();
-        }}
-        onDelete={editable ? weatherCaptureFlow.modal.requestDeleteWeather : undefined}
-      />
-    </ScrollView>
+    </View>
   );
 }

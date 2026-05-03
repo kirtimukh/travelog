@@ -18,11 +18,9 @@ import {
   type JourneyActionConfirmKind,
 } from "../../src/features/journey/components/JourneyActionConfirmModal";
 import { JourneyMapPanel } from "../../src/features/journey/components/JourneyMapPanel";
-import { JourneyMediaEditModal } from "../../src/features/journey/components/JourneyMediaEditModal";
-import { JourneyNoteEditModal } from "../../src/features/journey/components/JourneyNoteEditModal";
-import { JourneyNotesFeed } from "../../src/features/journey/components/JourneyNotesFeed";
-import { JourneyWeatherModal } from "../../src/features/journey/components/JourneyWeatherModal";
 import { RerecordOverlayBar } from "../../src/features/journey/components/RerecordOverlayBar";
+import { JourneyArtifactsEditorModals } from "../../src/features/journey/journeyArtifacts/JourneyArtifactsEditorModals";
+import { JourneyArtifactsFeed } from "../../src/features/journey/journeyArtifacts/JourneyArtifactsFeed";
 import { useJourneyControls } from "../../src/features/journey/hooks/useJourneyControls";
 import { useJourneyData } from "../../src/features/journey/hooks/useJourneyData";
 import { useMediaEditFlow } from "../../src/features/journey/hooks/useMediaEditFlow";
@@ -252,23 +250,20 @@ export default function JourneyScreen() {
           </Pressable>
         </View>
 
-        <JourneyNotesFeed
+        <JourneyArtifactsFeed
           notes={journeyData.notes}
           media={journeyData.media}
           weather={journeyData.weather}
           pauseWindows={pauseWindows}
           locationPoints={journeyData.points}
-          suspendPlayback={
-            textNoteModalVisible ||
-            voiceNoteModalVisible ||
-            noteEditFlow.target !== null ||
-            rerecordFlow.session !== null ||
-            weatherCaptureFlow.modal.visible
-          }
-          onLongPressNote={noteEditFlow.openFor}
-          onLongPressMedia={mediaEditFlow.editModal.openFor}
-          onLongPressWeather={(row) => {
-            weatherCaptureFlow.modal.openForWeather(row);
+          noteEdit={noteEditFlow}
+          mediaEdit={mediaEditFlow}
+          weatherCapture={weatherCaptureFlow}
+          liveSuspendExtras={{
+            textNoteModalVisible,
+            voiceNoteModalVisible,
+            rerecordSessionActive: rerecordFlow.session !== null,
+            mediaAddModalVisible: mediaEditFlow.addModal.visible,
           }}
         />
       </ScrollView>
@@ -336,78 +331,18 @@ export default function JourneyScreen() {
         />
       ) : null}
 
-      {noteEditFlow.target ? (
-        <JourneyNoteEditModal
-          visible
-          note={noteEditFlow.target}
-          text={noteEditFlow.text}
-          onChangeText={noteEditFlow.onChangeText}
-          busy={noteEditFlow.busy}
-          onRequestClose={noteEditFlow.close}
-          onSave={() => {
-            void noteEditFlow.save();
-          }}
-          onDelete={() => {
-            void noteEditFlow.remove();
-          }}
-          onRerecordAudio={() => {
-            if (!noteEditFlow.target) {
-              return;
-            }
-            void rerecordFlow.rerecordNoteAudio(noteEditFlow.target);
-            noteEditFlow.close();
-          }}
-        />
-      ) : null}
-
-      {mediaEditFlow.editModal.target ? (
-        <JourneyMediaEditModal
-          visible
-          file={mediaEditFlow.editModal.target.file}
-          width={mediaEditFlow.editModal.target.width}
-          height={mediaEditFlow.editModal.target.height}
-          text={mediaEditFlow.editModal.text}
-          onChangeText={mediaEditFlow.editModal.onChangeText}
-          timestampEpochMs={mediaEditFlow.editModal.timestampEpochMs}
-          onChangeTimestampEpochMs={mediaEditFlow.editModal.onChangeTimestampEpochMs}
-          localDateTime={mediaEditFlow.editModal.localDateTime}
-          onChangeLocalDateTime={mediaEditFlow.editModal.onChangeLocalDateTime}
-          lat={mediaEditFlow.editModal.lat}
-          onChangeLat={mediaEditFlow.editModal.onChangeLat}
-          lng={mediaEditFlow.editModal.lng}
-          onChangeLng={mediaEditFlow.editModal.onChangeLng}
-          busy={mediaEditFlow.editModal.busy}
-          onRequestClose={mediaEditFlow.editModal.close}
-          onSave={() => {
-            void mediaEditFlow.editModal.save();
-          }}
-          onDelete={() => {
-            void mediaEditFlow.editModal.remove();
-          }}
-        />
-      ) : null}
-
-      <JourneyWeatherModal
-        visible={weatherCaptureFlow.modal.visible}
-        mode={weatherCaptureFlow.modal.mode}
-        busy={weatherCaptureFlow.modal.busy}
-        offline={weatherCaptureFlow.modal.offline}
-        error={weatherCaptureFlow.modal.error}
-        quotaLabel={weatherCaptureFlow.modal.quotaLabel}
-        canRequest={weatherCaptureFlow.modal.canRequest}
-        weatherDisplay={weatherCaptureFlow.modal.weatherDisplay}
-        dismissButtonLabel={weatherCaptureFlow.modal.dismissButtonLabel}
-        onRetry={() => {
-          void weatherCaptureFlow.modal.retryAvailability();
+      <JourneyArtifactsEditorModals
+        noteEdit={noteEditFlow}
+        mediaEdit={mediaEditFlow}
+        weatherCapture={weatherCaptureFlow}
+        onRerecordAudio={() => {
+          if (!noteEditFlow.target) {
+            return;
+          }
+          void rerecordFlow.rerecordNoteAudio(noteEditFlow.target);
+          noteEditFlow.close();
         }}
-        onRequestWeather={() => {
-          void weatherCaptureFlow.modal.requestWeather();
-        }}
-        onDismiss={weatherCaptureFlow.modal.close}
-        onSave={() => {
-          void weatherCaptureFlow.modal.savePreview();
-        }}
-        onDelete={weatherCaptureFlow.modal.requestDeleteWeather}
+        weatherOnDelete={weatherCaptureFlow.modal.requestDeleteWeather}
       />
     </View>
   );
