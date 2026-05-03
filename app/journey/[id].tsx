@@ -1,6 +1,6 @@
-import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, AppState, Linking, Pressable, Text, View } from "react-native";
+import { Alert, Linking, Pressable, Text, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -28,15 +28,11 @@ import { useJourneyData } from "../../src/features/journey/hooks/useJourneyData"
 import { useMediaEditFlow } from "../../src/features/journey/hooks/useMediaEditFlow";
 import { useNoteEditFlow } from "../../src/features/journey/hooks/useNoteEditFlow";
 import { useRerecordFlow } from "../../src/features/journey/hooks/useRerecordFlow";
+import { useScheduledMapFallbackLngLat } from "../../src/features/journey/hooks/useScheduledMapFallbackLngLat";
 import { useWeatherCaptureFlow } from "../../src/features/journey/hooks/useWeatherCaptureFlow";
 import { getJourneyPauseWindows } from "../../src/features/journey/replay";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../src/features/journey/useOngoingJourneyCandidate";
-import {
-  getCachedCurrentLocation,
-  subscribeCachedCurrentLocation,
-  type CachedCurrentLocation,
-} from "../../src/location/currentLocationCache";
 
 export default function JourneyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -101,48 +97,10 @@ export default function JourneyScreen() {
     [],
   );
 
-  const [scheduledCachedLocation, setScheduledCachedLocation] =
-    useState<CachedCurrentLocation | null>(null);
-  useFocusEffect(
-    useCallback(() => {
-      if (journeyData.statusLabel !== "scheduled") {
-        setScheduledCachedLocation(null);
-        return;
-      }
-      setScheduledCachedLocation(getCachedCurrentLocation());
-      const unsub = subscribeCachedCurrentLocation((coords) => {
-        setScheduledCachedLocation(coords);
-      });
-      return unsub;
-    }, [journeyData.statusLabel]),
+  const liveMapFallbackLngLat = useScheduledMapFallbackLngLat(
+    journeyData.statusLabel,
+    journeyData.points.length,
   );
-  useEffect(() => {
-    if (journeyData.statusLabel !== "scheduled") {
-      setScheduledCachedLocation(null);
-      return;
-    }
-    setScheduledCachedLocation(getCachedCurrentLocation());
-    const sub = AppState.addEventListener("change", (next) => {
-      if (next === "active") {
-        setScheduledCachedLocation(getCachedCurrentLocation());
-      }
-    });
-    return () => {
-      sub.remove();
-    };
-  }, [journeyData.statusLabel]);
-
-  const liveMapFallbackLngLat = useMemo(() => {
-    if (journeyData.statusLabel !== "scheduled") {
-      return null;
-    }
-    if (journeyData.points.length > 0) {
-      return null;
-    }
-    return scheduledCachedLocation
-      ? { lat: scheduledCachedLocation.lat, lng: scheduledCachedLocation.lng }
-      : null;
-  }, [journeyData.points.length, journeyData.statusLabel, scheduledCachedLocation]);
 
   const { endJourney, busy: controlsBusy } = journeyControls;
   const requestEndJourney = useCallback((): void => {
