@@ -15,7 +15,6 @@ import { JourneyWeatherCardBody, weatherRowToCardDisplay } from "./JourneyWeathe
 import {
   buildFeed,
   type FeedItem,
-  formatListTimestamp,
   latLngLabelForNote,
   MEDIA_FEED_THUMBNAIL_HEIGHT,
   mediaListMetaLine,
@@ -23,6 +22,7 @@ import {
   notePreviewText,
   shouldShowNoteBodyBelowPlayer,
 } from "./JourneyNotesFeed.utils";
+import { formatListTimestamp } from "../displayFormatters";
 
 type FeedVoiceAudio = {
   player: AudioPlayer;

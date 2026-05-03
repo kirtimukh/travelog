@@ -1,6 +1,6 @@
 import type { LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
+import { formatLatLngPair, formatListTimestamp } from "../displayFormatters";
 import type { JourneyPauseWindow } from "../replay";
-
 export const MEDIA_FEED_THUMBNAIL_HEIGHT = 100;
 
 export type FeedItem =
@@ -54,17 +54,6 @@ export function notePreviewText(note: NoteRow): string {
     return "Voice note";
   }
   return "";
-}
-
-export function formatListTimestamp(ts: number): string {
-  return new Date(ts).toLocaleString(undefined, {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
-}
-
-function formatLatLngPair(lat: number, lng: number): string {
-  return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 }
 
 function nearestPointByTimestamp(

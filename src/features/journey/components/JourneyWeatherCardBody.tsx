@@ -1,6 +1,7 @@
 import { Image, Text, View } from "react-native";
 
 import type { WeatherRow } from "../../../db/schema";
+import { formatLatLngPair, formatListTimestamp } from "../displayFormatters";
 
 /** Feed + modal preview fields (matches `WeatherRow` display subset). */
 export type JourneyWeatherCardDisplay = {
@@ -12,17 +13,6 @@ export type JourneyWeatherCardDisplay = {
   temperature: number | null;
   feels_like_temperature: number | null;
 };
-
-function formatListTimestamp(ts: number): string {
-  return new Date(ts).toLocaleString(undefined, {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
-}
-
-function formatLatLngPair(lat: number, lng: number): string {
-  return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-}
 
 export function weatherRowToCardDisplay(row: WeatherRow): JourneyWeatherCardDisplay {
   return {
