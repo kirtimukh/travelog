@@ -1,5 +1,5 @@
 import { useEffect, type ReactElement } from "react";
-import { Text, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 
 import { AppHeaderMenu } from "../../../components/AppHeaderMenu";
 import { HeaderBackButton } from "../../../components/HeaderBackButton";
@@ -21,6 +21,9 @@ type Params = {
   requestDeleteJourney: () => void;
   deleteJourneyBusy: boolean;
   noteOrMediaBusy: boolean;
+  requestExportJourney?: () => void | Promise<void>;
+  exportJourneyDisabled?: boolean;
+  exportBusy: boolean;
 };
 
 export function useJourneyDetailsHeaderOptions({
@@ -31,6 +34,9 @@ export function useJourneyDetailsHeaderOptions({
   requestDeleteJourney,
   deleteJourneyBusy,
   noteOrMediaBusy,
+  requestExportJourney,
+  exportJourneyDisabled = false,
+  exportBusy,
 }: Params): void {
   useEffect(() => {
     navigation.setOptions({
@@ -55,18 +61,29 @@ export function useJourneyDetailsHeaderOptions({
           showHistory
           ongoingJourneyId={ongoingJourneyId}
           hideOngoing={ongoingJourneyId === journeyId}
+          onExportJourney={
+            Platform.OS === "android" && requestExportJourney != null
+              ? () => {
+                  void requestExportJourney();
+                }
+              : undefined
+          }
+          exportJourneyDisabled={exportJourneyDisabled}
           onDeleteJourney={requestDeleteJourney}
-          deleteJourneyDisabled={noteOrMediaBusy || deleteJourneyBusy}
+          deleteJourneyDisabled={noteOrMediaBusy || deleteJourneyBusy || exportBusy}
         />
       ),
     });
   }, [
     deleteJourneyBusy,
+    exportBusy,
+    exportJourneyDisabled,
     journey,
     journeyId,
     navigation,
     noteOrMediaBusy,
     ongoingJourneyId,
     requestDeleteJourney,
+    requestExportJourney,
   ]);
 }

@@ -7,6 +7,8 @@ type AppHeaderMenuProps = {
   showHistory: boolean;
   ongoingJourneyId: number | null;
   hideOngoing?: boolean;
+  onExportJourney?: () => void;
+  exportJourneyDisabled?: boolean;
   onEndJourney?: () => void;
   endJourneyDisabled?: boolean;
   onDeleteJourney?: () => void;
@@ -18,6 +20,8 @@ export function AppHeaderMenu({
   showHistory,
   ongoingJourneyId,
   hideOngoing = false,
+  onExportJourney,
+  exportJourneyDisabled = false,
   onEndJourney,
   endJourneyDisabled = false,
   onDeleteJourney,
@@ -73,8 +77,24 @@ export function AppHeaderMenu({
                 <Text className="font-medium text-neutral-900">Ongoing</Text>
               </Pressable>
             ) : null}
-            {onEndJourney != null || onDeleteJourney != null ? (
+            {onExportJourney != null || onEndJourney != null || onDeleteJourney != null ? (
               <View className="mt-2 gap-2 border-t border-neutral-200 pt-2">
+                {onExportJourney ? (
+                  <Pressable
+                    className={`rounded-md px-3 py-2 ${exportJourneyDisabled ? "bg-neutral-100" : "bg-white"}`}
+                    disabled={exportJourneyDisabled}
+                    onPress={() => {
+                      setOpen(false);
+                      onExportJourney();
+                    }}
+                  >
+                    <Text
+                      className={`font-medium ${exportJourneyDisabled ? "text-neutral-400" : "text-neutral-900"}`}
+                    >
+                      Export journey
+                    </Text>
+                  </Pressable>
+                ) : null}
                 {onEndJourney ? (
                   <Pressable
                     className={`rounded-md px-3 py-2 ${endJourneyDisabled ? "bg-neutral-100" : "bg-white"}`}

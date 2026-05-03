@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useCallback } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -11,6 +11,7 @@ import { JourneyDetailsReplayStatsCard } from "../../../src/features/journey/com
 import { JourneyDetailsReplayToolbar } from "../../../src/features/journey/components/details/JourneyDetailsReplayToolbar";
 import { useJourneyDetailsData } from "../../../src/features/journey/hooks/useJourneyDetailsData";
 import { useJourneyDetailsHeaderOptions } from "../../../src/features/journey/hooks/useJourneyDetailsHeaderOptions";
+import { useJourneyExport } from "../../../src/features/journey/hooks/useJourneyExport";
 import { useJourneyDetailsReplay } from "../../../src/features/journey/hooks/useJourneyDetailsReplay";
 import { useMediaEditFlow } from "../../../src/features/journey/hooks/useMediaEditFlow";
 import { useNoteEditFlow } from "../../../src/features/journey/hooks/useNoteEditFlow";
@@ -70,6 +71,19 @@ export default function JourneyDetailsScreen() {
 
   const noteOrMediaBusy = noteEditFlow.busy || mediaEditFlow.editModal.busy;
 
+  const journeyExport = useJourneyExport({
+    journeyId,
+    journey,
+    setScreenError,
+  });
+
+  const exportJourneyDisabled =
+    journey == null ||
+    journey.status === "scheduled" ||
+    noteOrMediaBusy ||
+    deleteJourneyBusy ||
+    journeyExport.exportBusy;
+
   useJourneyDetailsHeaderOptions({
     navigation,
     journey,
@@ -78,6 +92,9 @@ export default function JourneyDetailsScreen() {
     requestDeleteJourney,
     deleteJourneyBusy,
     noteOrMediaBusy,
+    requestExportJourney: journeyExport.requestExportJourney,
+    exportJourneyDisabled,
+    exportBusy: journeyExport.exportBusy,
   });
 
   const editable = canEditInDetails(journey?.status ?? "");
@@ -94,6 +111,18 @@ export default function JourneyDetailsScreen() {
         <Text className="text-xl font-bold">{journey?.name ?? "Journey details"}</Text>
         <Text className="mt-2 text-neutral-600">Status: {journey?.status ?? "—"}</Text>
         {screenError ? <Text className="mt-2 text-sm text-red-700">{screenError}</Text> : null}
+        {journeyExport.exportWarning ? (
+          <View className="mt-3 flex-row items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2">
+            <Text className="shrink text-sm text-amber-900">{journeyExport.exportWarning}</Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={journeyExport.dismissExportWarning}
+              className="rounded bg-amber-200 px-2 py-1"
+            >
+              <Text className="text-xs font-semibold text-amber-900">Dismiss</Text>
+            </Pressable>
+          </View>
+        ) : null}
 
         <JourneyDetailsMapSection
           mapNativeGesture={replay.mapNativeGesture}
