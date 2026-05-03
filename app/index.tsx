@@ -1,15 +1,11 @@
 import * as DocumentPicker from "expo-document-picker";
 import * as Sharing from "expo-sharing";
-import { useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
 import { openAppDatabase } from "../src/db/client";
-import {
-  createJourney,
-  getMainScreenJourneyCandidate,
-} from "../src/db/journeys";
-import type { JourneyRow } from "../src/db/schema";
+import { createJourney } from "../src/db/journeys";
 import {
   copyRequiredPmtilesIntoAppDocuments,
   validateRequiredPmtiles,
@@ -26,34 +22,24 @@ import { useOngoingJourneyCandidate } from "../src/features/journey/useOngoingJo
 export default function HomeScreen() {
   const router = useRouter();
   const navigation = useNavigation();
-  const { ongoingJourneyId } = useOngoingJourneyCandidate();
   const [status, setStatus] = useState<string>("Checking map package...");
   const [ready, setReady] = useState<boolean>(false);
+  const {
+    candidateJourney,
+    ongoingJourneyId,
+    candidateLoading,
+    refreshOngoingJourney,
+  } = useOngoingJourneyCandidate({ skipFocusRefresh: !ready });
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<{ name: string; uri: string } | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
-  const [candidateJourney, setCandidateJourney] = useState<JourneyRow | null>(null);
-  const [candidateLoading, setCandidateLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [journeyError, setJourneyError] = useState<string | null>(null);
   const [creatingJourney, setCreatingJourney] = useState<boolean>(false);
   const [exportingDiagnostics, setExportingDiagnostics] = useState<boolean>(false);
   const [exportDiagnosticsError, setExportDiagnosticsError] = useState<string | null>(null);
-
-  const refreshCandidateJourney = useCallback(async (): Promise<void> => {
-    setCandidateLoading(true);
-    try {
-      const db = await openAppDatabase();
-      const candidate = await getMainScreenJourneyCandidate(db);
-      setCandidateJourney(candidate);
-    } catch {
-      setCandidateJourney(null);
-    } finally {
-      setCandidateLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
     const cfg = getPmtilesConfig();
@@ -66,17 +52,8 @@ export default function HomeScreen() {
     }
     setReady(true);
     setStatus(`Map package ready: ${cfg.pmtilesFileName}`);
-    void refreshCandidateJourney();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!ready) {
-        return;
-      }
-      void refreshCandidateJourney();
-    }, [ready, refreshCandidateJourney]),
-  );
+    void refreshOngoingJourney();
+  }, [refreshOngoingJourney]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -175,7 +152,7 @@ export default function HomeScreen() {
       setStatus(successMessage);
       setFormSuccess(successMessage);
       setSelectedFile(null);
-      await refreshCandidateJourney();
+      await refreshOngoingJourney();
     } catch (error) {
       const message =
         error instanceof Error
@@ -204,18 +181,6 @@ export default function HomeScreen() {
       const newId = await createJourney(db, {
         name: trimmedName,
         description: trimmedDescription,
-      });
-      setCandidateJourney({
-        id: newId,
-        name: trimmedName,
-        description: trimmedDescription,
-        start_ts: null,
-        end_ts: null,
-        status: "scheduled",
-        metadata: null,
-        journey_duration_ms: null,
-        recorded_duration_ms: null,
-        recorded_distance: null,
       });
       setName("");
       setDescription("");
