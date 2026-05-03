@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "mapmytrip",
+    "scheme": "Travelog",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -37,9 +37,9 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "MapMyTrip records your route while journeys are active, including in the background.",
-          "locationWhenInUsePermission": "MapMyTrip uses your location to show your path on the map.",
-          "locationAlwaysPermission": "Allow background location so MapMyTrip can continue recording your journey when the screen is off.",
+          "locationAlwaysAndWhenInUsePermission": "Travelog records your route while journeys are active, including in the background.",
+          "locationWhenInUsePermission": "Travelog uses your location to show your path on the map.",
+          "locationAlwaysPermission": "Allow background location so Travelog can continue recording your journey when the screen is off.",
           "isIosBackgroundLocationEnabled": true,
           "isAndroidBackgroundLocationEnabled": true,
           "isAndroidForegroundServiceEnabled": true
@@ -48,14 +48,14 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "MapMyTrip needs the microphone to record voice notes on a journey."
+          "microphonePermission": "Travelog needs the microphone to record voice notes on a journey."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "MapMyTrip needs access to your photos to attach images to a journey.",
-          "cameraPermission": "MapMyTrip can use the camera to capture images for a journey."
+          "photosPermission": "Travelog needs access to your photos to attach images to a journey.",
+          "cameraPermission": "Travelog can use the camera to capture images for a journey."
         }
       ],
       "expo-file-system",

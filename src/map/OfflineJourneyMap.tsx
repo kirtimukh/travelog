@@ -82,7 +82,7 @@ function boundsFromPoints(points: LocationPointRow[]): LngLatBounds | null {
 
 const offlineFallbackStyle: StyleSpecification = {
   version: 8,
-  name: "MapMyTrip Offline Fallback",
+  name: "Travelog Offline Fallback",
   sources: {},
   layers: [
     {
@@ -102,7 +102,7 @@ function buildOfflineStyle(pmtilesPath: string | undefined): StyleSpecification 
 
   return {
     version: 8,
-    name: "MapMyTrip PMTiles Basemap",
+    name: "Travelog PMTiles Basemap",
     sources: {
       "pmtiles-basemap": {
         type: "vector",

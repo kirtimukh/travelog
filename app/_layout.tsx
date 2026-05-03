@@ -115,7 +115,7 @@ export default function RootLayout() {
             screenOptions={{
               headerShown: true,
               // Default `title` (not string `headerTitle`) so screens can override via setOptions({ title }).
-              title: "MapMyTrip",
+              title: "Travelog",
             }}
           />
         </AppErrorBoundary>

@@ -63,7 +63,7 @@ function buildTaskOptions(mode: AccuracyMode): Location.LocationTaskOptions {
     timeInterval: MIN_TIME_BETWEEN_COMMITS_MS,
     activityType: Location.LocationActivityType.Fitness,
     foregroundService: {
-      notificationTitle: "MapMyTrip",
+      notificationTitle: "Travelog",
       notificationBody: "Recording your journey in the background.",
       notificationColor: "#1D4ED8",
     },
