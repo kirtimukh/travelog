@@ -5,6 +5,7 @@ import { Modal, Pressable, Text, View } from "react-native";
 type AppHeaderMenuProps = {
   showHome: boolean;
   showHistory: boolean;
+  showAdvanced?: boolean;
   ongoingJourneyId: number | null;
   hideOngoing?: boolean;
   onExportJourney?: () => void;
@@ -18,6 +19,7 @@ type AppHeaderMenuProps = {
 export function AppHeaderMenu({
   showHome,
   showHistory,
+  showAdvanced = false,
   ongoingJourneyId,
   hideOngoing = false,
   onExportJourney,
@@ -64,6 +66,17 @@ export function AppHeaderMenu({
                 }}
               >
                 <Text className="font-medium text-neutral-900">History</Text>
+              </Pressable>
+            ) : null}
+            {showAdvanced ? (
+              <Pressable
+                className="rounded-md px-3 py-2"
+                onPress={() => {
+                  setOpen(false);
+                  router.navigate("/advanced");
+                }}
+              >
+                <Text className="font-medium text-neutral-900">Advanced</Text>
               </Pressable>
             ) : null}
             {showOngoing ? (
