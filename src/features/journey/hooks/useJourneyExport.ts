@@ -2,7 +2,10 @@ import { useCallback, useState, type Dispatch, type SetStateAction } from "react
 import { Platform } from "react-native";
 
 import type { JourneyRow } from "../../../db/schema";
-import { runJourneyExportAndroid } from "../export/runJourneyExportAndroid";
+import {
+  runJourneyExportAndroid,
+  type JourneyExportMode,
+} from "../export/runJourneyExportAndroid";
 
 type Params = {
   journeyId: number;
@@ -12,7 +15,8 @@ type Params = {
 
 export type UseJourneyExportResult = {
   exportBusy: boolean;
-  requestExportJourney: () => Promise<void>;
+  requestExportJourneyDownload: () => Promise<void>;
+  requestExportJourneyShare: () => Promise<void>;
   exportWarning: string | null;
   dismissExportWarning: () => void;
 };
@@ -29,36 +33,48 @@ export function useJourneyExport({
     setExportWarning(null);
   }, []);
 
-  const requestExportJourney = useCallback(async (): Promise<void> => {
-    if (Platform.OS !== "android") {
-      return;
-    }
-    if (!journey || journey.status === "scheduled" || !Number.isFinite(journeyId)) {
-      return;
-    }
-    setExportBusy(true);
-    setScreenError(null);
-    try {
-      const res = await runJourneyExportAndroid(journeyId);
-      if (!res.ok) {
-        setScreenError(res.error);
+  const runExport = useCallback(
+    async (mode: JourneyExportMode): Promise<void> => {
+      if (Platform.OS !== "android") {
         return;
       }
-      if (res.hadMissingAssets) {
-        setExportWarning(
-          "Some voice notes or images were missing on this device. Those entries are null in journey.json.",
-        );
+      if (!journey || journey.status === "scheduled" || !Number.isFinite(journeyId)) {
+        return;
       }
-    } catch (e) {
-      setScreenError(e instanceof Error ? e.message : "Export failed.");
-    } finally {
-      setExportBusy(false);
-    }
-  }, [journey, journeyId, setScreenError]);
+      setExportBusy(true);
+      setScreenError(null);
+      try {
+        const res = await runJourneyExportAndroid(journeyId, mode);
+        if (!res.ok) {
+          setScreenError(res.error);
+          return;
+        }
+        if (res.hadMissingAssets) {
+          setExportWarning(
+            "Some voice notes or images were missing on this device. Those entries are null in journey.json.",
+          );
+        }
+      } catch (e) {
+        setScreenError(e instanceof Error ? e.message : "Export failed.");
+      } finally {
+        setExportBusy(false);
+      }
+    },
+    [journey, journeyId, setScreenError],
+  );
+
+  const requestExportJourneyDownload = useCallback(async (): Promise<void> => {
+    await runExport("download");
+  }, [runExport]);
+
+  const requestExportJourneyShare = useCallback(async (): Promise<void> => {
+    await runExport("share");
+  }, [runExport]);
 
   return {
     exportBusy,
-    requestExportJourney,
+    requestExportJourneyDownload,
+    requestExportJourneyShare,
     exportWarning,
     dismissExportWarning,
   };

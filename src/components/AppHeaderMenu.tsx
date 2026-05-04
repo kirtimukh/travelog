@@ -8,7 +8,8 @@ type AppHeaderMenuProps = {
   showAdvanced?: boolean;
   ongoingJourneyId: number | null;
   hideOngoing?: boolean;
-  onExportJourney?: () => void;
+  onExportJourneyDownload?: () => void;
+  onExportJourneyShare?: () => void;
   exportJourneyDisabled?: boolean;
   onEndJourney?: () => void;
   endJourneyDisabled?: boolean;
@@ -22,7 +23,8 @@ export function AppHeaderMenu({
   showAdvanced = false,
   ongoingJourneyId,
   hideOngoing = false,
-  onExportJourney,
+  onExportJourneyDownload,
+  onExportJourneyShare,
   exportJourneyDisabled = false,
   onEndJourney,
   endJourneyDisabled = false,
@@ -31,7 +33,9 @@ export function AppHeaderMenu({
 }: AppHeaderMenuProps) {
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
+  const [exportPickerOpen, setExportPickerOpen] = useState<boolean>(false);
   const showOngoing = ongoingJourneyId != null && !hideOngoing;
+  const canExport = onExportJourneyDownload != null || onExportJourneyShare != null;
 
   return (
     <>
@@ -90,21 +94,21 @@ export function AppHeaderMenu({
                 <Text className="font-medium text-neutral-900">Ongoing</Text>
               </Pressable>
             ) : null}
-            {onExportJourney != null || onEndJourney != null || onDeleteJourney != null ? (
+            {canExport || onEndJourney != null || onDeleteJourney != null ? (
               <View className="mt-2 gap-2 border-t border-neutral-200 pt-2">
-                {onExportJourney ? (
+                {canExport ? (
                   <Pressable
                     className={`rounded-md px-3 py-2 ${exportJourneyDisabled ? "bg-neutral-100" : "bg-white"}`}
                     disabled={exportJourneyDisabled}
                     onPress={() => {
                       setOpen(false);
-                      onExportJourney();
+                      setExportPickerOpen(true);
                     }}
                   >
                     <Text
                       className={`font-medium ${exportJourneyDisabled ? "text-neutral-400" : "text-neutral-900"}`}
                     >
-                      Export journey
+                      Export Journey
                     </Text>
                   </Pressable>
                 ) : null}
@@ -143,6 +147,52 @@ export function AppHeaderMenu({
               </View>
             ) : null}
           </View>
+        </Pressable>
+      </Modal>
+      <Modal
+        transparent
+        visible={exportPickerOpen}
+        animationType="fade"
+        onRequestClose={() => setExportPickerOpen(false)}
+      >
+        <Pressable
+          className="flex-1 items-center justify-center bg-black/40 px-6"
+          onPress={() => setExportPickerOpen(false)}
+        >
+          <Pressable
+            className="w-full max-w-sm rounded-md border border-neutral-200 bg-white p-4 shadow"
+            onPress={() => {}}
+          >
+            <Text className="text-base font-semibold text-neutral-900">Export Journey</Text>
+            <Text className="mt-1 text-sm text-neutral-600">Choose where to send the export.</Text>
+            <View className="mt-3 gap-2">
+              {onExportJourneyDownload ? (
+                <Pressable
+                  className="rounded-md bg-white px-3 py-2"
+                  onPress={() => {
+                    setExportPickerOpen(false);
+                    onExportJourneyDownload();
+                  }}
+                >
+                  <Text className="font-medium text-neutral-900">Save to device</Text>
+                </Pressable>
+              ) : null}
+              {onExportJourneyShare ? (
+                <Pressable
+                  className="rounded-md bg-white px-3 py-2"
+                  onPress={() => {
+                    setExportPickerOpen(false);
+                    onExportJourneyShare();
+                  }}
+                >
+                  <Text className="font-medium text-neutral-900">Share…</Text>
+                </Pressable>
+              ) : null}
+              <Pressable className="rounded-md px-3 py-2" onPress={() => setExportPickerOpen(false)}>
+                <Text className="font-medium text-neutral-500">Cancel</Text>
+              </Pressable>
+            </View>
+          </Pressable>
         </Pressable>
       </Modal>
     </>

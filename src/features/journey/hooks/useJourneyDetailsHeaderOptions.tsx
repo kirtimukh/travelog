@@ -21,7 +21,8 @@ type Params = {
   requestDeleteJourney: () => void;
   deleteJourneyBusy: boolean;
   noteOrMediaBusy: boolean;
-  requestExportJourney?: () => void | Promise<void>;
+  requestExportJourneyDownload?: () => void | Promise<void>;
+  requestExportJourneyShare?: () => void | Promise<void>;
   exportJourneyDisabled?: boolean;
   exportBusy: boolean;
 };
@@ -34,7 +35,8 @@ export function useJourneyDetailsHeaderOptions({
   requestDeleteJourney,
   deleteJourneyBusy,
   noteOrMediaBusy,
-  requestExportJourney,
+  requestExportJourneyDownload,
+  requestExportJourneyShare,
   exportJourneyDisabled = false,
   exportBusy,
 }: Params): void {
@@ -61,10 +63,17 @@ export function useJourneyDetailsHeaderOptions({
           showHistory
           ongoingJourneyId={ongoingJourneyId}
           hideOngoing={ongoingJourneyId === journeyId}
-          onExportJourney={
-            Platform.OS === "android" && requestExportJourney != null
+          onExportJourneyDownload={
+            Platform.OS === "android" && requestExportJourneyDownload != null
               ? () => {
-                  void requestExportJourney();
+                  void requestExportJourneyDownload();
+                }
+              : undefined
+          }
+          onExportJourneyShare={
+            Platform.OS === "android" && requestExportJourneyShare != null
+              ? () => {
+                  void requestExportJourneyShare();
                 }
               : undefined
           }
@@ -84,6 +93,7 @@ export function useJourneyDetailsHeaderOptions({
     noteOrMediaBusy,
     ongoingJourneyId,
     requestDeleteJourney,
-    requestExportJourney,
+    requestExportJourneyDownload,
+    requestExportJourneyShare,
   ]);
 }

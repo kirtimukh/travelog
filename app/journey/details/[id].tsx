@@ -92,7 +92,8 @@ export default function JourneyDetailsScreen() {
     requestDeleteJourney,
     deleteJourneyBusy,
     noteOrMediaBusy,
-    requestExportJourney: journeyExport.requestExportJourney,
+    requestExportJourneyDownload: journeyExport.requestExportJourneyDownload,
+    requestExportJourneyShare: journeyExport.requestExportJourneyShare,
     exportJourneyDisabled,
     exportBusy: journeyExport.exportBusy,
   });
