@@ -22,7 +22,7 @@ export type JourneyExportAsset = {
 export type FileSizeProbe = (uri: string) => Promise<{ exists: boolean; size: number }>;
 
 export function utf8ByteLength(text: string): number {
-  return Buffer.byteLength(text, "utf8");
+  return new TextEncoder().encode(text).length;
 }
 
 export function sanitizeJourneyNameSegment(name: string): string {
