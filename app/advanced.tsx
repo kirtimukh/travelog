@@ -1,25 +1,20 @@
-import * as Sharing from "expo-sharing";
 import { useNavigation } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
 import { HeaderBackButton } from "../src/components/HeaderBackButton";
 import { PmtilesPackageCard } from "../src/components/PmtilesPackageCard";
-import { writeExportJsonFile } from "../src/diagnostics/errorLogStore";
-import {
-  getPmtilesCardStatusLine,
-  usePmtilesPackageReady,
-} from "../src/storage/usePmtilesPackageReady";
+import { useDiagnosticsJsonShare } from "../src/diagnostics/useDiagnosticsJsonShare";
+import { usePmtilesPackageReady } from "../src/storage/usePmtilesPackageReady";
 
 export default function AdvancedScreen() {
   const navigation = useNavigation();
-  const { ready, checking, refresh } = usePmtilesPackageReady();
-  const cardStatus = useMemo(
-    () => getPmtilesCardStatusLine(ready, checking),
-    [ready, checking],
-  );
-  const [exportingDiagnostics, setExportingDiagnostics] = useState<boolean>(false);
-  const [exportDiagnosticsError, setExportDiagnosticsError] = useState<string | null>(null);
+  const { refresh, cardStatus } = usePmtilesPackageReady();
+  const {
+    busy: exportingDiagnostics,
+    error: exportDiagnosticsError,
+    share: shareErrorLog,
+  } = useDiagnosticsJsonShare();
 
   useEffect(() => {
     navigation.setOptions({
@@ -27,30 +22,6 @@ export default function AdvancedScreen() {
       headerLeft: () => <HeaderBackButton />,
     });
   }, [navigation]);
-
-  const shareErrorLog = useCallback(async (): Promise<void> => {
-    setExportDiagnosticsError(null);
-    setExportingDiagnostics(true);
-    try {
-      const uri = await writeExportJsonFile();
-      if (!uri) {
-        setExportDiagnosticsError("Could not write export file.");
-        return;
-      }
-      if (!(await Sharing.isAvailableAsync())) {
-        setExportDiagnosticsError("Sharing is not available on this device.");
-        return;
-      }
-      await Sharing.shareAsync(uri, {
-        mimeType: "application/json",
-        UTI: "public.json",
-      });
-    } catch (e) {
-      setExportDiagnosticsError(e instanceof Error ? e.message : "Export failed.");
-    } finally {
-      setExportingDiagnostics(false);
-    }
-  }, []);
 
   return (
     <View className="flex-1 bg-white">

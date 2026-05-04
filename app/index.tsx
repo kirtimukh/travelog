@@ -1,5 +1,5 @@
 import { useNavigation, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
 import { openAppDatabase } from "../src/db/client";
@@ -8,19 +8,12 @@ import { AppHeaderMenu } from "../src/components/AppHeaderMenu";
 import { HeaderBackButton } from "../src/components/HeaderBackButton";
 import { PmtilesPackageCard } from "../src/components/PmtilesPackageCard";
 import { useOngoingJourneyCandidate } from "../src/features/journey/useOngoingJourneyCandidate";
-import {
-  getPmtilesCardStatusLine,
-  usePmtilesPackageReady,
-} from "../src/storage/usePmtilesPackageReady";
+import { usePmtilesPackageReady } from "../src/storage/usePmtilesPackageReady";
 
 export default function HomeScreen() {
   const router = useRouter();
   const navigation = useNavigation();
-  const { ready, checking, refresh } = usePmtilesPackageReady();
-  const cardStatus = useMemo(
-    () => getPmtilesCardStatusLine(ready, checking),
-    [ready, checking],
-  );
+  const { ready, checking, refresh, cardStatus } = usePmtilesPackageReady();
   const {
     candidateJourney,
     ongoingJourneyId,

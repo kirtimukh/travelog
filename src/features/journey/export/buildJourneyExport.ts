@@ -70,6 +70,8 @@ export function exportExceedsMaxBytes(
 
 export type PrepareJourneyExportResult = {
   payload: JourneyExportPayload;
+  /** Same string used for jsonUtf8Bytes — reuse when writing journey.json to avoid double stringify. */
+  jsonString: string;
   assets: JourneyExportAsset[];
   jsonUtf8Bytes: number;
   totalAssetBytes: number;
@@ -139,6 +141,7 @@ export async function prepareJourneyExportForZip(
 
   return {
     payload,
+    jsonString,
     assets,
     jsonUtf8Bytes,
     totalAssetBytes,

@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 import { zip } from "react-native-zip-archive";
 
 import { loadJourneyBundle } from "../bundle";
+import { copyLocalZipToSafDocument, formatSaveError } from "./androidZipSafCopy";
 import {
   EXPORT_MAX_BYTES,
   exportExceedsMaxBytes,
@@ -63,31 +64,6 @@ async function sweepStaleJourneyExportArtifacts(cacheDir: string): Promise<void>
   }
 }
 
-function formatSaveError(e: unknown): string {
-  if (e instanceof Error && e.message.trim().length > 0) {
-    return `Could not save the file: ${e.message}`;
-  }
-  return "Could not save the file. Try another folder or try again.";
-}
-
-/** Bytes per chunk when copying a local zip into a SAF `content://` document (Expo `copyAsync` file→content is broken on Android — it uses `Uri.toFile()` on the destination). */
-const SAF_ZIP_COPY_CHUNK_BYTES = 256 * 1024;
-
-async function copyLocalZipToSafDocument(zipPath: string, safFileUri: string, totalBytes: number): Promise<void> {
-  for (let offset = 0; offset < totalBytes; offset += SAF_ZIP_COPY_CHUNK_BYTES) {
-    const length = Math.min(SAF_ZIP_COPY_CHUNK_BYTES, totalBytes - offset);
-    const chunkB64 = await FileSystem.readAsStringAsync(zipPath, {
-      encoding: FileSystem.EncodingType.Base64,
-      position: offset,
-      length,
-    });
-    await FileSystem.writeAsStringAsync(safFileUri, chunkB64, {
-      encoding: FileSystem.EncodingType.Base64,
-      append: offset > 0,
-    });
-  }
-}
-
 /**
  * Android-only: builds a zip of `journey.json` and assets in cache, then either
  * copies it via SAF to user-chosen storage (`download`) or opens the share sheet (`share`).
@@ -97,6 +73,7 @@ export async function runJourneyExportAndroid(
   mode: JourneyExportMode,
   probe: FileSizeProbe = defaultFileProbe,
 ): Promise<JourneyExportRunResult> {
+  // Defensive: UI should only call from Android via useJourneyExport.
   if (Platform.OS !== "android") {
     return { ok: false, error: "Export is only available on Android." };
   }
@@ -132,8 +109,7 @@ export async function runJourneyExportAndroid(
   try {
     await FileSystem.makeDirectoryAsync(stagingDir, { intermediates: true });
 
-    const jsonString = JSON.stringify(prep.payload);
-    await FileSystem.writeAsStringAsync(`${stagingDir}journey.json`, jsonString, {
+    await FileSystem.writeAsStringAsync(`${stagingDir}journey.json`, prep.jsonString, {
       encoding: "utf8",
     });
 

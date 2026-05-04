@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { AppState, Platform, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import type { LocationPointRow } from "../../../db/schema";
 import { OfflineJourneyMap } from "../../../map/OfflineJourneyMap";
+import { useAndroidMapRemountOnForeground } from "../hooks/useAndroidMapRemountOnForeground";
 
 type Props = {
   points: LocationPointRow[];
@@ -21,25 +21,7 @@ export function JourneyMapPanel({
   fallbackLngLat,
   fallbackMarkerVariant,
 }: Props) {
-  const [mapRemountKey, setMapRemountKey] = useState(0);
-  const appStateRef = useRef(AppState.currentState);
-
-  useEffect(() => {
-    const sub = AppState.addEventListener("change", (next) => {
-      const prev = appStateRef.current;
-      appStateRef.current = next;
-      if (Platform.OS !== "android") {
-        return;
-      }
-      if (
-        next === "active" &&
-        (prev === "background" || prev === "inactive")
-      ) {
-        setMapRemountKey((k) => k + 1);
-      }
-    });
-    return () => sub.remove();
-  }, []);
+  const mapRemountKey = useAndroidMapRemountOnForeground();
 
   if (!hasLocationPermission) {
     return (

@@ -1,5 +1,5 @@
 import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { getPmtilesConfig } from "./pmtilesConfig";
 import { hasValidPmtilesPackage } from "./pmtilesGuard";
@@ -22,9 +22,15 @@ export function usePmtilesPackageReady(): {
   ready: boolean;
   checking: boolean;
   refresh: () => Promise<void>;
+  cardStatus: string;
 } {
   const [ready, setReady] = useState(false);
   const [checking, setChecking] = useState(true);
+
+  const cardStatus = useMemo(
+    () => getPmtilesCardStatusLine(ready, checking),
+    [ready, checking],
+  );
 
   const refresh = useCallback(async (): Promise<void> => {
     setChecking(true);
@@ -42,5 +48,5 @@ export function usePmtilesPackageReady(): {
     }, [refresh]),
   );
 
-  return { ready, checking, refresh };
+  return { ready, checking, refresh, cardStatus };
 }

@@ -15,8 +15,8 @@ type Params = {
 
 export type UseJourneyExportResult = {
   exportBusy: boolean;
-  requestExportJourneyDownload: () => Promise<void>;
-  requestExportJourneyShare: () => Promise<void>;
+  requestExportJourneyDownload: (() => Promise<void>) | undefined;
+  requestExportJourneyShare: (() => Promise<void>) | undefined;
   exportWarning: string | null;
   dismissExportWarning: () => void;
 };
@@ -35,9 +35,6 @@ export function useJourneyExport({
 
   const runExport = useCallback(
     async (mode: JourneyExportMode): Promise<void> => {
-      if (Platform.OS !== "android") {
-        return;
-      }
       if (!journey || journey.status === "scheduled" || !Number.isFinite(journeyId)) {
         return;
       }
@@ -63,6 +60,8 @@ export function useJourneyExport({
     [journey, journeyId, setScreenError],
   );
 
+  const isAndroid = Platform.OS === "android";
+
   const requestExportJourneyDownload = useCallback(async (): Promise<void> => {
     await runExport("download");
   }, [runExport]);
@@ -73,8 +72,8 @@ export function useJourneyExport({
 
   return {
     exportBusy,
-    requestExportJourneyDownload,
-    requestExportJourneyShare,
+    requestExportJourneyDownload: isAndroid ? requestExportJourneyDownload : undefined,
+    requestExportJourneyShare: isAndroid ? requestExportJourneyShare : undefined,
     exportWarning,
     dismissExportWarning,
   };

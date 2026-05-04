@@ -1,5 +1,5 @@
 import { useEffect, type ReactElement } from "react";
-import { Platform, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { AppHeaderMenu } from "../../../components/AppHeaderMenu";
 import { HeaderBackButton } from "../../../components/HeaderBackButton";
@@ -64,14 +64,14 @@ export function useJourneyDetailsHeaderOptions({
           ongoingJourneyId={ongoingJourneyId}
           hideOngoing={ongoingJourneyId === journeyId}
           onExportJourneyDownload={
-            Platform.OS === "android" && requestExportJourneyDownload != null
+            requestExportJourneyDownload != null
               ? () => {
                   void requestExportJourneyDownload();
                 }
               : undefined
           }
           onExportJourneyShare={
-            Platform.OS === "android" && requestExportJourneyShare != null
+            requestExportJourneyShare != null
               ? () => {
                   void requestExportJourneyShare();
                 }

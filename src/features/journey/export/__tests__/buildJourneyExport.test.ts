@@ -133,6 +133,7 @@ describe("prepareJourneyExportForZip", () => {
       ],
     });
     const res = await prepareJourneyExportForZip(bundle, probeOk);
+    expect(res.jsonString).toBe(JSON.stringify(res.payload));
     expect(res.assets).toHaveLength(2);
     expect(res.payload.notes[0].audio_file).toBe("voice-1.m4a");
     expect(res.payload.media[0].file).toBe("image-2.png");
