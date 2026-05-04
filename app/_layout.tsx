@@ -1,3 +1,4 @@
+import "../src/diagnostics/sentry";
 import "react-native-gesture-handler";
 
 import "../global.css";
@@ -9,6 +10,7 @@ import { ThemeProvider } from "@react-navigation/native";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { AppState, Text, View } from "react-native";
+import * as Sentry from "@sentry/react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import "../src/diagnostics/installErrorLogging";
@@ -43,7 +45,7 @@ function useIsPastAppExpiry() {
   return pastExpiry;
 }
 
-export default function RootLayout() {
+function RootLayout() {
   const pastExpiry = useIsPastAppExpiry();
   const router = useRouter();
   const pathname = usePathname();
@@ -123,3 +125,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);

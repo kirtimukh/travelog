@@ -12,6 +12,7 @@
   "dependencies": {
     "@maplibre/maplibre-react-native": "^11.0.1",
     "@react-native-community/netinfo": "^11.5.2",
+    "@sentry/react-native": "^7.11.0",
     "expo": "~55.0.19",
     "expo-asset": "^55.0.15",
     "expo-audio": "~55.0.14",

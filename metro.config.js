@@ -1,8 +1,12 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
+const { withSentryConfig } = require("@sentry/react-native/metro");
 
 const baseConfig = getDefaultConfig(__dirname);
-const config = withNativeWind(baseConfig, { input: "./global.css" });
-config.resolver.unstable_enablePackageExports = false;
+const nativeWindConfig = withNativeWind(baseConfig, { input: "./global.css" });
+nativeWindConfig.resolver.unstable_enablePackageExports = false;
 
-module.exports = config;
+// Sentry wraps last: hooks the Metro serializer to emit source maps so JS
+// stacks de-symbolicate in Sentry. Must come after NativeWind to preserve
+// NativeWind's serializer customisations.
+module.exports = withSentryConfig(nativeWindConfig);

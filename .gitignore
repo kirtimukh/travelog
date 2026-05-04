@@ -34,6 +34,10 @@ yarn-error.*
 .env*.local
 .env
 
+# Sentry — keep org/project slugs but never commit the auth token;
+# easiest to exclude the whole file and use EAS secrets for SENTRY_AUTH_TOKEN
+sentry.properties
+
 # typescript
 *.tsbuildinfo
 

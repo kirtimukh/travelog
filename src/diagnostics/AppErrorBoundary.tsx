@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
+import * as Sentry from "@sentry/react-native";
 
 import { appendErrorLogEntry } from "./errorLogStore";
 import { getLastRoute } from "./routeContext";
@@ -24,6 +25,13 @@ export class AppErrorBoundary extends Component<Props, State> {
       stack: error.stack,
       componentStack: info.componentStack ?? undefined,
       route: getLastRoute(),
+    });
+
+    Sentry.captureException(error, {
+      contexts: {
+        react: { componentStack: info.componentStack ?? "" },
+      },
+      extra: { route: getLastRoute() },
     });
   }
 
