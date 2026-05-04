@@ -59,12 +59,12 @@
         }
       ],
       "expo-file-system",
-      [
+        [
         "@sentry/react-native",
         {
           "organization": "ubworks",
           "project": "travelog",
-          "url": "https://sentry.io/"
+          "url": "https://de.sentry.io/"
         }
       ],
       [
