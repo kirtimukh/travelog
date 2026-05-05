@@ -66,6 +66,14 @@ export async function updateMediaDetails(
   );
 }
 
+export async function updateMediaFile(
+  db: SQLite.SQLiteDatabase,
+  mediaId: number,
+  file: string,
+): Promise<void> {
+  await db.runAsync(`UPDATE media SET file = ? WHERE id = ?`, [file, mediaId]);
+}
+
 export async function deleteMediaById(
   db: SQLite.SQLiteDatabase,
   mediaId: number,

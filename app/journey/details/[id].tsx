@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,6 +18,7 @@ import { useNoteEditFlow } from "../../../src/features/journey/hooks/useNoteEdit
 import { useWeatherCaptureFlow } from "../../../src/features/journey/hooks/useWeatherCaptureFlow";
 import { canEditInDetails } from "../../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../../src/features/journey/useOngoingJourneyCandidate";
+import { takeJourneyImportFeedback } from "../../../src/features/journey/import/journeyImportFeedback";
 
 export default function JourneyDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -77,6 +78,26 @@ export default function JourneyDetailsScreen() {
     setScreenError,
   });
 
+  const [importCompleteMessage, setImportCompleteMessage] = useState<string | null>(null);
+  const [importSkipSummary, setImportSkipSummary] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fb = takeJourneyImportFeedback();
+    if (fb?.complete) {
+      setImportCompleteMessage("Journey import complete");
+      const parts: string[] = [];
+      if (fb.skippedRowCount > 0) {
+        parts.push(
+          `${fb.skippedRowCount} row(s) were skipped (invalid data or missing image files in the archive).`,
+        );
+      }
+      if (fb.missingAssetCount > 0) {
+        parts.push(`${fb.missingAssetCount} asset(s) could not be copied to this device.`);
+      }
+      setImportSkipSummary(parts.length > 0 ? parts.join(" ") : null);
+    }
+  }, []);
+
   const exportJourneyDisabled =
     journey == null ||
     journey.status === "scheduled" ||
@@ -122,6 +143,28 @@ export default function JourneyDetailsScreen() {
             >
               <Text className="text-xs font-semibold text-amber-900">Dismiss</Text>
             </Pressable>
+          </View>
+        ) : null}
+        {importCompleteMessage ? (
+          <View className="mt-3 rounded-md border border-green-200 bg-green-50 px-3 py-2">
+            <View className="flex-row items-start justify-between gap-2">
+              <View className="min-w-0 flex-1">
+                <Text className="text-sm font-semibold text-green-900">{importCompleteMessage}</Text>
+                {importSkipSummary ? (
+                  <Text className="mt-2 text-sm text-amber-900">{importSkipSummary}</Text>
+                ) : null}
+              </View>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  setImportCompleteMessage(null);
+                  setImportSkipSummary(null);
+                }}
+                className="rounded bg-green-200 px-2 py-1"
+              >
+                <Text className="text-xs font-semibold text-green-900">Dismiss</Text>
+              </Pressable>
+            </View>
           </View>
         ) : null}
 

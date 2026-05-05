@@ -132,6 +132,46 @@ export async function getMainScreenJourneyCandidate(
   return row ? mapJourneyRow(row) : null;
 }
 
+/**
+ * Inserts a journey row for import: `status` is always `completed`; no active-journey / tracking side effects.
+ */
+export async function insertJourneyForImport(
+  db: SQLite.SQLiteDatabase,
+  fields: {
+    name: string;
+    description: string | null;
+    start_ts: number | null;
+    end_ts: number | null;
+    metadata: string | null;
+    journey_duration_ms: number | null;
+    recorded_duration_ms: number | null;
+    recorded_distance: number | null;
+  },
+): Promise<number> {
+  const result = await db.runAsync(
+    `INSERT INTO journey (name, description, start_ts, end_ts, status, metadata, journey_duration_ms, recorded_duration_ms, recorded_distance)
+     VALUES (?, ?, ?, ?, 'completed', ?, ?, ?, ?)`,
+    [
+      fields.name,
+      fields.description,
+      fields.start_ts,
+      fields.end_ts,
+      fields.metadata,
+      fields.journey_duration_ms,
+      fields.recorded_duration_ms,
+      fields.recorded_distance,
+    ],
+  );
+  return Number(result.lastInsertRowId);
+}
+
+export async function hasOngoingJourney(db: SQLite.SQLiteDatabase): Promise<boolean> {
+  const row = await db.getFirstAsync<{ one: number }>(
+    `SELECT 1 AS one FROM journey WHERE status = 'ongoing' LIMIT 1`,
+  );
+  return row != null;
+}
+
 export async function createJourney(
   db: SQLite.SQLiteDatabase,
   input: {

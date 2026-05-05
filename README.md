@@ -29,6 +29,12 @@ Then start Metro with `npx expo start --dev-client` and open the dev client on t
 
 - **Typecheck:** `npx tsc --noEmit`
 
+## Journey ZIP export / import
+
+- **Export** (ZIP + `journey.json`) is implemented on **Android** from journey details.
+- **Import** is implemented on **Android** from **Advanced → Import Journey** (see repo root `feat_import.md` for the full contract).
+- **iOS:** mirror the Android export + import flows when adding parity (picker, unzip, DB transaction + asset copy pattern should match).
+
 ## Step 3: PMTiles upload + Android emulator preload
 
 - First launch is gated: app requires uploading a `.pmtiles` file.
