@@ -4,6 +4,7 @@
  */
 import type { LocationObject } from "expo-location";
 import * as TaskManager from "expo-task-manager";
+import * as Sentry from "@sentry/react-native";
 
 import { openAppDatabase } from "../db/client";
 import { getJourneyById } from "../db/journeys";
@@ -45,6 +46,26 @@ function hasFiniteCoordinates(
 TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   try {
     if (error) {
+      const err =
+        error instanceof Error
+          ? error
+          : new Error(
+              typeof error === "string"
+                ? error
+                : (() => {
+                    try {
+                      return JSON.stringify(error);
+                    } catch {
+                      return String(error);
+                    }
+                  })(),
+            );
+      Sentry.captureException(err, {
+        tags: { task: LOCATION_TASK_NAME, source: "task_callback" },
+        ...(error instanceof Error
+          ? {}
+          : { extra: { rawTaskError: error as unknown } }),
+      });
       return;
     }
     if (!data || typeof data !== "object") {
@@ -129,5 +150,9 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     const message =
       taskError instanceof Error ? taskError.message : String(taskError);
     console.warn(`[${LOCATION_TASK_NAME}] failed to persist locations: ${message}`);
+    Sentry.captureException(
+      taskError instanceof Error ? taskError : new Error(message),
+      { tags: { task: LOCATION_TASK_NAME, source: "task_persist" } },
+    );
   }
 });

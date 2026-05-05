@@ -21,6 +21,12 @@ Sentry.init({
   // Captures MapLibre / GL / foreground-service native crashes alongside JS errors.
   enableNativeCrashHandling: true,
 
+  // iOS: MetricKit-backed watchdog / OOM termination detection on next launch.
+  enableWatchdogTerminationTracking: true,
+
+  // Android ANR reports with richer context (all threads), not only the blocked thread.
+  attachThreads: true,
+
   // Tracks session health (crash-free rate) in Sentry dashboards.
   enableAutoSessionTracking: true,
 

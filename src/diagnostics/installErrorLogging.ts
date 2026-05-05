@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/react-native";
+
 import { appendErrorLogEntry } from "./errorLogStore";
 import type { ErrorLogEntry } from "./errorLogTypes";
 import { getLastRoute } from "./routeContext";
@@ -105,6 +107,24 @@ export function installErrorLogging(): void {
           message: n.message,
           stack: n.stack,
           extra: n.extra,
+        });
+
+        const err =
+          rejection instanceof Error
+            ? rejection
+            : Object.assign(
+                new Error(n.message || String(rejection)),
+                {
+                  name: n.name || "UnhandledPromiseRejection",
+                  ...(n.stack ? { stack: n.stack } : {}),
+                },
+              );
+        Sentry.captureException(err, {
+          tags: { kind: "promise_rejection" },
+          extra: {
+            ...n.extra,
+            normalizedName: n.name,
+          },
         });
       },
       onHandled: () => {},
