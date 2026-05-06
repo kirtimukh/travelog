@@ -1,0 +1,35 @@
+diff --git a/node_modules/expo-task-manager/android/src/main/java/expo/modules/taskManager/TaskService.java b/node_modules/expo-task-manager/android/src/main/java/expo/modules/taskManager/TaskService.java
+index 44cd804..e90d6a9 100644
+--- a/node_modules/expo-task-manager/android/src/main/java/expo/modules/taskManager/TaskService.java
++++ b/node_modules/expo-task-manager/android/src/main/java/expo/modules/taskManager/TaskService.java
+@@ -423,7 +423,29 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
+     }
+     mTasksAndEventsRepository.putEventForAppScopeKey(appScopeKey, body);
+ 
+-    getAppLoader().loadApp(mContextRef.get(),
++    // Avoid NPE when AppLoaderProvider.getLoader fails or Context is gone; finish job gracefully.
++    HeadlessAppLoader appLoader = getAppLoader();
++    Context ctx = mContextRef.get();
++    if (appLoader == null || ctx == null) {
++      Log.e(TAG, "Cannot execute task headlessly: HeadlessAppLoader or Context unavailable.");
++      if (callback != null) {
++        sTaskCallbacks.remove(eventId);
++      }
++      List<String> eventsForApp = sEvents.get(appScopeKey);
++      if (eventsForApp != null) {
++        eventsForApp.remove(eventId);
++        if (eventsForApp.isEmpty()) {
++          sEvents.remove(appScopeKey);
++          maybeFinishHeadlessTask(appScopeKey);
++        }
++      }
++      if (callback != null) {
++        callback.onFinished(null);
++      }
++      return;
++    }
++
++    appLoader.loadApp(ctx,
+       new HeadlessAppLoader.Params(appScopeKey, task.getAppUrl()),
+       () -> {
+       },

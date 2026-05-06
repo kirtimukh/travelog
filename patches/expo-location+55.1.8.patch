@@ -1,0 +1,16 @@
+diff --git a/node_modules/expo-location/android/src/main/java/expo/modules/location/taskConsumers/LocationTaskConsumer.kt b/node_modules/expo-location/android/src/main/java/expo/modules/location/taskConsumers/LocationTaskConsumer.kt
+index b4f6c06..20675cd 100644
+--- a/node_modules/expo-location/android/src/main/java/expo/modules/location/taskConsumers/LocationTaskConsumer.kt
++++ b/node_modules/expo-location/android/src/main/java/expo/modules/location/taskConsumers/LocationTaskConsumer.kt
+@@ -119,7 +119,10 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
+       val locationBundle = Bundle()
+       val coordsBundle = Bundle()
+       if (persistableLocationBundle != null) {
+-        coordsBundle.putAll(persistableLocationBundle.getPersistableBundle("coords"))
++        val coordsPb = persistableLocationBundle.getPersistableBundle("coords")
++        if (coordsPb != null) {
++          coordsBundle.putAll(coordsPb)
++        }
+         locationBundle.putAll(persistableLocationBundle)
+         locationBundle.putBundle("coords", coordsBundle)
+         locationBundles.add(locationBundle)
