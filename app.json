@@ -59,12 +59,13 @@
         }
       ],
       "expo-file-system",
-        [
-        "@sentry/react-native",
+      [
+        "@sentry/react-native/expo",
         {
           "organization": "ubworks",
           "project": "travelog",
-          "url": "https://de.sentry.io/"
+          "url": "https://de.sentry.io/",
+          "useNativeInit": true
         }
       ],
       [
@@ -75,7 +76,8 @@
           }
         }
       ],
-      "./plugins/withAndroidAbiSplits.js"
+      "./plugins/withAndroidAbiSplits.js",
+      "./plugins/withExpoProguardRules.js"
     ]
   }
 }

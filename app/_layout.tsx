@@ -23,8 +23,8 @@ import { refreshLocationTrackingAccuracyIfRunning } from "../src/tracking/locati
 
 void SplashScreen.preventAutoHideAsync();
 
-/** Inclusive cutoff: app stops working from this instant onward. May 9, 2026, 12:00 AM IST. */
-const APP_EXPIRES_AT = new Date("2026-05-09T00:00:00+05:30");
+/** Inclusive cutoff: app stops working from this instant onward. May 15, 2026, 12:00 AM IST. */
+const APP_EXPIRES_AT = new Date("2026-05-15T00:00:00+05:30");
 
 function useIsPastAppExpiry() {
   const [pastExpiry, setPastExpiry] = useState(
