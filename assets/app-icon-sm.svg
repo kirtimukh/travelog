@@ -1,0 +1,29 @@
+<svg width="1024" height="1024" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="travelogSkyLogo" cx="40%" cy="25%" r="75%">
+      <stop offset="0%" stop-color="#10152A"/>
+      <stop offset="100%" stop-color="#0A1520"/>
+    </radialGradient>
+    <linearGradient id="travelogPinLogo" x1="50" y1="27" x2="50" y2="73" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F07050"/>
+      <stop offset="100%" stop-color="#B83A1E"/>
+    </linearGradient>
+    <filter id="travelogPinGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="100" height="100" fill="url(#travelogSkyLogo)"/>
+  <path d="M0 90 L14 68 L26 78 L42 54 L58 76 L70 62 L100 90 Z" fill="#12253A" opacity="0.9"/>
+  <path d="M0 95 L18 78 L32 86 L50 68 L68 84 L84 74 L100 88 L100 95 Z" fill="#1A3350" opacity="0.6"/>
+
+  <rect x="0" y="90" width="100" height="100" fill="url(#travelogSkyLogo)"/>
+
+  <path d="M42 54 L32 69 L41 65 L53 69 Z" fill="#FAFAFA" opacity="0.7"/>
+  <path d="M70 62 L64 69 L71 66 L78 70 Z" fill="#FAFAFA" opacity="0.5"/>
+
+  <path d="M50 27 C42 27 35 34 35 43 C35 55 50 73 50 73 C50 73 65 55 65 43 C65 34 58 27 50 27 Z" fill="url(#travelogPinLogo)" filter="url(#travelogPinGlow)"/>
+  <circle cx="50" cy="43" r="7" fill="#0A1520" opacity="0.8"/>
+  <line x1="50" y1="39.5" x2="50" y2="46.5" stroke="#EDF4F8" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="46.5" y1="43" x2="53.5" y2="43" stroke="#EDF4F8" stroke-width="1.2" stroke-linecap="round"/>
+</svg>
