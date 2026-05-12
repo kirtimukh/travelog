@@ -1,5 +1,7 @@
+import { AppState } from "react-native";
 import * as Battery from "expo-battery";
 import * as Location from "expo-location";
+import * as Sentry from "@sentry/react-native";
 
 import type { JourneyStatus } from "../db/schema";
 import {
@@ -29,6 +31,30 @@ export type TrackingSyncResult = {
 };
 
 let currentAccuracyMode: AccuracyMode | null = null;
+
+const FOREGROUND_WAIT_TIMEOUT_MS = 3000;
+const POST_START_VERIFY_DELAY_MS = 500;
+
+/**
+ * Resolves once AppState is "active", or after a timeout — whichever comes first.
+ * Prevents the native LocationTaskConsumer from rejecting the foreground service
+ * when Android still considers the app backgrounded during a cold-start race.
+ */
+function waitForForeground(): Promise<void> {
+  if (AppState.currentState === "active") {
+    return Promise.resolve();
+  }
+  return new Promise<void>((resolve) => {
+    const timeout = setTimeout(resolve, FOREGROUND_WAIT_TIMEOUT_MS);
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        clearTimeout(timeout);
+        sub.remove();
+        resolve();
+      }
+    });
+  });
+}
 
 async function resolveAccuracyMode(): Promise<AccuracyMode> {
   const available = await Battery.isAvailableAsync();
@@ -109,15 +135,19 @@ export async function requestLocationPermissionsForTracking(): Promise<TrackingS
 
 /**
  * Starts background location updates with battery-aware accuracy. No-op if already running.
+ * Waits for AppState "active" before starting the foreground service to avoid the
+ * native LocationTaskConsumer rejecting the request during a cold-start race.
  */
 export async function startOngoingLocationTracking(): Promise<void> {
+  await waitForForeground();
+
   const mode = await resolveAccuracyMode();
   currentAccuracyMode = mode;
 
-  const started = await Location.hasStartedLocationUpdatesAsync(
+  const alreadyRunning = await Location.hasStartedLocationUpdatesAsync(
     LOCATION_TASK_NAME,
   );
-  if (started) {
+  if (alreadyRunning) {
     await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
   }
 
@@ -125,6 +155,22 @@ export async function startOngoingLocationTracking(): Promise<void> {
     LOCATION_TASK_NAME,
     buildTaskOptions(mode),
   );
+
+  await new Promise((r) => setTimeout(r, POST_START_VERIFY_DELAY_MS));
+  const running = await Location.hasStartedLocationUpdatesAsync(
+    LOCATION_TASK_NAME,
+  );
+  if (!running) {
+    Sentry.captureMessage("Location foreground service failed to start", {
+      level: "error",
+      tags: { task: LOCATION_TASK_NAME, source: "post_start_verify" },
+      extra: {
+        appState: AppState.currentState,
+        accuracyMode: mode,
+      },
+    });
+  }
+
   void reconcileForegroundWatch();
 }
 

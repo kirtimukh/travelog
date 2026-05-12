@@ -2,7 +2,7 @@
   "expo": {
     "name": "Travelog",
     "slug": "Travelog",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -73,12 +73,21 @@
         {
           "android": {
             "enableProguardInReleaseBuilds": true,
-            "enableShrinkResourcesInReleaseBuilds": true
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "reactNativeArchitectures": ["arm64-v8a", "armeabi-v7a"]
           }
         }
       ],
       "./plugins/withAndroidAbiSplits.js",
-      "./plugins/withExpoProguardRules.js"
+      "./plugins/withExpoProguardRules.js",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "travelog",
+          "organization": "ubworks"
+        }
+      ]
     ]
   }
 }

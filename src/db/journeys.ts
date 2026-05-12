@@ -1,4 +1,5 @@
 import type * as SQLite from "expo-sqlite";
+import * as Sentry from "@sentry/react-native";
 
 import { syncBackgroundTrackingForJourneyStatus } from "../tracking/locationTracking";
 import {
@@ -320,7 +321,19 @@ export async function updateJourneyStatus(
   }
 
   syncActiveJourneySession(journeyId, nextStatus);
-  await syncBackgroundTrackingForJourneyStatus(nextStatus);
+  try {
+    await syncBackgroundTrackingForJourneyStatus(nextStatus);
+  } catch (trackingError) {
+    Sentry.captureException(
+      trackingError instanceof Error
+        ? trackingError
+        : new Error(String(trackingError)),
+      {
+        tags: { source: "updateJourneyStatus_tracking_sync" },
+        extra: { journeyId, nextStatus, previousStatus: current.status },
+      },
+    );
+  }
 }
 
 /**

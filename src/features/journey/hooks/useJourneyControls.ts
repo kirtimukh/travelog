@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react-native";
 import * as Location from "expo-location";
 import { useCallback, useState } from "react";
 
@@ -73,14 +74,20 @@ export function useJourneyControls({
         }
         await updateJourneyStatus(db, journeyId, "ongoing");
         await recordCurrentPointNow();
+        Sentry.logger.info("Journey started: Status changed from scheduled to ongoing");
       } else if (statusLabel === "ongoing") {
         await updateJourneyStatus(db, journeyId, "paused");
+        Sentry.logger.info("Journey started: Status changed from ongoing to paused");
       } else if (statusLabel === "paused") {
         await updateJourneyStatus(db, journeyId, "ongoing");
+        Sentry.logger.info("Journey started: Status changed from paused to ongoing");
       }
       await refreshJourneyData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Action failed.");
+      Sentry.logger.error(
+        Sentry.logger.fmt`Journey action failed: ${err instanceof Error ? err.message : "Action failed."}`
+      );
     } finally {
       setBusy(false);
     }

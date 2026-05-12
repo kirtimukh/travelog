@@ -1,6 +1,6 @@
 {
-  "name": "mobile",
-  "version": "1.0.0",
+  "name": "travelog",
+  "version": "0.0.2",
   "main": "expo-router/entry",
   "scripts": {
     "postinstall": "patch-package",

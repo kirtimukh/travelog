@@ -37,6 +37,8 @@ Sentry.init({
   // Disable in dev to avoid noise; flip to true to test the Sentry pipeline
   // against a dev build.
   enabled: !__DEV__,
+
+  enableLogs: true,
 });
 
 // Explicit AppState breadcrumb so every crash report shows "last known
