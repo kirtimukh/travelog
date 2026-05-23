@@ -203,14 +203,6 @@ export default function JourneyScreen() {
 
         <View className="mt-6 flex-row gap-3">
           <Pressable
-            className={`flex-1 rounded-xl border border-neutral-200 px-4 py-3 ${rerecordFlow.session ? "bg-neutral-200" : "bg-neutral-50"}`}
-            accessibilityLabel="Weather"
-            accessibilityRole="button"
-            onPress={() => {}}
-          >
-            <Text className="text-center text-lg font-semibold text-neutral-900">☁️</Text>
-          </Pressable>
-          <Pressable
             className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3"
             accessibilityLabel="Add media"
             accessibilityRole="button"
@@ -245,7 +237,6 @@ export default function JourneyScreen() {
         <JourneyArtifactsFeed
           notes={journeyData.notes}
           media={journeyData.media}
-          weather={journeyData.weather}
           pauseWindows={pauseWindows}
           locationPoints={journeyData.points}
           noteEdit={noteEditFlow}

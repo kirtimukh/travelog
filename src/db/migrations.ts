@@ -77,35 +77,10 @@ const MIGRATIONS: string[] = [
   ALTER TABLE journey ADD COLUMN recorded_duration_ms INTEGER;
   ALTER TABLE journey ADD COLUMN recorded_distance REAL;
   `,
-  // version 7 — weather snapshots captured from Google Weather API.
-  `
-  CREATE TABLE IF NOT EXISTS weather (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    journey_id INTEGER NOT NULL,
-    temperature REAL,
-    feels_like_temperature REAL,
-    weather_condition TEXT,
-    weather_condition_icon TEXT,
-    full_data TEXT NOT NULL,
-    timestamp INTEGER NOT NULL,
-    lat REAL NOT NULL,
-    lng REAL NOT NULL,
-    FOREIGN KEY (journey_id) REFERENCES journey(id) ON DELETE CASCADE
-  );
-
-  CREATE INDEX IF NOT EXISTS idx_weather_journey_ts
-    ON weather (journey_id, timestamp);
-  `,
-  // version 8 — successful weather API fetches (quota), independent of saved weather rows.
-  `
-  CREATE TABLE IF NOT EXISTS weather_quota_event (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    timestamp INTEGER NOT NULL
-  );
-
-  CREATE INDEX IF NOT EXISTS idx_weather_quota_event_ts
-    ON weather_quota_event (timestamp);
-  `,
+  // version 7 — no-op (legacy weather table removed; keeps user_version aligned).
+  `SELECT 1;`,
+  // version 8 — no-op (legacy weather_quota_event removed; keeps user_version aligned).
+  `SELECT 1;`,
 ];
 
 /**

@@ -6,7 +6,6 @@ import type {
   MediaRow,
   NoteRow,
   NoteType,
-  WeatherRow,
 } from "../../../db/schema";
 
 /** Same cap as export ([feat_import.md](../../../../feat_import.md) §3). */
@@ -201,31 +200,6 @@ function coerceMediaRow(raw: unknown): MediaRow | null {
   };
 }
 
-function coerceWeatherRow(raw: unknown): WeatherRow | null {
-  if (!isRecord(raw)) {
-    return null;
-  }
-  const timestamp = asNullableNumber(raw.timestamp);
-  const lat = asNullableNumber(raw.lat);
-  const lng = asNullableNumber(raw.lng);
-  if (timestamp == null || lat == null || lng == null) {
-    return null;
-  }
-  const fullData = asNullableString(raw.full_data);
-  return {
-    id: asNumber(raw.id, 0),
-    journey_id: asNumber(raw.journey_id, 0),
-    temperature: asNullableNumber(raw.temperature),
-    feels_like_temperature: asNullableNumber(raw.feels_like_temperature),
-    weather_condition: asNullableString(raw.weather_condition),
-    weather_condition_icon: asNullableString(raw.weather_condition_icon),
-    full_data: fullData ?? "{}",
-    timestamp,
-    lat,
-    lng,
-  };
-}
-
 /**
  * Parses `journey.json` string. No rich per-field schema; coerces shapes where possible.
  * Rejects only on JSON parse failure or missing top-level keys.
@@ -240,7 +214,7 @@ export function parseJourneyImportPayload(jsonString: string): ParseJourneyImpor
   if (!isRecord(data)) {
     return { ok: false, error: "Invalid payload root." };
   }
-  const keys = ["journey", "points", "notes", "media", "weather"] as const;
+  const keys = ["journey", "points", "notes", "media"] as const;
   for (const k of keys) {
     if (!(k in data)) {
       return { ok: false, error: `Missing required key: ${k}.` };
@@ -259,10 +233,6 @@ export function parseJourneyImportPayload(jsonString: string): ParseJourneyImpor
   if (!Array.isArray(data.media)) {
     return { ok: false, error: "media must be an array." };
   }
-  if (!Array.isArray(data.weather)) {
-    return { ok: false, error: "weather must be an array." };
-  }
-
   let skippedPointsInJson = 0;
   const points: LocationPointRow[] = [];
   for (const p of data.points) {
@@ -317,17 +287,9 @@ export function parseJourneyImportPayload(jsonString: string): ParseJourneyImpor
     }
   }
 
-  const weather: WeatherRow[] = [];
-  for (const w of data.weather) {
-    const row = coerceWeatherRow(w);
-    if (row) {
-      weather.push(row);
-    }
-  }
-
   return {
     ok: true,
-    payload: { journey, points, notes, media, weather },
+    payload: { journey, points, notes, media },
     skippedPointsInJson,
     skippedNotesInJson,
     skippedMediaInJson,

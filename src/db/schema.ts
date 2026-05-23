@@ -63,16 +63,3 @@ export type MediaRow = {
   type: MediaType;
   file: string;
 };
-
-export type WeatherRow = {
-  id: number;
-  journey_id: number;
-  temperature: number | null;
-  feels_like_temperature: number | null;
-  weather_condition: string | null;
-  weather_condition_icon: string | null;
-  full_data: string;
-  timestamp: number;
-  lat: number;
-  lng: number;
-};

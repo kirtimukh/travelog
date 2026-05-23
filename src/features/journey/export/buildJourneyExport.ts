@@ -1,5 +1,5 @@
 import type { JourneyBundle } from "../bundle";
-import type { JourneyRow, LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
+import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
 
 export const EXPORT_MAX_BYTES = 300 * 1024 * 1024;
 
@@ -10,7 +10,6 @@ export type JourneyExportPayload = {
   points: LocationPointRow[];
   notes: NoteRow[];
   media: ExportMediaRow[];
-  weather: WeatherRow[];
 };
 
 export type JourneyExportAsset = {
@@ -132,7 +131,6 @@ export async function prepareJourneyExportForZip(
     points: bundle.points,
     notes,
     media,
-    weather: bundle.weather,
   };
 
   const jsonString = JSON.stringify(payload);

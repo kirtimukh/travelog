@@ -31,7 +31,6 @@ export default function JourneyDetailsScreen() {
     points,
     notes,
     media,
-    weather,
     locationPermission,
     screenError,
     setScreenError,
@@ -61,7 +60,6 @@ export default function JourneyDetailsScreen() {
     points,
     notes,
     media,
-    weather,
   });
 
   const noteOrMediaBusy = noteEditFlow.busy || mediaEditFlow.editModal.busy;
@@ -192,7 +190,6 @@ export default function JourneyDetailsScreen() {
         <JourneyArtifactsFeed
           notes={notes}
           media={media}
-          weather={weather}
           pauseWindows={replay.replayPauseWindows}
           locationPoints={points}
           editable={editable}

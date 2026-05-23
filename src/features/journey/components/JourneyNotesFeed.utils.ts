@@ -1,4 +1,4 @@
-import type { LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
+import type { LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
 import { formatLatLngPair, formatListTimestamp } from "../displayFormatters";
 import type { JourneyPauseWindow } from "../replay";
 export const MEDIA_FEED_THUMBNAIL_HEIGHT = 100;
@@ -6,13 +6,11 @@ export const MEDIA_FEED_THUMBNAIL_HEIGHT = 100;
 export type FeedItem =
   | { kind: "note"; data: NoteRow; sortTs: number }
   | { kind: "media"; data: MediaRow; sortTs: number }
-  | { kind: "weather"; data: WeatherRow; sortTs: number }
   | { kind: "pause"; data: JourneyPauseWindow; sortTs: number };
 
 export function buildFeed(
   notes: NoteRow[],
   media: MediaRow[],
-  weather: WeatherRow[],
   pauseWindows: JourneyPauseWindow[],
 ): FeedItem[] {
   const items: FeedItem[] = [
@@ -25,11 +23,6 @@ export function buildFeed(
       kind: "media" as const,
       data: m,
       sortTs: m.timestamp ?? Number.MAX_SAFE_INTEGER,
-    })),
-    ...weather.map((w) => ({
-      kind: "weather" as const,
-      data: w,
-      sortTs: w.timestamp,
     })),
     ...pauseWindows.map((window) => ({
       kind: "pause" as const,

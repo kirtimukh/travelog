@@ -10,7 +10,6 @@ import type {
   LocationPointRow,
   MediaRow,
   NoteRow,
-  WeatherRow,
 } from "../../../db/schema";
 import { onPermissionGranted } from "../../../location/currentLocationCache";
 import { syncActiveJourneySession } from "../../../storage/activeJourney";
@@ -25,7 +24,6 @@ export type UseJourneyDataResult = {
   points: LocationPointRow[];
   notes: NoteRow[];
   media: MediaRow[];
-  weather: WeatherRow[];
   error: string | null;
   locationPermission: "unknown" | "granted" | "denied";
   needsBackgroundLocationSettings: boolean;
@@ -41,7 +39,6 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
   const [points, setPoints] = useState<LocationPointRow[]>([]);
   const [notes, setNotes] = useState<NoteRow[]>([]);
   const [media, setMedia] = useState<MediaRow[]>([]);
-  const [weather, setWeather] = useState<WeatherRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [locationPermission, setLocationPermission] = useState<
     "unknown" | "granted" | "denied"
@@ -62,7 +59,6 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
       points: loadedPoints,
       notes: loadedNotes,
       media: loadedMedia,
-      weather: loadedWeather,
     } = bundle;
     setJourney(journey);
     setName(journey.name);
@@ -70,7 +66,6 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
     setPoints(loadedPoints);
     setNotes(loadedNotes);
     setMedia(loadedMedia);
-    setWeather(loadedWeather);
     syncActiveJourneySession(journey.id, journey.status);
     const trackingSync = await syncBackgroundTrackingForJourneyStatus(journey.status);
     if (journey.status === "ongoing" && !trackingSync.started) {
@@ -144,7 +139,6 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
     points,
     notes,
     media,
-    weather,
     error,
     locationPermission,
     needsBackgroundLocationSettings,

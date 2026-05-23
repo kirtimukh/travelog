@@ -1,4 +1,4 @@
-/** Short date + time for feed rows, weather cards, and similar lists. */
+/** Short date + time for feed rows and similar lists. */
 export function formatListTimestamp(ts: number): string {
   return new Date(ts).toLocaleString(undefined, {
     dateStyle: "short",

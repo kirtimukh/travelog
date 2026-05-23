@@ -1,4 +1,4 @@
-import type { JourneyRow, LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../db/schema";
+import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../db/schema";
 
 export type JourneyPauseWindow = {
   startTs: number;
@@ -8,8 +8,7 @@ export type JourneyPauseWindow = {
 export type ReplayTimelineEntry =
   | { kind: "text_note"; id: number; timestamp: number; preview100: string }
   | { kind: "voice_note"; id: number; timestamp: number; durationSec: number | null }
-  | { kind: "image"; id: number; timestamp: number; media: MediaRow }
-  | { kind: "weather"; id: number; timestamp: number; condition: string | null; temperature: number | null };
+  | { kind: "image"; id: number; timestamp: number; media: MediaRow };
 
 export function replayTimelineEntryKey(entry: ReplayTimelineEntry): string {
   return `${entry.kind}:${entry.id}`;
@@ -239,11 +238,7 @@ export function getReplayHeading(point: LocationPointRow | null): number | null 
   }
 }
 
-export function buildReplayTimeline(
-  notes: NoteRow[],
-  media: MediaRow[],
-  weather: WeatherRow[],
-): ReplayTimelineEntry[] {
+export function buildReplayTimeline(notes: NoteRow[], media: MediaRow[]): ReplayTimelineEntry[] {
   const noteEntries: ReplayTimelineEntry[] = notes.map((note) =>
     note.type === "voice"
       ? {
@@ -267,15 +262,7 @@ export function buildReplayTimeline(
       timestamp: item.timestamp as number,
       media: item,
     }));
-  const weatherEntries: ReplayTimelineEntry[] = weather.map((row) => ({
-    kind: "weather" as const,
-    id: row.id,
-    timestamp: row.timestamp,
-    condition: row.weather_condition,
-    temperature: row.temperature,
-  }));
-
-  return [...noteEntries, ...mediaEntries, ...weatherEntries].sort((a, b) => {
+  return [...noteEntries, ...mediaEntries].sort((a, b) => {
     if (a.timestamp !== b.timestamp) {
       return a.timestamp - b.timestamp;
     }

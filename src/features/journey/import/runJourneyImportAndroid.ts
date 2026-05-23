@@ -14,7 +14,6 @@ import {
 import { insertLocationPoint } from "../../../db/locationPoints";
 import { createMedia, updateMediaFile } from "../../../db/media";
 import { createNote, updateNoteAudio } from "../../../db/notes";
-import { createWeather } from "../../../db/weather";
 import { randomUuid } from "../../../files/uuid";
 import {
   IMPORT_MAX_BYTES,
@@ -283,20 +282,6 @@ export async function runJourneyImportAndroid(opts?: {
         mediaTasks.push({ newMediaId, stagingUri: row.stagingUri });
       }
 
-      for (const w of payload.weather) {
-        throwIfAborted(signal);
-        await createWeather(db, {
-          journeyId: newJourneyId,
-          temperature: w.temperature,
-          feelsLikeTemperature: w.feels_like_temperature,
-          weatherCondition: w.weather_condition,
-          weatherConditionIcon: w.weather_condition_icon,
-          fullData: w.full_data,
-          timestamp: w.timestamp,
-          lat: w.lat,
-          lng: w.lng,
-        });
-      }
     });
 
     committedJourneyId = newJourneyId;

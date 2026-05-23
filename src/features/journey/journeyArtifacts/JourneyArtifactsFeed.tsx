@@ -1,4 +1,4 @@
-import type { LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
+import type { LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
 import type { JourneyPauseWindow } from "../replay";
 import { JourneyNotesFeed } from "../components/JourneyNotesFeed";
 import type { UseMediaEditFlowResult } from "../hooks/useMediaEditFlow";
@@ -11,7 +11,6 @@ import {
 export type JourneyArtifactsFeedProps = {
   notes: NoteRow[];
   media: MediaRow[];
-  weather: WeatherRow[];
   pauseWindows: JourneyPauseWindow[];
   locationPoints: LocationPointRow[];
   editable?: boolean;
@@ -23,7 +22,6 @@ export type JourneyArtifactsFeedProps = {
 export function JourneyArtifactsFeed({
   notes,
   media: mediaRows,
-  weather: weatherRows,
   pauseWindows,
   locationPoints,
   editable = true,
@@ -41,7 +39,6 @@ export function JourneyArtifactsFeed({
     <JourneyNotesFeed
       notes={notes}
       media={mediaRows}
-      weather={weatherRows}
       pauseWindows={pauseWindows}
       locationPoints={locationPoints}
       editable={editable}

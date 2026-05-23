@@ -10,7 +10,7 @@ import {
   utf8ByteLength,
   zipFilenameStemForSaf,
 } from "../buildJourneyExport";
-import type { JourneyRow, LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../../db/schema";
+import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../../db/schema";
 
 function rowJourney(over: Partial<JourneyRow> = {}): JourneyRow {
   return {
@@ -34,7 +34,6 @@ function bundleFrom(over: Partial<JourneyBundle> = {}): JourneyBundle {
     points: [] as LocationPointRow[],
     notes: [] as NoteRow[],
     media: [] as MediaRow[],
-    weather: [] as WeatherRow[],
     ...over,
   };
 }

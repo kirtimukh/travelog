@@ -12,7 +12,7 @@ import {
 import { ScrollView as RNScrollView } from "react-native";
 import { Gesture, type GestureType } from "react-native-gesture-handler";
 
-import type { JourneyRow, LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
+import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
 import { sumPathDistanceMeters } from "../journeyMetrics";
 import {
   buildReplayTimeline,
@@ -41,7 +41,6 @@ type Params = {
   points: LocationPointRow[];
   notes: NoteRow[];
   media: MediaRow[];
-  weather: WeatherRow[];
 };
 
 export type ReplayCard = {
@@ -83,7 +82,6 @@ export function useJourneyDetailsReplay({
   points,
   notes,
   media,
-  weather,
 }: Params): UseJourneyDetailsReplayResult {
   const [isReplaying, setIsReplaying] = useState<boolean>(false);
   const [holdDirection, setHoldDirection] = useState<-1 | 0 | 1>(0);
@@ -134,8 +132,8 @@ export function useJourneyDetailsReplay({
     [journey, replayElapsedMs, replaySessionPointTs],
   );
   const replayTimeline = useMemo(
-    () => buildReplayTimeline(notes, media, weather),
-    [media, notes, weather],
+    () => buildReplayTimeline(notes, media),
+    [media, notes],
   );
 
   const clearReplayCardStack = useCallback(() => {

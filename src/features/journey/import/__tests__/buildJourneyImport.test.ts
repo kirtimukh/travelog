@@ -1,5 +1,5 @@
 import type { JourneyExportPayload } from "../../export/buildJourneyExport";
-import type { JourneyRow, LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../../db/schema";
+import type { JourneyRow, LocationPointRow, MediaRow, NoteRow } from "../../../../db/schema";
 import {
   assertFlatStagingDirectory,
   buildMediaImportPlans,
@@ -38,7 +38,7 @@ function minimalPayload(): JourneyExportPayload {
       heading: null,
     },
   ];
-  return { journey, points, notes: [], media: [], weather: [] };
+  return { journey, points, notes: [], media: [] };
 }
 
 describe("parseJourneyImportPayload", () => {

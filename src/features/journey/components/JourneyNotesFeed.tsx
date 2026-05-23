@@ -5,13 +5,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 
 import { enterPlaybackSession, registerPlayer } from "../../../audio/audioSessionManager";
-import type { LocationPointRow, MediaRow, NoteRow, WeatherRow } from "../../../db/schema";
+import type { LocationPointRow, MediaRow, NoteRow } from "../../../db/schema";
 
 import { waitForPlayerReady } from "../audio/waitForPlayerReady";
 import { formatDurationSeconds } from "../formatDuration";
 import type { JourneyPauseWindow } from "../replay";
 
-import { JourneyWeatherCardBody, weatherRowToCardDisplay } from "./JourneyWeatherCardBody";
 import {
   buildFeed,
   type FeedItem,
@@ -261,16 +260,6 @@ function renderFeedItem(item: FeedItem, ctx: FeedRenderContext): ReactElement {
           </View>
         </View>
       );
-    case "weather":
-      return (
-        <View key={`weather-${item.data.id}`} className="mt-3 overflow-hidden rounded-md border border-sky-200">
-          <JourneyWeatherCardBody
-            data={weatherRowToCardDisplay(item.data)}
-            includeTopMargin={false}
-            layout="feed"
-          />
-        </View>
-      );
     case "pause":
       return (
         <View
@@ -289,7 +278,6 @@ function renderFeedItem(item: FeedItem, ctx: FeedRenderContext): ReactElement {
 type Props = {
   notes: NoteRow[];
   media: MediaRow[];
-  weather: WeatherRow[];
   pauseWindows?: JourneyPauseWindow[];
   locationPoints?: LocationPointRow[];
   editable?: boolean;
@@ -306,7 +294,6 @@ type Props = {
 export function JourneyNotesFeed({
   notes,
   media,
-  weather,
   pauseWindows = [],
   locationPoints = [],
   editable = true,
@@ -315,8 +302,8 @@ export function JourneyNotesFeed({
   suspendPlayback = false,
 }: Props) {
   const feed = useMemo(
-    () => buildFeed(notes, media, weather, pauseWindows),
-    [notes, media, weather, pauseWindows],
+    () => buildFeed(notes, media, pauseWindows),
+    [notes, media, pauseWindows],
   );
   const total = feed.length;
 

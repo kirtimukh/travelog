@@ -25,18 +25,6 @@ function ReplayCardContent({ card }: { card: ReplayCard }) {
       return (
         <Text className="text-xs text-neutral-700">{formatVoiceReplayDuration(entry.durationSec)}</Text>
       );
-    case "weather": {
-      const condition = entry.condition?.trim() || "—";
-      const temp =
-        entry.temperature != null && !Number.isNaN(entry.temperature)
-          ? String(entry.temperature)
-          : "—";
-      return (
-        <Text className="text-xs text-neutral-700">
-          {condition} : {temp}
-        </Text>
-      );
-    }
     case "image": {
       const cap = caption100(entry.media.text);
       return (

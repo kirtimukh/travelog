@@ -8,7 +8,6 @@ import type {
   LocationPointRow,
   MediaRow,
   NoteRow,
-  WeatherRow,
 } from "../../../db/schema";
 import { onPermissionGranted } from "../../../location/currentLocationCache";
 import { loadJourneyBundle } from "../bundle";
@@ -24,7 +23,6 @@ export type UseJourneyDetailsDataResult = {
   points: LocationPointRow[];
   notes: NoteRow[];
   media: MediaRow[];
-  weather: WeatherRow[];
   locationPermission: boolean;
   screenError: string | null;
   setScreenError: Dispatch<SetStateAction<string | null>>;
@@ -43,7 +41,6 @@ export function useJourneyDetailsData({
   const [points, setPoints] = useState<LocationPointRow[]>([]);
   const [notes, setNotes] = useState<NoteRow[]>([]);
   const [media, setMedia] = useState<MediaRow[]>([]);
-  const [weather, setWeather] = useState<WeatherRow[]>([]);
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
   const [screenError, setScreenError] = useState<string | null>(null);
   const [deleteJourneyBusy, setDeleteJourneyBusy] = useState<boolean>(false);
@@ -60,7 +57,6 @@ export function useJourneyDetailsData({
     setPoints(bundle.points);
     setNotes(bundle.notes);
     setMedia(bundle.media);
-    setWeather(bundle.weather);
   }, [journeyId]);
 
   const requestDeleteJourney = useCallback((): void => {
@@ -110,7 +106,6 @@ export function useJourneyDetailsData({
     points,
     notes,
     media,
-    weather,
     locationPermission,
     screenError,
     setScreenError,

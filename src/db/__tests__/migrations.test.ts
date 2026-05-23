@@ -47,15 +47,9 @@ describe("runMigrations", () => {
       expect.stringContaining("ALTER TABLE journey ADD COLUMN journey_duration_ms"),
     );
     expect(execAsync).toHaveBeenNthCalledWith(12, "PRAGMA user_version = 6");
-    expect(execAsync).toHaveBeenNthCalledWith(
-      13,
-      expect.stringContaining("CREATE TABLE IF NOT EXISTS weather"),
-    );
+    expect(execAsync).toHaveBeenNthCalledWith(13, "SELECT 1;");
     expect(execAsync).toHaveBeenNthCalledWith(14, "PRAGMA user_version = 7");
-    expect(execAsync).toHaveBeenNthCalledWith(
-      15,
-      expect.stringContaining("CREATE TABLE IF NOT EXISTS weather_quota_event"),
-    );
+    expect(execAsync).toHaveBeenNthCalledWith(15, "SELECT 1;");
     expect(execAsync).toHaveBeenNthCalledWith(16, "PRAGMA user_version = 8");
   });
 
@@ -149,7 +143,7 @@ describe("runMigrations", () => {
     expect(v6Sql).toContain("recorded_distance");
   });
 
-  it("adds weather table and weather index in migration v7", async () => {
+  it("runs no-op in migration v7 (legacy weather slot)", async () => {
     const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 0 });
     const execAsync = jest.fn().mockResolvedValue(undefined);
     const db = { getFirstAsync, execAsync };
@@ -158,15 +152,11 @@ describe("runMigrations", () => {
     await runMigrations(db as never);
 
     const v7Sql = String(execAsync.mock.calls[12]?.[0] ?? "");
-    expect(v7Sql).toContain("CREATE TABLE IF NOT EXISTS weather");
-    expect(v7Sql).toContain("journey_id INTEGER NOT NULL");
-    expect(v7Sql).toContain("weather_condition_icon TEXT");
-    expect(v7Sql).toContain("full_data TEXT NOT NULL");
-    expect(v7Sql).toContain("FOREIGN KEY (journey_id) REFERENCES journey(id) ON DELETE CASCADE");
-    expect(v7Sql).toContain("CREATE INDEX IF NOT EXISTS idx_weather_journey_ts");
+    expect(v7Sql).toBe("SELECT 1;");
+    expect(v7Sql).not.toContain("weather");
   });
 
-  it("adds weather_quota_event table in migration v8", async () => {
+  it("runs no-op in migration v8 (legacy weather quota slot)", async () => {
     const getFirstAsync = jest.fn().mockResolvedValue({ user_version: 0 });
     const execAsync = jest.fn().mockResolvedValue(undefined);
     const db = { getFirstAsync, execAsync };
@@ -175,7 +165,7 @@ describe("runMigrations", () => {
     await runMigrations(db as never);
 
     const v8Sql = String(execAsync.mock.calls[14]?.[0] ?? "");
-    expect(v8Sql).toContain("CREATE TABLE IF NOT EXISTS weather_quota_event");
-    expect(v8Sql).toContain("idx_weather_quota_event_ts");
+    expect(v8Sql).toBe("SELECT 1;");
+    expect(v8Sql).not.toContain("weather");
   });
 });
