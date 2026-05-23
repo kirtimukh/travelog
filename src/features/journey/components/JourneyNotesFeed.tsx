@@ -192,13 +192,11 @@ type FeedRenderContext = {
   locationPoints: LocationPointRow[];
   onLongPressNote: (note: NoteRow) => void;
   onLongPressMedia: (item: MediaRow) => void;
-  onLongPressWeather?: (row: WeatherRow) => void;
   feedVoiceAudio: FeedVoiceAudio;
 };
 
 function renderFeedItem(item: FeedItem, ctx: FeedRenderContext): ReactElement {
-  const { editable, locationPoints, onLongPressNote, onLongPressMedia, onLongPressWeather, feedVoiceAudio } =
-    ctx;
+  const { editable, locationPoints, onLongPressNote, onLongPressMedia, feedVoiceAudio } = ctx;
 
   switch (item.kind) {
     case "note":
@@ -264,24 +262,13 @@ function renderFeedItem(item: FeedItem, ctx: FeedRenderContext): ReactElement {
         </View>
       );
     case "weather":
-      return onLongPressWeather ? (
-        <Pressable
-          key={`weather-${item.data.id}`}
-          className="mt-3 overflow-hidden rounded-md border border-sky-200 active:bg-sky-100/80"
-          onLongPress={() => {
-            onLongPressWeather(item.data);
-          }}
-          delayLongPress={350}
-        >
+      return (
+        <View key={`weather-${item.data.id}`} className="mt-3 overflow-hidden rounded-md border border-sky-200">
           <JourneyWeatherCardBody
             data={weatherRowToCardDisplay(item.data)}
             includeTopMargin={false}
             layout="feed"
           />
-        </Pressable>
-      ) : (
-        <View key={`weather-${item.data.id}`}>
-          <JourneyWeatherCardBody data={weatherRowToCardDisplay(item.data)} />
         </View>
       );
     case "pause":
@@ -308,7 +295,6 @@ type Props = {
   editable?: boolean;
   onLongPressNote: (note: NoteRow) => void;
   onLongPressMedia: (item: MediaRow) => void;
-  onLongPressWeather?: (row: WeatherRow) => void;
   /** When true, pauses the shared list player (modals / re-record overlay own audio). */
   suspendPlayback?: boolean;
 };
@@ -326,7 +312,6 @@ export function JourneyNotesFeed({
   editable = true,
   onLongPressNote,
   onLongPressMedia,
-  onLongPressWeather,
   suspendPlayback = false,
 }: Props) {
   const feed = useMemo(
@@ -361,7 +346,6 @@ export function JourneyNotesFeed({
     locationPoints,
     onLongPressNote,
     onLongPressMedia,
-    onLongPressWeather,
     feedVoiceAudio,
   };
 

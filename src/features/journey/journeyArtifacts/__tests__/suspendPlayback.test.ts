@@ -6,21 +6,12 @@ describe("computeJourneyArtifactsSuspendPlayback", () => {
       computeJourneyArtifactsSuspendPlayback({
         noteEditOpen: true,
         mediaEditOpen: false,
-        weatherModalVisible: false,
       }),
     ).toBe(true);
     expect(
       computeJourneyArtifactsSuspendPlayback({
         noteEditOpen: false,
         mediaEditOpen: true,
-        weatherModalVisible: false,
-      }),
-    ).toBe(true);
-    expect(
-      computeJourneyArtifactsSuspendPlayback({
-        noteEditOpen: false,
-        mediaEditOpen: false,
-        weatherModalVisible: true,
       }),
     ).toBe(true);
   });
@@ -30,7 +21,6 @@ describe("computeJourneyArtifactsSuspendPlayback", () => {
       computeJourneyArtifactsSuspendPlayback({
         noteEditOpen: false,
         mediaEditOpen: false,
-        weatherModalVisible: false,
       }),
     ).toBe(false);
   });
@@ -46,7 +36,6 @@ describe("computeJourneyArtifactsSuspendPlayback", () => {
       computeJourneyArtifactsSuspendPlayback({
         noteEditOpen: false,
         mediaEditOpen: false,
-        weatherModalVisible: false,
         liveExtras,
       }),
     ).toBe(true);

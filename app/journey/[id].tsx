@@ -27,7 +27,6 @@ import { useMediaEditFlow } from "../../src/features/journey/hooks/useMediaEditF
 import { useNoteEditFlow } from "../../src/features/journey/hooks/useNoteEditFlow";
 import { useRerecordFlow } from "../../src/features/journey/hooks/useRerecordFlow";
 import { useScheduledMapFallbackLngLat } from "../../src/features/journey/hooks/useScheduledMapFallbackLngLat";
-import { useWeatherCaptureFlow } from "../../src/features/journey/hooks/useWeatherCaptureFlow";
 import { confirmTwoStepDestructiveAction } from "../../src/features/journey/confirmTwoStepDestructive";
 import { getJourneyPauseWindows } from "../../src/features/journey/replay";
 import { getJourneyActionLabel } from "../../src/features/journey/status";
@@ -55,11 +54,6 @@ export default function JourneyScreen() {
     journeyId,
     refreshJourneyData: journeyData.refreshJourneyData,
   });
-  const weatherCaptureFlow = useWeatherCaptureFlow({
-    journeyId,
-    refreshJourneyData: journeyData.refreshJourneyData,
-  });
-
   const [textNoteModalVisible, setTextNoteModalVisible] = useState(false);
   const [voiceNoteModalVisible, setVoiceNoteModalVisible] = useState(false);
   const [journeyActionConfirmOpen, setJourneyActionConfirmOpen] = useState(false);
@@ -212,9 +206,7 @@ export default function JourneyScreen() {
             className={`flex-1 rounded-xl border border-neutral-200 px-4 py-3 ${rerecordFlow.session ? "bg-neutral-200" : "bg-neutral-50"}`}
             accessibilityLabel="Weather"
             accessibilityRole="button"
-            onPress={() => {
-              weatherCaptureFlow.modal.open();
-            }}
+            onPress={() => {}}
           >
             <Text className="text-center text-lg font-semibold text-neutral-900">☁️</Text>
           </Pressable>
@@ -258,7 +250,6 @@ export default function JourneyScreen() {
           locationPoints={journeyData.points}
           noteEdit={noteEditFlow}
           mediaEdit={mediaEditFlow}
-          weatherCapture={weatherCaptureFlow}
           liveSuspendExtras={{
             textNoteModalVisible,
             voiceNoteModalVisible,
@@ -334,7 +325,6 @@ export default function JourneyScreen() {
       <JourneyArtifactsEditorModals
         noteEdit={noteEditFlow}
         mediaEdit={mediaEditFlow}
-        weatherCapture={weatherCaptureFlow}
         onRerecordAudio={() => {
           if (!noteEditFlow.target) {
             return;
@@ -342,7 +332,6 @@ export default function JourneyScreen() {
           void rerecordFlow.rerecordNoteAudio(noteEditFlow.target);
           noteEditFlow.close();
         }}
-        weatherOnDelete={weatherCaptureFlow.modal.requestDeleteWeather}
       />
     </View>
   );

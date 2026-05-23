@@ -1,27 +1,19 @@
 import { JourneyMediaEditModal } from "../components/JourneyMediaEditModal";
 import { JourneyNoteEditModal } from "../components/JourneyNoteEditModal";
-import { JourneyWeatherModal } from "../components/JourneyWeatherModal";
 import type { UseMediaEditFlowResult } from "../hooks/useMediaEditFlow";
 import type { UseNoteEditFlowResult } from "../hooks/useNoteEditFlow";
-import type { UseWeatherCaptureFlowResult } from "../hooks/useWeatherCaptureFlow";
 
 export type JourneyArtifactsEditorModalsProps = {
   noteEdit: UseNoteEditFlowResult;
   mediaEdit: UseMediaEditFlowResult;
-  weatherCapture: UseWeatherCaptureFlowResult;
   onRerecordAudio: () => void;
-  weatherOnDelete?: () => void;
 };
 
 export function JourneyArtifactsEditorModals({
   noteEdit,
   mediaEdit,
-  weatherCapture,
   onRerecordAudio,
-  weatherOnDelete,
 }: JourneyArtifactsEditorModalsProps) {
-  const m = weatherCapture.modal;
-
   return (
     <>
       <JourneyNoteEditModal
@@ -63,29 +55,6 @@ export function JourneyArtifactsEditorModals({
         onDelete={() => {
           void mediaEdit.editModal.remove();
         }}
-      />
-
-      <JourneyWeatherModal
-        visible={m.visible}
-        mode={m.mode}
-        busy={m.busy}
-        offline={m.offline}
-        error={m.error}
-        quotaLabel={m.quotaLabel}
-        canRequest={m.canRequest}
-        weatherDisplay={m.weatherDisplay}
-        dismissButtonLabel={m.dismissButtonLabel}
-        onRetry={() => {
-          void m.retryAvailability();
-        }}
-        onRequestWeather={() => {
-          void m.requestWeather();
-        }}
-        onDismiss={m.close}
-        onSave={() => {
-          void m.savePreview();
-        }}
-        onDelete={weatherOnDelete}
       />
     </>
   );

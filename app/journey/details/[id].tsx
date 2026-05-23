@@ -15,7 +15,6 @@ import { useJourneyExport } from "../../../src/features/journey/hooks/useJourney
 import { useJourneyDetailsReplay } from "../../../src/features/journey/hooks/useJourneyDetailsReplay";
 import { useMediaEditFlow } from "../../../src/features/journey/hooks/useMediaEditFlow";
 import { useNoteEditFlow } from "../../../src/features/journey/hooks/useNoteEditFlow";
-import { useWeatherCaptureFlow } from "../../../src/features/journey/hooks/useWeatherCaptureFlow";
 import { canEditInDetails } from "../../../src/features/journey/status";
 import { useOngoingJourneyCandidate } from "../../../src/features/journey/useOngoingJourneyCandidate";
 import { takeJourneyImportFeedback } from "../../../src/features/journey/import/journeyImportFeedback";
@@ -63,11 +62,6 @@ export default function JourneyDetailsScreen() {
     notes,
     media,
     weather,
-  });
-
-  const weatherCaptureFlow = useWeatherCaptureFlow({
-    journeyId,
-    refreshJourneyData: refresh,
   });
 
   const noteOrMediaBusy = noteEditFlow.busy || mediaEditFlow.editModal.busy;
@@ -204,19 +198,16 @@ export default function JourneyDetailsScreen() {
           editable={editable}
           noteEdit={noteEditFlow}
           mediaEdit={mediaEditFlow}
-          weatherCapture={weatherCaptureFlow}
         />
       </ScrollView>
 
       <JourneyArtifactsEditorModals
         noteEdit={noteEditFlow}
         mediaEdit={mediaEditFlow}
-        weatherCapture={weatherCaptureFlow}
         onRerecordAudio={() => {
           setScreenError("Re-recording is only available on the live journey screen.");
           noteEditFlow.close();
         }}
-        weatherOnDelete={editable ? weatherCaptureFlow.modal.requestDeleteWeather : undefined}
       />
     </View>
   );

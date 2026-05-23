@@ -3,7 +3,6 @@ import type { JourneyPauseWindow } from "../replay";
 import { JourneyNotesFeed } from "../components/JourneyNotesFeed";
 import type { UseMediaEditFlowResult } from "../hooks/useMediaEditFlow";
 import type { UseNoteEditFlowResult } from "../hooks/useNoteEditFlow";
-import type { UseWeatherCaptureFlowResult } from "../hooks/useWeatherCaptureFlow";
 import {
   computeJourneyArtifactsSuspendPlayback,
   type JourneyArtifactsLiveSuspendExtras,
@@ -18,7 +17,6 @@ export type JourneyArtifactsFeedProps = {
   editable?: boolean;
   noteEdit: UseNoteEditFlowResult;
   mediaEdit: UseMediaEditFlowResult;
-  weatherCapture: UseWeatherCaptureFlowResult;
   liveSuspendExtras?: JourneyArtifactsLiveSuspendExtras;
 };
 
@@ -31,13 +29,11 @@ export function JourneyArtifactsFeed({
   editable = true,
   noteEdit,
   mediaEdit,
-  weatherCapture,
   liveSuspendExtras,
 }: JourneyArtifactsFeedProps) {
   const suspendPlayback = computeJourneyArtifactsSuspendPlayback({
     noteEditOpen: noteEdit.target !== null,
     mediaEditOpen: mediaEdit.editModal.target !== null,
-    weatherModalVisible: weatherCapture.modal.visible,
     liveExtras: liveSuspendExtras,
   });
 
@@ -61,9 +57,6 @@ export function JourneyArtifactsFeed({
           return;
         }
         mediaEdit.editModal.openFor(item);
-      }}
-      onLongPressWeather={(row) => {
-        weatherCapture.modal.openForWeather(row);
       }}
     />
   );

@@ -11,11 +11,9 @@ export type JourneyArtifactsLiveSuspendExtras = {
 export function computeJourneyArtifactsSuspendPlayback(args: {
   noteEditOpen: boolean;
   mediaEditOpen: boolean;
-  weatherModalVisible: boolean;
   liveExtras?: JourneyArtifactsLiveSuspendExtras;
 }): boolean {
-  const base =
-    args.noteEditOpen || args.mediaEditOpen || args.weatherModalVisible;
+  const base = args.noteEditOpen || args.mediaEditOpen;
   const x = args.liveExtras;
   if (!x) {
     return base;
