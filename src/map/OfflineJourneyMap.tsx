@@ -13,8 +13,7 @@ import { Pressable, Text, View, type NativeSyntheticEvent } from "react-native";
 
 import type { LocationPointRow } from "../db/schema";
 import { ensureMapCatalogLoaded } from "../storage/mapCatalog";
-import { getPmtilesConfig } from "../storage/pmtilesConfig";
-import { getSpikeBasemapEntry, resolveBasemapStyle } from "./spikeBasemap";
+import { useViewportBasemapStyle } from "./useViewportBasemapStyle";
 
 type Props = {
   points: LocationPointRow[];
@@ -81,6 +80,13 @@ function boundsFromPoints(points: LocationPointRow[]): LngLatBounds | null {
   return [west, south, east, north];
 }
 
+function isLngLatBounds(value: unknown): value is LngLatBounds {
+  if (!Array.isArray(value) || value.length !== 4) {
+    return false;
+  }
+  return value.every((n) => typeof n === "number" && Number.isFinite(n));
+}
+
 export function OfflineJourneyMap({
   points,
   markerHead,
@@ -117,20 +123,9 @@ export function OfflineJourneyMap({
     () => (resolvedMarkerPoint ? toPointFeature(resolvedMarkerPoint) : null),
     [resolvedMarkerPoint],
   );
-  const pmtilesConfig = getPmtilesConfig();
   const catalogState = ensureMapCatalogLoaded();
-  const spikeEntry = useMemo(
-    () => getSpikeBasemapEntry(catalogState?.entries),
-    [catalogState?.entries],
-  );
-  const mapStyle = useMemo(
-    () =>
-      resolveBasemapStyle({
-        catalogEntries: catalogState?.entries,
-        localPmtilesPath: pmtilesConfig?.pmtilesPath,
-      }),
-    [catalogState?.entries, pmtilesConfig?.pmtilesPath],
-  );
+  const { mapStyle, onViewportChange, onStyleDidFinishLoading } =
+    useViewportBasemapStyle(catalogState?.entries);
 
   const cameraRef = useRef<CameraRef>(null);
   const mapRef = useRef<MapRef>(null);
@@ -152,25 +147,23 @@ export function OfflineJourneyMap({
     if (fallbackLngLat) {
       return [fallbackLngLat.lng, fallbackLngLat.lat];
     }
-    if (spikeEntry?.center) {
-      return [spikeEntry.center[0], spikeEntry.center[1]];
-    }
     return DEFAULT_CENTER;
-  }, [points, markerHead, fallbackLngLat, spikeEntry]);
+  }, [points, markerHead, fallbackLngLat]);
 
-  const initialZoom = useMemo(() => {
-    if (
-      points.length >= 1 ||
-      (markerHead !== undefined && markerHead !== null) ||
-      fallbackLngLat
-    ) {
-      return INITIAL_ZOOM;
-    }
-    if (spikeEntry?.center) {
-      return spikeEntry.center[2];
-    }
-    return INITIAL_ZOOM;
-  }, [points, markerHead, fallbackLngLat, spikeEntry]);
+  const scheduleViewportUpdate = useCallback(
+    (bounds: LngLatBounds, zoom: number) => {
+      onViewportChange(bounds, zoom);
+    },
+    [onViewportChange],
+  );
+
+  const syncViewportFromMap = useCallback(() => {
+    void mapRef.current?.getViewState().then((viewState) => {
+      if (isLngLatBounds(viewState.bounds)) {
+        scheduleViewportUpdate(viewState.bounds, viewState.zoom);
+      }
+    });
+  }, [scheduleViewportUpdate]);
 
   const fitCameraToRoute = useCallback(() => {
     if (!mapReadyRef.current) {
@@ -239,7 +232,7 @@ export function OfflineJourneyMap({
 
   const onRegionDidChange = useCallback(
     (event: NativeSyntheticEvent<ViewStateChangeEvent>) => {
-      const { zoom: z, userInteraction } = event.nativeEvent;
+      const { bounds, zoom: z, userInteraction } = event.nativeEvent;
       if (typeof z === "number" && !Number.isNaN(z)) {
         setCurrentZoom(z);
       }
@@ -250,8 +243,11 @@ export function OfflineJourneyMap({
       ) {
         setAutoFollowRoute(false);
       }
+      if (isLngLatBounds(bounds) && typeof z === "number" && !Number.isNaN(z)) {
+        scheduleViewportUpdate(bounds, z);
+      }
     },
-    [],
+    [scheduleViewportUpdate],
   );
 
   const zoomByStep = useCallback((delta: number) => {
@@ -292,12 +288,14 @@ export function OfflineJourneyMap({
         onRegionDidChange={onRegionDidChange}
         onDidFinishLoadingMap={() => {
           mapReadyRef.current = true;
+          syncViewportFromMap();
           if (autoFollowRoute && !userInteractionRef.current) {
             fitCameraToRoute();
             syncZoomFromMap();
           }
         }}
         onDidFinishLoadingStyle={() => {
+          onStyleDidFinishLoading();
           mapReadyRef.current = true;
           if (autoFollowRoute && !userInteractionRef.current) {
             fitCameraToRoute();
@@ -308,7 +306,7 @@ export function OfflineJourneyMap({
         <Camera
           ref={cameraRef}
           initialViewState={{
-            zoom: initialZoom,
+            zoom: INITIAL_ZOOM,
             center: initialCenter,
           }}
           minZoom={MIN_ZOOM}

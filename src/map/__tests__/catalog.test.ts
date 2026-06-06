@@ -4,8 +4,12 @@ import {
   basemapLayers,
   boundsIntersect,
   buildStyle,
+  buildStyleForViewport,
   lonLatToTile,
   padBounds,
+  regionSetKey,
+  regionSetsEqual,
+  regionsForViewport,
   tilesForBounds,
 } from "../catalog";
 
@@ -114,6 +118,53 @@ describe("basemapLayers", () => {
     expect(landuse).toMatchObject({
       paint: { "fill-color": "#E5E7EB" },
     });
+  });
+});
+
+describe("regionSetKey", () => {
+  it("returns sorted region names joined by pipe", () => {
+    expect(
+      regionSetKey([
+        entry("b", [0, 0, 1, 1]),
+        entry("a", [1, 1, 2, 2]),
+      ]),
+    ).toBe("a|b");
+  });
+});
+
+describe("regionSetsEqual", () => {
+  it("returns true for identical sets", () => {
+    expect(regionSetsEqual(new Set(["a", "b"]), new Set(["b", "a"]))).toBe(true);
+  });
+
+  it("returns false when sizes differ", () => {
+    expect(regionSetsEqual(new Set(["a"]), new Set(["a", "b"]))).toBe(false);
+  });
+});
+
+describe("regionsForViewport", () => {
+  const catalog = [
+    entry("inside", [1, 1, 3, 3]),
+    entry("outside", [20, 20, 22, 22]),
+  ];
+
+  it("pads the viewport before selecting active regions", () => {
+    const viewport: Bounds = [0, 0, 1.05, 1.05];
+    expect(regionsForViewport(catalog, viewport, 8).map((r) => r.name)).toEqual([
+      "inside",
+    ]);
+  });
+});
+
+describe("buildStyleForViewport", () => {
+  it("builds one source per active region in the viewport", () => {
+    const catalog = [
+      entry("inside", [1, 1, 3, 3]),
+      entry("outside", [20, 20, 22, 22]),
+    ];
+    const style = buildStyleForViewport(catalog, [0, 0, 5, 5], 8);
+    expect(Object.keys(style.sources ?? {})).toEqual(["pmtiles-inside"]);
+    expect(style.layers).toHaveLength(6);
   });
 });
 

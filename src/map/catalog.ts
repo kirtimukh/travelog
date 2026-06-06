@@ -120,6 +120,42 @@ export function basemapLayers(sourceId: string): StyleSpecification["layers"] {
   ];
 }
 
+export function regionSetKey(entries: CatalogEntry[]): string {
+  return entries
+    .map((entry) => entry.name)
+    .sort()
+    .join("|");
+}
+
+export function regionSetsEqual(a: Set<string>, b: Set<string>): boolean {
+  if (a.size !== b.size) {
+    return false;
+  }
+  for (const value of a) {
+    if (!b.has(value)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function regionsForViewport(
+  catalog: CatalogEntry[],
+  viewport: Bounds,
+  zoom: number,
+  padFraction = 0.1,
+): CatalogEntry[] {
+  return activeRegions(catalog, padBounds(viewport, padFraction), zoom);
+}
+
+export function buildStyleForViewport(
+  catalog: CatalogEntry[],
+  viewport: Bounds,
+  zoom: number,
+): StyleSpecification {
+  return buildStyle(regionsForViewport(catalog, viewport, zoom));
+}
+
 export function buildStyle(entries: CatalogEntry[]): StyleSpecification {
   const sources: StyleSpecification["sources"] = {};
   const layers: StyleSpecification["layers"] = [
