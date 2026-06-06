@@ -6,14 +6,15 @@ import {
   type CameraRef,
   type LngLatBounds,
   type MapRef,
-  type StyleSpecification,
   type ViewStateChangeEvent,
 } from "@maplibre/maplibre-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, Text, View, type NativeSyntheticEvent } from "react-native";
 
 import type { LocationPointRow } from "../db/schema";
+import { ensureMapCatalogLoaded } from "../storage/mapCatalog";
 import { getPmtilesConfig } from "../storage/pmtilesConfig";
+import { getSpikeBasemapEntry, resolveBasemapStyle } from "./spikeBasemap";
 
 type Props = {
   points: LocationPointRow[];
@@ -80,96 +81,6 @@ function boundsFromPoints(points: LocationPointRow[]): LngLatBounds | null {
   return [west, south, east, north];
 }
 
-const offlineFallbackStyle: StyleSpecification = {
-  version: 8,
-  name: "Travelog Offline Fallback",
-  sources: {},
-  layers: [
-    {
-      id: "background",
-      type: "background",
-      paint: {
-        "background-color": "#F3F4F6",
-      },
-    },
-  ],
-};
-
-function buildOfflineStyle(pmtilesPath: string | undefined): StyleSpecification {
-  if (!pmtilesPath) {
-    return offlineFallbackStyle;
-  }
-
-  return {
-    version: 8,
-    name: "Travelog PMTiles Basemap",
-    sources: {
-      "pmtiles-basemap": {
-        type: "vector",
-        url: `pmtiles://${pmtilesPath}`,
-      },
-    },
-    layers: [
-      {
-        id: "background",
-        type: "background",
-        paint: {
-          "background-color": "#F3F4F6",
-        },
-      },
-      {
-        id: "landuse-fill",
-        type: "fill",
-        source: "pmtiles-basemap",
-        "source-layer": "landuse",
-        paint: {
-          "fill-color": "#E5E7EB",
-        },
-      },
-      {
-        id: "water-fill",
-        type: "fill",
-        source: "pmtiles-basemap",
-        "source-layer": "water",
-        paint: {
-          "fill-color": "#BFDBFE",
-        },
-      },
-      {
-        id: "transportation-line",
-        type: "line",
-        source: "pmtiles-basemap",
-        "source-layer": "transportation",
-        paint: {
-          "line-color": "#64748B",
-          "line-width": 1.2,
-        },
-      },
-      {
-        id: "boundary-line",
-        type: "line",
-        source: "pmtiles-basemap",
-        "source-layer": "boundary",
-        paint: {
-          "line-color": "#94A3B8",
-          "line-width": 1,
-          "line-dasharray": [2, 2],
-        },
-      },
-      {
-        id: "building-fill",
-        type: "fill",
-        source: "pmtiles-basemap",
-        "source-layer": "building",
-        paint: {
-          "fill-color": "#D1D5DB",
-          "fill-opacity": 0.8,
-        },
-      },
-    ],
-  };
-}
-
 export function OfflineJourneyMap({
   points,
   markerHead,
@@ -207,9 +118,18 @@ export function OfflineJourneyMap({
     [resolvedMarkerPoint],
   );
   const pmtilesConfig = getPmtilesConfig();
+  const catalogState = ensureMapCatalogLoaded();
+  const spikeEntry = useMemo(
+    () => getSpikeBasemapEntry(catalogState?.entries),
+    [catalogState?.entries],
+  );
   const mapStyle = useMemo(
-    () => buildOfflineStyle(pmtilesConfig?.pmtilesPath),
-    [pmtilesConfig?.pmtilesPath],
+    () =>
+      resolveBasemapStyle({
+        catalogEntries: catalogState?.entries,
+        localPmtilesPath: pmtilesConfig?.pmtilesPath,
+      }),
+    [catalogState?.entries, pmtilesConfig?.pmtilesPath],
   );
 
   const cameraRef = useRef<CameraRef>(null);
@@ -232,8 +152,25 @@ export function OfflineJourneyMap({
     if (fallbackLngLat) {
       return [fallbackLngLat.lng, fallbackLngLat.lat];
     }
+    if (spikeEntry?.center) {
+      return [spikeEntry.center[0], spikeEntry.center[1]];
+    }
     return DEFAULT_CENTER;
-  }, [points, markerHead, fallbackLngLat]);
+  }, [points, markerHead, fallbackLngLat, spikeEntry]);
+
+  const initialZoom = useMemo(() => {
+    if (
+      points.length >= 1 ||
+      (markerHead !== undefined && markerHead !== null) ||
+      fallbackLngLat
+    ) {
+      return INITIAL_ZOOM;
+    }
+    if (spikeEntry?.center) {
+      return spikeEntry.center[2];
+    }
+    return INITIAL_ZOOM;
+  }, [points, markerHead, fallbackLngLat, spikeEntry]);
 
   const fitCameraToRoute = useCallback(() => {
     if (!mapReadyRef.current) {
@@ -371,7 +308,7 @@ export function OfflineJourneyMap({
         <Camera
           ref={cameraRef}
           initialViewState={{
-            zoom: INITIAL_ZOOM,
+            zoom: initialZoom,
             center: initialCenter,
           }}
           minZoom={MIN_ZOOM}

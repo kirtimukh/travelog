@@ -1,19 +1,18 @@
 import { useNavigation, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
 import { openAppDatabase } from "../src/db/client";
 import { createJourney } from "../src/db/journeys";
 import { AppHeaderMenu } from "../src/components/AppHeaderMenu";
 import { HeaderBackButton } from "../src/components/HeaderBackButton";
-import { PmtilesPackageCard } from "../src/components/PmtilesPackageCard";
 import { useOngoingJourneyCandidate } from "../src/features/journey/useOngoingJourneyCandidate";
-import { usePmtilesPackageReady } from "../src/storage/usePmtilesPackageReady";
+import { useMapCatalogReady } from "../src/storage/useMapCatalogReady";
 
 export default function HomeScreen() {
   const router = useRouter();
   const navigation = useNavigation();
-  const { ready, checking, refresh, cardStatus } = usePmtilesPackageReady();
+  const { ready, checking, regionCount } = useMapCatalogReady();
   const {
     candidateJourney,
     ongoingJourneyId,
@@ -45,11 +44,6 @@ export default function HomeScreen() {
       ),
     });
   }, [navigation, ongoingJourneyId]);
-
-  const onPmtilesImportSuccessHome = useCallback(async () => {
-    await refresh();
-    await refreshOngoingJourney();
-  }, [refresh, refreshOngoingJourney]);
 
   async function submitNewJourney(): Promise<void> {
     if (creatingJourney) {
@@ -86,25 +80,13 @@ export default function HomeScreen() {
     <View className="flex-1 bg-white px-6 pt-12">
       <Text className="text-xl font-bold text-blue-600">Home</Text>
       {ready ? (
-        <>
-          <Text className="mt-2 text-sm text-neutral-700">Map package configured</Text>
-          <Pressable
-            className="mt-2 self-start"
-            onPress={() => {
-              router.navigate("/advanced");
-            }}
-          >
-            <Text className="text-sm font-semibold text-blue-600 underline">
-              Change map package…
-            </Text>
-          </Pressable>
-        </>
-      ) : checking ? (
-        <Text className="mt-2 text-sm text-neutral-600">Checking map package...</Text>
-      ) : (
         <Text className="mt-2 text-sm text-neutral-700">
-          Upload a .pmtiles file to unlock map-enabled journeys.
+          {regionCount} regions available
         </Text>
+      ) : checking ? (
+        <Text className="mt-2 text-sm text-neutral-600">Loading map catalog...</Text>
+      ) : (
+        <Text className="mt-2 text-sm text-red-700">Map catalog unavailable.</Text>
       )}
       {ready ? (
         <Pressable
@@ -115,14 +97,6 @@ export default function HomeScreen() {
         >
           <Text className="font-semibold text-white">View all journeys</Text>
         </Pressable>
-      ) : null}
-      {!ready && !checking ? (
-        <View className="mt-6">
-          <PmtilesPackageCard
-            status={cardStatus}
-            onImportSuccess={onPmtilesImportSuccessHome}
-          />
-        </View>
       ) : null}
       {!ready ? null : candidateLoading ? (
         <Text className="mt-6 text-sm text-neutral-600">Loading journey...</Text>

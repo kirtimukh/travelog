@@ -18,7 +18,7 @@ import { AppErrorBoundary } from "../src/diagnostics/AppErrorBoundary";
 import { RouteCapture } from "../src/diagnostics/RouteCapture";
 import { subscribeCurrentLocationCacheAppState } from "../src/location/currentLocationCache";
 import { appNavigationTheme } from "../src/theme/navigationTheme";
-import { hasValidPmtilesPackage } from "../src/storage/pmtilesGuard";
+import { hasValidMapCatalog } from "../src/storage/mapCatalog";
 import { refreshLocationTrackingAccuracyIfRunning } from "../src/tracking/locationTracking";
 
 void SplashScreen.preventAutoHideAsync();
@@ -72,15 +72,12 @@ function RootLayout() {
       if (state !== "active") {
         return;
       }
-      void (async () => {
-        const hasValidPmtiles = await hasValidPmtilesPackage();
-        if (hasValidPmtiles) {
-          return;
-        }
-        if (pathname?.startsWith("/journey/")) {
-          router.replace("/");
-        }
-      })();
+      if (hasValidMapCatalog()) {
+        return;
+      }
+      if (pathname?.startsWith("/journey/")) {
+        router.replace("/");
+      }
     });
     return () => sub.remove();
   }, [pathname, router]);

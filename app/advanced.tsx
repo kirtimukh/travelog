@@ -6,6 +6,7 @@ import { HeaderBackButton } from "../src/components/HeaderBackButton";
 import { PmtilesPackageCard } from "../src/components/PmtilesPackageCard";
 import { useDiagnosticsJsonShare } from "../src/diagnostics/useDiagnosticsJsonShare";
 import { useJourneyImport } from "../src/features/journey/hooks/useJourneyImport";
+import { useMapCatalogReady } from "../src/storage/useMapCatalogReady";
 import { usePmtilesPackageReady } from "../src/storage/usePmtilesPackageReady";
 
 export default function AdvancedScreen() {
@@ -20,6 +21,7 @@ export default function AdvancedScreen() {
     setScreenError: setImportError,
     onImportSuccess,
   });
+  const { cardStatus: catalogStatus, regionCount } = useMapCatalogReady();
   const { refresh, cardStatus } = usePmtilesPackageReady();
   const {
     busy: exportingDiagnostics,
@@ -41,7 +43,13 @@ export default function AdvancedScreen() {
         contentContainerStyle={{ paddingBottom: 32 }}
         keyboardShouldPersistTaps="handled"
       >
-      <PmtilesPackageCard status={cardStatus} onImportSuccess={refresh} />
+      <Text className="text-sm text-neutral-700">{catalogStatus}</Text>
+      <Text className="mt-1 text-xs text-neutral-500">
+        {regionCount > 0 ? `${regionCount} bundled regions` : "No bundled regions loaded"}
+      </Text>
+      <View className="mt-6">
+        <PmtilesPackageCard status={cardStatus} onImportSuccess={refresh} />
+      </View>
       <View className="mt-8 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
         <Text className="text-base font-semibold text-neutral-900">Diagnostics</Text>
         <Text className="mt-2 text-xs text-neutral-500">

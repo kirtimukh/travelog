@@ -8,7 +8,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "sync-catalog": "cp ../tileserver/cataloging/catalog.json assets/catalog/catalog.json"
   },
   "dependencies": {
     "@maplibre/maplibre-react-native": "^11.0.1",

@@ -13,7 +13,7 @@ import type {
 } from "../../../db/schema";
 import { onPermissionGranted } from "../../../location/currentLocationCache";
 import { syncActiveJourneySession } from "../../../storage/activeJourney";
-import { hasValidPmtilesPackage } from "../../../storage/pmtilesGuard";
+import { hasValidMapCatalog } from "../../../storage/mapCatalog";
 import { syncBackgroundTrackingForJourneyStatus } from "../../../tracking/locationTracking";
 import { loadJourneyBundle as loadJourneyBundleData } from "../bundle";
 
@@ -101,7 +101,7 @@ export function useJourneyData(journeyId: number): UseJourneyDataResult {
       if (!Number.isFinite(journeyId)) {
         return;
       }
-      if (!(await hasValidPmtilesPackage())) {
+      if (!hasValidMapCatalog()) {
         router.replace("/");
         return;
       }

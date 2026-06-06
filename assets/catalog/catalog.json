@@ -1,0 +1,4844 @@
+[
+  {
+    "name": "africa_cape-verde",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_cape-verde.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_cape-verde.json",
+    "bounds": [
+      -26.3237859,
+      14.0048549,
+      0,
+      18.004998
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -13.1618929,
+      16.0049264,
+      6
+    ]
+  },
+  {
+    "name": "africa_central-african-republic",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_central-african-republic.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_central-african-republic.json",
+    "bounds": [
+      14.409084,
+      2.208735,
+      27.475776,
+      11.0326369
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      20.94243,
+      6.6206859,
+      6
+    ]
+  },
+  {
+    "name": "africa_chad",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_chad.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_chad.json",
+    "bounds": [
+      13.40129,
+      7.4285179,
+      24.0252659,
+      23.537926
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      18.7132779,
+      15.4832219,
+      6
+    ]
+  },
+  {
+    "name": "africa_comores",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_comores.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_comores.json",
+    "bounds": [
+      42.749809,
+      -12.968996,
+      45.596611,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      44.17321,
+      -6.484498,
+      6
+    ]
+  },
+  {
+    "name": "africa_congo-brazzaville",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_congo-brazzaville.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_congo-brazzaville.json",
+    "bounds": [
+      10.944174,
+      -5.195885,
+      18.667831,
+      3.740932
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      14.8060025,
+      -0.7274765,
+      6
+    ]
+  },
+  {
+    "name": "africa_congo-democratic-republic",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_congo-democratic-republic.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_congo-democratic-republic.json",
+    "bounds": [
+      11.883432,
+      -13.5006,
+      31.335694,
+      5.401396
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      21.609563,
+      -4.049602,
+      6
+    ]
+  },
+  {
+    "name": "africa_djibouti",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_djibouti.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_djibouti.json",
+    "bounds": [
+      41.761773,
+      10.888238,
+      43.896251,
+      12.8261449
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      42.829012,
+      11.8571914,
+      6
+    ]
+  },
+  {
+    "name": "africa_egypt",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_egypt.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_egypt.json",
+    "bounds": [
+      24.626276,
+      21.9838029,
+      37.162628,
+      32.52518
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      30.894452,
+      27.2544914,
+      6
+    ]
+  },
+  {
+    "name": "africa_equatorial-guinea",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_equatorial-guinea.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_equatorial-guinea.json",
+    "bounds": [
+      5.165631,
+      -1.792669,
+      11.423378,
+      4.1471339
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      8.2945045,
+      1.1772324,
+      6
+    ]
+  },
+  {
+    "name": "africa_eritrea",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_eritrea.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_eritrea.json",
+    "bounds": [
+      36.420705,
+      12.3438519,
+      43.346016,
+      18.329616
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      39.8833605,
+      15.3367339,
+      6
+    ]
+  },
+  {
+    "name": "africa_ethiopia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_ethiopia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_ethiopia.json",
+    "bounds": [
+      32.9672229,
+      3.3891919,
+      48.0054469,
+      14.916257
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      40.4863349,
+      9.1527244,
+      6
+    ]
+  },
+  {
+    "name": "africa_gabon",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_gabon.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_gabon.json",
+    "bounds": [
+      7.389727,
+      -5.995799,
+      14.551391,
+      2.325716
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      10.970559,
+      -1.8350415,
+      6
+    ]
+  },
+  {
+    "name": "africa_ghana",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_ghana.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_ghana.json",
+    "bounds": [
+      -3.807399,
+      3.7040559,
+      1.394038,
+      11.177723
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -1.2066805,
+      7.4408894,
+      6
+    ]
+  },
+  {
+    "name": "africa_guinea",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_guinea.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_guinea.json",
+    "bounds": [
+      -16.857083,
+      7.183332,
+      0,
+      12.683216
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -8.4285415,
+      9.933274,
+      6
+    ]
+  },
+  {
+    "name": "africa_guinea-bissau",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_guinea-bissau.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_guinea-bissau.json",
+    "bounds": [
+      -16.964265,
+      10.14494,
+      0,
+      12.693598
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -8.4821325,
+      11.419269,
+      6
+    ]
+  },
+  {
+    "name": "africa_ivory-coast",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_ivory-coast.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_ivory-coast.json",
+    "bounds": [
+      -8.633881,
+      4.141916,
+      0,
+      10.750343
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -4.3169405,
+      7.4461295,
+      6
+    ]
+  },
+  {
+    "name": "africa_kenya",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_kenya.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_kenya.json",
+    "bounds": [
+      33.8679,
+      -4.816276,
+      41.97685,
+      4.6299309
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      37.922375,
+      -0.0931725,
+      6
+    ]
+  },
+  {
+    "name": "africa_lesotho",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_lesotho.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_lesotho.json",
+    "bounds": [
+      27.009201,
+      -30.6847209,
+      29.46393,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      28.2365655,
+      -15.3423604,
+      6
+    ]
+  },
+  {
+    "name": "africa_liberia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_liberia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_liberia.json",
+    "bounds": [
+      -14.95454,
+      -0.681003,
+      0,
+      8.5701578
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -7.47727,
+      3.9445774,
+      6
+    ]
+  },
+  {
+    "name": "africa_libya",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_libya.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_libya.json",
+    "bounds": [
+      9.374405,
+      19.4508699,
+      25.407256,
+      33.57972
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      17.3908305,
+      26.5152949,
+      6
+    ]
+  },
+  {
+    "name": "africa_madagascar",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_madagascar.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_madagascar.json",
+    "bounds": [
+      42.30124,
+      -26.5822999,
+      51.14843,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      46.724835,
+      -13.2911499,
+      6
+    ]
+  },
+  {
+    "name": "africa_malawi",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_malawi.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_malawi.json",
+    "bounds": [
+      32.664413,
+      -17.133244,
+      35.929412,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      34.2969125,
+      -8.566622,
+      6
+    ]
+  },
+  {
+    "name": "africa_mali",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_mali.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_mali.json",
+    "bounds": [
+      -12.24701,
+      10.117598,
+      4.3302569,
+      25.0949899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -3.9583765,
+      17.6062939,
+      6
+    ]
+  },
+  {
+    "name": "africa_mauritania",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_mauritania.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_mauritania.json",
+    "bounds": [
+      -17.350161,
+      14.715784,
+      0,
+      27.3361349
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -8.6750805,
+      21.0259594,
+      6
+    ]
+  },
+  {
+    "name": "africa_mauritius",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_mauritius.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_mauritius.json",
+    "bounds": [
+      53.547275,
+      -22.241095,
+      65.639906,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      59.5935905,
+      -11.1205475,
+      6
+    ]
+  },
+  {
+    "name": "africa_morocco",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_morocco.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_morocco.json",
+    "bounds": [
+      -18.183499,
+      20.4037299,
+      0,
+      36.1619899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -9.0917495,
+      28.2828599,
+      6
+    ]
+  },
+  {
+    "name": "africa_mozambique",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_mozambique.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_mozambique.json",
+    "bounds": [
+      30.207424,
+      -26.938372,
+      42.534886,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      36.371155,
+      -13.469186,
+      6
+    ]
+  },
+  {
+    "name": "africa_namibia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_namibia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_namibia.json",
+    "bounds": [
+      9.784615,
+      -30.206859,
+      25.265894,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      17.5252545,
+      -15.1034295,
+      6
+    ]
+  },
+  {
+    "name": "africa_niger",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_niger.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_niger.json",
+    "bounds": [
+      0.119721,
+      11.6868379,
+      16.0560499,
+      23.56864
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      8.0878854,
+      17.6277389,
+      6
+    ]
+  },
+  {
+    "name": "africa_nigeria",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_nigeria.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_nigeria.json",
+    "bounds": [
+      2.6645279,
+      2.6740219,
+      14.680567,
+      13.8987439
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      8.6725474,
+      8.2863829,
+      6
+    ]
+  },
+  {
+    "name": "africa_rwanda",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_rwanda.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_rwanda.json",
+    "bounds": [
+      28.859296,
+      -2.8487469,
+      30.908642,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      29.883969,
+      -1.4243734,
+      6
+    ]
+  },
+  {
+    "name": "africa_saint-helena-ascension-and-tristan-da-cunha",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_saint-helena-ascension-and-tristan-da-cunha.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_saint-helena-ascension-and-tristan-da-cunha.json",
+    "bounds": [
+      -15.570256,
+      -43.832453,
+      0,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -7.785128,
+      -21.9162265,
+      6
+    ]
+  },
+  {
+    "name": "africa_sierra-leone",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_sierra-leone.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_sierra-leone.json",
+    "bounds": [
+      -14.76451,
+      5.391619,
+      0,
+      10.005706
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -7.382255,
+      7.6986625,
+      6
+    ]
+  },
+  {
+    "name": "africa_somalia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_somalia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_somalia.json",
+    "bounds": [
+      40.97489,
+      -1.816753,
+      52.448708,
+      12.710943
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      46.711799,
+      5.447095,
+      6
+    ]
+  },
+  {
+    "name": "africa_south-africa",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_south-africa.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_south-africa.json",
+    "bounds": [
+      14.373284,
+      -48.464971,
+      40.2702,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      27.321742,
+      -24.2324855,
+      6
+    ]
+  },
+  {
+    "name": "africa_south-sudan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_south-sudan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_south-sudan.json",
+    "bounds": [
+      23.424911,
+      3.4615469,
+      35.962977,
+      12.239366
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      29.693944,
+      7.8504564,
+      6
+    ]
+  },
+  {
+    "name": "africa_sudan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_sudan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_sudan.json",
+    "bounds": [
+      21.780999,
+      8.653747,
+      39.627812,
+      22.48111
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      30.7044055,
+      15.5674285,
+      6
+    ]
+  },
+  {
+    "name": "africa_swaziland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_swaziland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_swaziland.json",
+    "bounds": [
+      30.785751,
+      -27.318256,
+      32.136984,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      31.4613675,
+      -13.659128,
+      6
+    ]
+  },
+  {
+    "name": "africa_tanzania",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_tanzania.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_tanzania.json",
+    "bounds": [
+      29.24395,
+      -11.775945,
+      40.69487,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      34.96941,
+      -5.8879725,
+      6
+    ]
+  },
+  {
+    "name": "africa_togo",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_togo.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_togo.json",
+    "bounds": [
+      -0.148338,
+      5.8925409,
+      1.810942,
+      11.14395
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      0.831302,
+      8.5182454,
+      6
+    ]
+  },
+  {
+    "name": "africa_tunisia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_tunisia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_tunisia.json",
+    "bounds": [
+      7.513961,
+      30.208642,
+      12.127679,
+      37.941381
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      9.82082,
+      34.0750115,
+      6
+    ]
+  },
+  {
+    "name": "africa_uganda",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_uganda.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_uganda.json",
+    "bounds": [
+      29.57056,
+      -1.4873149,
+      35.0103099,
+      4.2505519
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      32.2904349,
+      1.3816185,
+      6
+    ]
+  },
+  {
+    "name": "africa_zambia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_zambia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/africa_zambia.json",
+    "bounds": [
+      21.989822,
+      -18.087769,
+      33.7177269,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      27.8537744,
+      -9.0438845,
+      6
+    ]
+  },
+  {
+    "name": "asia_armenia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_armenia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_armenia.json",
+    "bounds": [
+      43.43821,
+      38.8374299,
+      46.64262,
+      41.31029
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      45.040415,
+      40.0738599,
+      6
+    ]
+  },
+  {
+    "name": "asia_azerbaijan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_azerbaijan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_azerbaijan.json",
+    "bounds": [
+      44.750061,
+      38.247274,
+      51.723097,
+      42.6743669
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      48.236579,
+      40.4608204,
+      6
+    ]
+  },
+  {
+    "name": "asia_bangladesh",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_bangladesh.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_bangladesh.json",
+    "bounds": [
+      87.9976499,
+      18.5840299,
+      92.697142,
+      26.64677
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      90.3473959,
+      22.6153999,
+      6
+    ]
+  },
+  {
+    "name": "asia_bhutan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_bhutan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_bhutan.json",
+    "bounds": [
+      88.73917,
+      26.6947999,
+      92.13159,
+      28.25372
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      90.43538,
+      27.4742599,
+      6
+    ]
+  },
+  {
+    "name": "asia_cambodia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_cambodia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_cambodia.json",
+    "bounds": [
+      101.8522179,
+      8.8580919,
+      107.639734,
+      14.71875
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      104.7459759,
+      11.7884209,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_anhui",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_anhui.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_anhui.json",
+    "bounds": [
+      114.86927,
+      29.388158,
+      119.656562,
+      34.6549569
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -97.4854488,
+      32.0215574,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_beijing",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_beijing.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_beijing.json",
+    "bounds": [
+      115.415497,
+      39.440833,
+      117.509508,
+      41.063822
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -98.2858623,
+      40.2523275,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_chongqing",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_chongqing.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_chongqing.json",
+    "bounds": [
+      105.283012,
+      28.15132,
+      110.200424,
+      32.206411
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -107.0066468,
+      30.1788655,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_fujian",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_fujian.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_fujian.json",
+    "bounds": [
+      115.840874,
+      22.96716,
+      121.627662,
+      28.322365
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -96.0140968,
+      25.6447625,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_gansu",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_gansu.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_gansu.json",
+    "bounds": [
+      92.299072,
+      32.5843779,
+      108.719263,
+      42.8135379
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      100.5091675,
+      37.6989579,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_guangdong",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_guangdong.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_guangdong.json",
+    "bounds": [
+      109.356535,
+      20.058514,
+      118.792417,
+      25.5243189
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -100.6738888,
+      22.7914164,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_guangxi",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_guangxi.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_guangxi.json",
+    "bounds": [
+      104.441871,
+      20.689823,
+      112.065353,
+      26.396483
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -106.4947528,
+      23.543153,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_guizhou",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_guizhou.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_guizhou.json",
+    "bounds": [
+      103.598156,
+      24.6170579,
+      109.55944,
+      29.2320359
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      106.578798,
+      26.9245469,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_hainan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_hainan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_hainan.json",
+    "bounds": [
+      107.578984,
+      11.984699,
+      118.784158,
+      20.403849
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -101.5667938,
+      16.194274,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_hebei",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_hebei.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_hebei.json",
+    "bounds": [
+      113.451004,
+      36.042992,
+      119.998168,
+      42.624866
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -98.0237788,
+      39.333929,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_heilongjiang",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_heilongjiang.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_heilongjiang.json",
+    "bounds": [
+      121.15,
+      43.410784,
+      137.153298,
+      54.47005
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -85.5967158,
+      48.940417,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_henan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_henan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_henan.json",
+    "bounds": [
+      110.345821,
+      31.3780519,
+      116.646995,
+      36.3680149
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -101.2519568,
+      33.8730334,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_hong-kong",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_hong-kong.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_hong-kong.json",
+    "bounds": [
+      113.813,
+      22.130413,
+      114.506,
+      22.56904
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -100.5888648,
+      22.3497265,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_hunan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_hunan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_hunan.json",
+    "bounds": [
+      108.779239,
+      24.632663,
+      114.258499,
+      30.138002
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -103.2294958,
+      27.3853325,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_inner-mongolia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_inner-mongolia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_inner-mongolia.json",
+    "bounds": [
+      94.794238,
+      37.399619,
+      126.076698,
+      54.365943
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -104.3128968,
+      45.882781,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_jiangsu",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_jiangsu.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_jiangsu.json",
+    "bounds": [
+      116.353798,
+      30.758986,
+      122.94525,
+      35.555067
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -95.0988408,
+      33.1570265,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_jiangxi",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_jiangxi.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_jiangxi.json",
+    "bounds": [
+      113.568763,
+      24.478088,
+      118.486519,
+      30.0884049
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -98.7207238,
+      27.2832464,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_jilin",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_jilin.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_jilin.json",
+    "bounds": [
+      121.627578,
+      40.329372,
+      131.7867249,
+      46.3146879
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -88.0412133,
+      43.3220299,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_liaoning",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_liaoning.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_liaoning.json",
+    "bounds": [
+      118.830528,
+      38.261909,
+      126.291289,
+      43.493032
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -92.1874563,
+      40.8774705,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_macau",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_macau.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_macau.json",
+    "bounds": [
+      113.527222,
+      22.0754589,
+      113.63245,
+      22.2170759
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -101.1685288,
+      22.1462674,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_ningxia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_ningxia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_ningxia.json",
+    "bounds": [
+      104.275,
+      35.232721,
+      107.657089,
+      39.3860599
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      105.9660445,
+      37.3093904,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_qinghai",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_qinghai.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_qinghai.json",
+    "bounds": [
+      89.39,
+      31.586725,
+      103.0727,
+      39.2216159
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      96.23135,
+      35.4041704,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_shaanxi",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_shaanxi.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_shaanxi.json",
+    "bounds": [
+      105.480079,
+      31.6949999,
+      111.247902,
+      39.589022
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -106.3843743,
+      35.6420109,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_shandong",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_shandong.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_shandong.json",
+    "bounds": [
+      114.813309,
+      34.3757459,
+      123.563227,
+      38.44
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -95.5600968,
+      36.4078729,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_shanghai",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_shanghai.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_shanghai.json",
+    "bounds": [
+      120.847034,
+      30.639095,
+      123.679027,
+      31.8845549
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -92.4853343,
+      31.2618249,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_shanxi",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_shanxi.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_shanxi.json",
+    "bounds": [
+      110.2,
+      34.578953,
+      114.57,
+      40.751159
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -102.3633648,
+      37.665056,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_sichuan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_sichuan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_sichuan.json",
+    "bounds": [
+      97.312773,
+      26.0459879,
+      108.550758,
+      34.33153
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      102.9317655,
+      30.1887589,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_tianjin",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_tianjin.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_tianjin.json",
+    "bounds": [
+      116.694374,
+      38.553267,
+      118.06303,
+      40.2530669
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -97.3696628,
+      39.4031669,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_tibet",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_tibet.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_tibet.json",
+    "bounds": [
+      77.832316,
+      26.528191,
+      99.125518,
+      36.5299999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      88.478917,
+      31.5290954,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_xinjiang",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_xinjiang.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_xinjiang.json",
+    "bounds": [
+      69.578275,
+      33.2185499,
+      96.43,
+      51.0022769
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      83.0041375,
+      42.1104134,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_yunnan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_yunnan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_yunnan.json",
+    "bounds": [
+      95.142318,
+      19.0119509,
+      106.215,
+      29.2351819
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      100.678659,
+      24.1235664,
+      6
+    ]
+  },
+  {
+    "name": "asia_china_zhejiang",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_zhejiang.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_china_zhejiang.json",
+    "bounds": [
+      118.02063,
+      26.691636,
+      123.837885,
+      31.1907769
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -93.8191073,
+      28.9412064,
+      6
+    ]
+  },
+  {
+    "name": "asia_east-timor",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_east-timor.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_east-timor.json",
+    "bounds": [
+      123.791196,
+      -9.6901029,
+      127.591094,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -89.0572198,
+      -4.8450514,
+      6
+    ]
+  },
+  {
+    "name": "asia_gcc-states",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_gcc-states.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_gcc-states.json",
+    "bounds": [
+      34.434886,
+      15.2475199,
+      60.94748,
+      32.1965339
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      47.691183,
+      23.7220269,
+      6
+    ]
+  },
+  {
+    "name": "asia_india_central-zone",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_central-zone.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_central-zone.json",
+    "bounds": [
+      74.014891,
+      17.770921,
+      84.646568,
+      31.728176
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      79.3307295,
+      24.7495485,
+      6
+    ]
+  },
+  {
+    "name": "asia_india_eastern-zone",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_eastern-zone.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_eastern-zone.json",
+    "bounds": [
+      81.367492,
+      17.7805649,
+      89.918288,
+      27.989553
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      85.64289,
+      22.8850589,
+      6
+    ]
+  },
+  {
+    "name": "asia_india_north-eastern-zone",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_north-eastern-zone.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_north-eastern-zone.json",
+    "bounds": [
+      87.703846,
+      21.1869829,
+      100.272206,
+      30.48656
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      93.988026,
+      25.8367714,
+      6
+    ]
+  },
+  {
+    "name": "asia_india_northern-zone",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_northern-zone.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_northern-zone.json",
+    "bounds": [
+      69.169911,
+      23.046881,
+      80.167546,
+      36.137884
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      74.6687285,
+      29.5923825,
+      6
+    ]
+  },
+  {
+    "name": "asia_india_southern-zone",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_southern-zone.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_southern-zone.json",
+    "bounds": [
+      70.004872,
+      5.943921,
+      95.55906,
+      19.9226809
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      82.781966,
+      12.9333009,
+      6
+    ]
+  },
+  {
+    "name": "asia_india_western-zone",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_western-zone.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_india_western-zone.json",
+    "bounds": [
+      67.3022349,
+      14.370845,
+      80.913619,
+      25.4465749
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      74.1079269,
+      19.9087099,
+      6
+    ]
+  },
+  {
+    "name": "asia_indonesia_java",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_java.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_java.json",
+    "bounds": [
+      104.139393,
+      -9.541155,
+      116.581418,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -104.3879593,
+      -4.7705775,
+      6
+    ]
+  },
+  {
+    "name": "asia_indonesia_kalimantan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_kalimantan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_kalimantan.json",
+    "bounds": [
+      104.96063,
+      -5.59958,
+      119.926747,
+      4.499767
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -102.3046763,
+      -0.5499065,
+      6
+    ]
+  },
+  {
+    "name": "asia_indonesia_maluku",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_maluku.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_maluku.json",
+    "bounds": [
+      123.89282,
+      -9.5249029,
+      135.411982,
+      3.727232
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -85.0959638,
+      -2.8988354,
+      6
+    ]
+  },
+  {
+    "name": "asia_indonesia_nusa-tenggara",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_nusa-tenggara.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_nusa-tenggara.json",
+    "bounds": [
+      114.408874,
+      -11.662985,
+      128.485096,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -93.3013798,
+      -5.8314925,
+      6
+    ]
+  },
+  {
+    "name": "asia_indonesia_papua",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_papua.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_papua.json",
+    "bounds": [
+      128.281858,
+      -9.4951159,
+      141.058957,
+      2.075967
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -80.0779573,
+      -3.7095744,
+      6
+    ]
+  },
+  {
+    "name": "asia_indonesia_sulawesi",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_sulawesi.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_sulawesi.json",
+    "bounds": [
+      116.251826,
+      -8.02115,
+      127.952265,
+      5.9712229
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -92.6463193,
+      -1.0249635,
+      6
+    ]
+  },
+  {
+    "name": "asia_indonesia_sumatra",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_sumatra.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_indonesia_sumatra.json",
+    "bounds": [
+      92.41697,
+      -7.1771899,
+      109.768523,
+      7.07911
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      101.0927465,
+      -0.0490399,
+      6
+    ]
+  },
+  {
+    "name": "asia_iran",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_iran.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_iran.json",
+    "bounds": [
+      44.023033,
+      24.039475,
+      63.35413,
+      39.790447
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      53.6885815,
+      31.914961,
+      6
+    ]
+  },
+  {
+    "name": "asia_iraq",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_iraq.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_iraq.json",
+    "bounds": [
+      38.784,
+      29.01775,
+      49.551084,
+      37.39063
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      44.167542,
+      33.20419,
+      6
+    ]
+  },
+  {
+    "name": "asia_israel-and-palestine",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_israel-and-palestine.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_israel-and-palestine.json",
+    "bounds": [
+      33.999936,
+      29.439598,
+      35.91531,
+      33.454362
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      34.957623,
+      31.44698,
+      6
+    ]
+  },
+  {
+    "name": "asia_japan_chubu",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_chubu.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_chubu.json",
+    "bounds": [
+      135.4393,
+      34.2664899,
+      139.909,
+      38.90717
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -77.0742148,
+      36.5868299,
+      6
+    ]
+  },
+  {
+    "name": "asia_japan_chugoku",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_chugoku.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_chugoku.json",
+    "bounds": [
+      129.893915,
+      33.5422499,
+      134.5244,
+      37.082889
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -82.5392073,
+      35.3125694,
+      6
+    ]
+  },
+  {
+    "name": "asia_japan_hokkaido",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_hokkaido.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_hokkaido.json",
+    "bounds": [
+      137.934616,
+      41.15098,
+      146.247631,
+      46.040273
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -72.6572413,
+      43.5956265,
+      6
+    ]
+  },
+  {
+    "name": "asia_japan_kansai",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_kansai.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_kansai.json",
+    "bounds": [
+      133.964396,
+      33.0789789,
+      137.657278,
+      36.458201
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -78.9375278,
+      34.7685899,
+      6
+    ]
+  },
+  {
+    "name": "asia_japan_kanto",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_kanto.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_kanto.json",
+    "bounds": [
+      134.045154,
+      18.625054,
+      155.605818,
+      37.15988
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -69.9228788,
+      27.892467,
+      6
+    ]
+  },
+  {
+    "name": "asia_japan_kyushu",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_kyushu.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_kyushu.json",
+    "bounds": [
+      122.23438,
+      20.725941,
+      132.804417,
+      35.097244
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -87.2289663,
+      27.9115925,
+      6
+    ]
+  },
+  {
+    "name": "asia_japan_shikoku",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_shikoku.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_shikoku.json",
+    "bounds": [
+      131.769819,
+      32.2295849,
+      135.17938,
+      34.65151
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -81.2737653,
+      33.4405474,
+      6
+    ]
+  },
+  {
+    "name": "asia_japan_tohoku",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_tohoku.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_japan_tohoku.json",
+    "bounds": [
+      138.93248,
+      36.528607,
+      142.878194,
+      41.641794
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -73.8430278,
+      39.0852005,
+      6
+    ]
+  },
+  {
+    "name": "asia_jordan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_jordan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_jordan.json",
+    "bounds": [
+      34.86886,
+      29.1821299,
+      39.31022,
+      33.3792199
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      37.08954,
+      31.2806749,
+      6
+    ]
+  },
+  {
+    "name": "asia_kazakhstan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_kazakhstan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_kazakhstan.json",
+    "bounds": [
+      46.42304,
+      40.5534619,
+      87.35359,
+      55.50799
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      66.888315,
+      48.0307259,
+      6
+    ]
+  },
+  {
+    "name": "asia_kyrgyzstan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_kyrgyzstan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_kyrgyzstan.json",
+    "bounds": [
+      69.255065,
+      39.151363,
+      80.277098,
+      43.281205
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      74.7660815,
+      41.216284,
+      6
+    ]
+  },
+  {
+    "name": "asia_laos",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_laos.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_laos.json",
+    "bounds": [
+      100.082831,
+      13.9015909,
+      107.650279,
+      22.5282459
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      103.866555,
+      18.2149184,
+      6
+    ]
+  },
+  {
+    "name": "asia_lebanon",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_lebanon.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_lebanon.json",
+    "bounds": [
+      34.76799,
+      33.0529899,
+      36.636657,
+      34.8025289
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      35.7023235,
+      33.9277594,
+      6
+    ]
+  },
+  {
+    "name": "asia_malaysia-singapore-brunei",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_malaysia-singapore-brunei.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_malaysia-singapore-brunei.json",
+    "bounds": [
+      99.25611,
+      0.830813,
+      119.668278,
+      7.736849
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -105.2861708,
+      4.283831,
+      6
+    ]
+  },
+  {
+    "name": "asia_maldives",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_maldives.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_maldives.json",
+    "bounds": [
+      71.7,
+      -1.3599999,
+      74.5,
+      7.6899999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      73.1,
+      3.165,
+      6
+    ]
+  },
+  {
+    "name": "asia_mongolia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_mongolia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_mongolia.json",
+    "bounds": [
+      87.70255,
+      41.500354,
+      120.020139,
+      52.195825
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      103.8613445,
+      46.8480895,
+      6
+    ]
+  },
+  {
+    "name": "asia_myanmar",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_myanmar.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_myanmar.json",
+    "bounds": [
+      90.651332,
+      9.5102109,
+      101.197093,
+      28.574763
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      95.9242125,
+      19.0424869,
+      6
+    ]
+  },
+  {
+    "name": "asia_nepal",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_nepal.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_nepal.json",
+    "bounds": [
+      80.04913,
+      26.3444999,
+      88.22213,
+      30.4782199
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      84.13563,
+      28.4113599,
+      6
+    ]
+  },
+  {
+    "name": "asia_north-korea",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_north-korea.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_north-korea.json",
+    "bounds": [
+      123.697,
+      37.61103,
+      131.6447,
+      43.02043
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -87.0775148,
+      40.31573,
+      6
+    ]
+  },
+  {
+    "name": "asia_pakistan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_pakistan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_pakistan.json",
+    "bounds": [
+      60.821684,
+      23.3762969,
+      77.224272,
+      37.106671
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      69.022978,
+      30.2414839,
+      6
+    ]
+  },
+  {
+    "name": "asia_philippines",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_philippines.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_philippines.json",
+    "bounds": [
+      112.1661,
+      4.3826959,
+      127.0742,
+      21.5302099
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -95.1282148,
+      12.9564529,
+      6
+    ]
+  },
+  {
+    "name": "asia_south-korea",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_south-korea.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_south-korea.json",
+    "bounds": [
+      124.3188,
+      32.36076,
+      132.3386,
+      38.6496599
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -86.4196648,
+      35.5052099,
+      6
+    ]
+  },
+  {
+    "name": "asia_sri-lanka",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_sri-lanka.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_sri-lanka.json",
+    "bounds": [
+      79.16416,
+      5.6212749,
+      82.64612,
+      10.07153
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      80.90514,
+      7.8464024,
+      6
+    ]
+  },
+  {
+    "name": "asia_syria",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_syria.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_syria.json",
+    "bounds": [
+      35.277097,
+      32.3066,
+      42.38383,
+      37.3223939
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      38.8304635,
+      34.8144969,
+      6
+    ]
+  },
+  {
+    "name": "asia_taiwan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_taiwan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_taiwan.json",
+    "bounds": [
+      118.1036,
+      20.72799,
+      122.9312,
+      26.6030499
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -94.2309648,
+      23.6655199,
+      6
+    ]
+  },
+  {
+    "name": "asia_tajikistan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_tajikistan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_tajikistan.json",
+    "bounds": [
+      67.320098,
+      36.663738,
+      75.16571,
+      41.05502
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      71.242904,
+      38.859379,
+      6
+    ]
+  },
+  {
+    "name": "asia_thailand",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_thailand.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_thailand.json",
+    "bounds": [
+      97.135615,
+      5.5978769,
+      105.63921,
+      20.4687519
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      101.3874125,
+      13.0333144,
+      6
+    ]
+  },
+  {
+    "name": "asia_turkmenistan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_turkmenistan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_turkmenistan.json",
+    "bounds": [
+      51.83271,
+      35.1235499,
+      66.70892,
+      42.81253
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      59.270815,
+      38.9680399,
+      6
+    ]
+  },
+  {
+    "name": "asia_uzbekistan",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_uzbekistan.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_uzbekistan.json",
+    "bounds": [
+      55.97708,
+      37.16636,
+      73.1746299,
+      45.618841
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      64.5758549,
+      41.3926005,
+      6
+    ]
+  },
+  {
+    "name": "asia_vietnam",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_vietnam.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_vietnam.json",
+    "bounds": [
+      102.095945,
+      7.3822389,
+      114.642323,
+      23.402135
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -106.3792308,
+      15.3921869,
+      6
+    ]
+  },
+  {
+    "name": "asia_yemen",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_yemen.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/asia_yemen.json",
+    "bounds": [
+      41.06894,
+      11.316153,
+      55.511675,
+      19.03189
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      48.2903075,
+      15.1740215,
+      6
+    ]
+  },
+  {
+    "name": "europe_albania",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_albania.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_albania.json",
+    "bounds": [
+      18.896483,
+      39.627375,
+      21.0628509,
+      42.663125
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      19.9796669,
+      41.14525,
+      6
+    ]
+  },
+  {
+    "name": "europe_andorra",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_andorra.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_andorra.json",
+    "bounds": [
+      1.412368,
+      42.4275999,
+      1.787481,
+      42.65717
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      1.5999245,
+      42.5423849,
+      6
+    ]
+  },
+  {
+    "name": "europe_austria",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_austria.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_austria.json",
+    "bounds": [
+      9.52678,
+      46.369793,
+      17.164078,
+      49.02403
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      13.345429,
+      47.6969115,
+      6
+    ]
+  },
+  {
+    "name": "europe_azores",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_azores.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_azores.json",
+    "bounds": [
+      -31.57293,
+      35.67791,
+      0,
+      40.0756999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -15.786465,
+      37.8768049,
+      6
+    ]
+  },
+  {
+    "name": "europe_belarus",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_belarus.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_belarus.json",
+    "bounds": [
+      23.174801,
+      51.234408,
+      32.76947,
+      56.173846
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      27.9721355,
+      53.704127,
+      6
+    ]
+  },
+  {
+    "name": "europe_belgium",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_belgium.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_belgium.json",
+    "bounds": [
+      2.340725,
+      49.4948909,
+      6.410265,
+      51.5983899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      4.375495,
+      50.5466404,
+      6
+    ]
+  },
+  {
+    "name": "europe_bosnia-herzegovina",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_bosnia-herzegovina.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_bosnia-herzegovina.json",
+    "bounds": [
+      15.715599,
+      42.552385,
+      19.626388,
+      45.278027
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      17.6709935,
+      43.915206,
+      6
+    ]
+  },
+  {
+    "name": "europe_bulgaria",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_bulgaria.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_bulgaria.json",
+    "bounds": [
+      22.34875,
+      41.22681,
+      29.18819,
+      44.21777
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      25.76847,
+      42.72229,
+      6
+    ]
+  },
+  {
+    "name": "europe_croatia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_croatia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_croatia.json",
+    "bounds": [
+      13.08916,
+      42.1648299,
+      19.459968,
+      46.5575619
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      16.274564,
+      44.3611959,
+      6
+    ]
+  },
+  {
+    "name": "europe_cyprus",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_cyprus.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_cyprus.json",
+    "bounds": [
+      31.95244,
+      34.2337399,
+      34.96147,
+      36.00323
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      33.456955,
+      35.1184849,
+      6
+    ]
+  },
+  {
+    "name": "europe_czech-republic",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_czech-republic.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_czech-republic.json",
+    "bounds": [
+      12.08477,
+      48.54292,
+      18.86321,
+      51.0642599
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      15.47399,
+      49.8035899,
+      6
+    ]
+  },
+  {
+    "name": "europe_denmark",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_denmark.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_denmark.json",
+    "bounds": [
+      7.7011,
+      54.44065,
+      15.65449,
+      58.0623899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      11.677795,
+      56.2515199,
+      6
+    ]
+  },
+  {
+    "name": "europe_estonia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_estonia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_estonia.json",
+    "bounds": [
+      20.85166,
+      57.4976399,
+      28.21426,
+      59.99705
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      24.53296,
+      58.7473449,
+      6
+    ]
+  },
+  {
+    "name": "europe_faroe-islands",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_faroe-islands.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_faroe-islands.json",
+    "bounds": [
+      -8.690197,
+      60.866318,
+      0,
+      62.905232
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -4.3450985,
+      61.885775,
+      6
+    ]
+  },
+  {
+    "name": "europe_finland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_finland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_finland.json",
+    "bounds": [
+      19.02427,
+      59.2878299,
+      31.615904,
+      70.09959
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      25.320087,
+      64.6937099,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_alsace",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_alsace.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_alsace.json",
+    "bounds": [
+      6.838921,
+      47.3845,
+      8.306437,
+      49.2080139
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      7.572679,
+      48.2962569,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_aquitaine",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_aquitaine.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_aquitaine.json",
+    "bounds": [
+      -1.842771,
+      42.6115499,
+      1.450577,
+      45.71724
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -0.196097,
+      44.1643949,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_auvergne",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_auvergne.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_auvergne.json",
+    "bounds": [
+      2.060519,
+      44.6145999,
+      4.492907,
+      46.80668
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      3.276713,
+      45.7106399,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_basse-normandie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_basse-normandie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_basse-normandie.json",
+    "bounds": [
+      -2.087526,
+      48.17802,
+      0.979067,
+      49.88523
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -0.5542295,
+      49.031625,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_bourgogne",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_bourgogne.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_bourgogne.json",
+    "bounds": [
+      2.843279,
+      46.15484,
+      5.519965,
+      48.40136
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      4.181622,
+      47.2781,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_bretagne",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_bretagne.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_bretagne.json",
+    "bounds": [
+      -5.883925,
+      47.07722,
+      0,
+      49.4145489
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -2.9419625,
+      48.2458844,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_centre",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_centre.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_centre.json",
+    "bounds": [
+      0.051538,
+      46.34591,
+      3.129925,
+      48.9422999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      1.5907315,
+      47.6441049,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_champagne-ardenne",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_champagne-ardenne.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_champagne-ardenne.json",
+    "bounds": [
+      3.382419,
+      47.57553,
+      5.892182,
+      50.22065
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      4.6373005,
+      48.89809,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_corse",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_corse.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_corse.json",
+    "bounds": [
+      8.317882,
+      41.31103,
+      9.751243,
+      43.1658899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      9.0345625,
+      42.2384599,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_franche-comte",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_franche-comte.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_franche-comte.json",
+    "bounds": [
+      5.25076,
+      46.2597499,
+      7.14439,
+      48.02537
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      6.197575,
+      47.1425599,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_guyane",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_guyane.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_guyane.json",
+    "bounds": [
+      -54.622994,
+      2.093117,
+      0,
+      6.370288
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -27.311497,
+      4.2317025,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_haute-normandie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_haute-normandie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_haute-normandie.json",
+    "bounds": [
+      0.009482,
+      48.66574,
+      1.803956,
+      50.08769
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      0.906719,
+      49.376715,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_ile-de-france",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_ile-de-france.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_ile-de-france.json",
+    "bounds": [
+      1.445097,
+      48.11918,
+      3.560409,
+      49.2427099
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      2.502753,
+      48.6809449,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_languedoc-roussillon",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_languedoc-roussillon.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_languedoc-roussillon.json",
+    "bounds": [
+      1.686256,
+      42.16658,
+      4.8479789,
+      44.9782099
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      3.2671174,
+      43.5723949,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_limousin",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_limousin.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_limousin.json",
+    "bounds": [
+      0.627097,
+      44.91842,
+      2.61384,
+      46.4578099
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      1.6204685,
+      45.6881149,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_lorraine",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_lorraine.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_lorraine.json",
+    "bounds": [
+      4.886022,
+      47.81188,
+      7.689503,
+      49.6194899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      6.2877625,
+      48.7156849,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_midi-pyrenees",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_midi-pyrenees.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_midi-pyrenees.json",
+    "bounds": [
+      -0.327537,
+      42.53333,
+      3.453264,
+      45.0477899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      1.5628635,
+      43.7905599,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_nord-pas-de-calais",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_nord-pas-de-calais.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_nord-pas-de-calais.json",
+    "bounds": [
+      1.278311,
+      49.96764,
+      4.273287,
+      51.2812099
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      2.775799,
+      50.6244249,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_pays-de-la-loire",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_pays-de-la-loire.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_pays-de-la-loire.json",
+    "bounds": [
+      -2.674666,
+      46.21875,
+      0.918996,
+      48.57002
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -0.877835,
+      47.394385,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_picardie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_picardie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_picardie.json",
+    "bounds": [
+      1.360085,
+      48.83599,
+      4.256744,
+      50.37125
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      2.8084145,
+      49.60362,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_poitou-charentes",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_poitou-charentes.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_poitou-charentes.json",
+    "bounds": [
+      -1.898565,
+      45.0867999,
+      1.214991,
+      47.17837
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -0.341787,
+      46.1325849,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_provence-alpes-cote-d-azur",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_provence-alpes-cote-d-azur.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_provence-alpes-cote-d-azur.json",
+    "bounds": [
+      4.1447459,
+      42.31539,
+      7.887672,
+      45.12887
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      6.0162089,
+      43.72213,
+      6
+    ]
+  },
+  {
+    "name": "europe_france_rhone-alpes",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_rhone-alpes.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_france_rhone-alpes.json",
+    "bounds": [
+      3.686075,
+      44.11274,
+      7.27726,
+      46.57299
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      5.4816675,
+      45.342865,
+      6
+    ]
+  },
+  {
+    "name": "europe_georgia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_georgia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_georgia.json",
+    "bounds": [
+      39.88093,
+      41.05117,
+      46.73959,
+      43.5899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      43.31026,
+      42.320535,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_berlin",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_berlin.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_berlin.json",
+    "bounds": [
+      13.08283,
+      52.33446,
+      13.762245,
+      52.6783
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      13.4225375,
+      52.50638,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_brandenburg",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_brandenburg.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_brandenburg.json",
+    "bounds": [
+      11.22404,
+      51.35252,
+      14.77917,
+      53.5783999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      13.001605,
+      52.4654599,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_bremen",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_bremen.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_bremen.json",
+    "bounds": [
+      8.480959,
+      53.0103399,
+      8.991268,
+      53.61063
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      8.7361135,
+      53.3104849,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_hamburg",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_hamburg.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_hamburg.json",
+    "bounds": [
+      7.967833,
+      53.391826,
+      10.331955,
+      54.062613
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      9.149894,
+      53.7272195,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_hessen",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_hessen.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_hessen.json",
+    "bounds": [
+      7.768021,
+      49.393212,
+      10.245952,
+      51.6591579
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      9.0069865,
+      50.5261849,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_mecklenburg-vorpommern",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_mecklenburg-vorpommern.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_mecklenburg-vorpommern.json",
+    "bounds": [
+      10.588074,
+      53.106186,
+      14.43422,
+      54.99857
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      12.511147,
+      54.052378,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_niedersachsen",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_niedersachsen.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_niedersachsen.json",
+    "bounds": [
+      6.295165,
+      51.293485,
+      11.607313,
+      54.239552
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      8.951239,
+      52.7665185,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_rheinland-pfalz",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_rheinland-pfalz.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_rheinland-pfalz.json",
+    "bounds": [
+      6.108849,
+      48.963765,
+      8.5112279,
+      50.9440439
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      7.3100384,
+      49.9539044,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_saarland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_saarland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_saarland.json",
+    "bounds": [
+      6.35017,
+      49.040133,
+      7.406287,
+      49.641456
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      6.8782285,
+      49.3407945,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_sachsen",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_sachsen.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_sachsen.json",
+    "bounds": [
+      11.86685,
+      50.0318939,
+      15.163009,
+      51.68735
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      13.5149295,
+      50.8596219,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_sachsen-anhalt",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_sachsen-anhalt.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_sachsen-anhalt.json",
+    "bounds": [
+      10.54725,
+      50.92887,
+      13.21268,
+      53.0566
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      11.879965,
+      51.992735,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_schleswig-holstein",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_schleswig-holstein.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_schleswig-holstein.json",
+    "bounds": [
+      7.46458,
+      53.3569039,
+      11.799314,
+      55.14634
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      9.631947,
+      54.2516219,
+      6
+    ]
+  },
+  {
+    "name": "europe_germany_thueringen",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_thueringen.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_germany_thueringen.json",
+    "bounds": [
+      9.863176,
+      50.19971,
+      12.661056,
+      51.6523699
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      11.262116,
+      50.9260399,
+      6
+    ]
+  },
+  {
+    "name": "europe_greece",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_greece.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_greece.json",
+    "bounds": [
+      18.970641,
+      34.59111,
+      29.65683,
+      41.7495399
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      24.3137355,
+      38.1703249,
+      6
+    ]
+  },
+  {
+    "name": "europe_guernsey-jersey",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_guernsey-jersey.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_guernsey-jersey.json",
+    "bounds": [
+      -3.573306,
+      48.806865,
+      0,
+      50.069483
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -1.786653,
+      49.438174,
+      6
+    ]
+  },
+  {
+    "name": "europe_hungary",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_hungary.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_hungary.json",
+    "bounds": [
+      16.108446,
+      45.732067,
+      22.906494,
+      48.589212
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      19.50747,
+      47.1606395,
+      6
+    ]
+  },
+  {
+    "name": "europe_iceland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_iceland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_iceland.json",
+    "bounds": [
+      -25.7408499,
+      62.84553,
+      0,
+      67.50085
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -12.8704249,
+      65.17319,
+      6
+    ]
+  },
+  {
+    "name": "europe_ireland-and-northern-ireland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_ireland-and-northern-ireland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_ireland-and-northern-ireland.json",
+    "bounds": [
+      -16.30824,
+      47.96052,
+      0,
+      56.86553
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -8.15412,
+      52.413025,
+      6
+    ]
+  },
+  {
+    "name": "europe_isle-of-man",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_isle-of-man.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_isle-of-man.json",
+    "bounds": [
+      -5.434554,
+      53.73236,
+      0,
+      54.6706
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -2.717277,
+      54.20148,
+      6
+    ]
+  },
+  {
+    "name": "europe_italy_centro",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_centro.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_centro.json",
+    "bounds": [
+      8.61327,
+      40.2144299,
+      14.981,
+      44.4797
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      11.797135,
+      42.3470649,
+      6
+    ]
+  },
+  {
+    "name": "europe_italy_isole",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_isole.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_isole.json",
+    "bounds": [
+      7.418403,
+      34.3753,
+      15.70887,
+      41.51893
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      11.5636365,
+      37.947115,
+      6
+    ]
+  },
+  {
+    "name": "europe_italy_nord-est",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_nord-est.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_nord-est.json",
+    "bounds": [
+      9.195461,
+      43.72977,
+      14.82597,
+      47.31101
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      12.0107155,
+      45.52039,
+      6
+    ]
+  },
+  {
+    "name": "europe_italy_nord-ovest",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_nord-ovest.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_nord-ovest.json",
+    "bounds": [
+      5.534663,
+      43.4393,
+      11.43336,
+      47.0601199
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      8.4840115,
+      45.2497099,
+      6
+    ]
+  },
+  {
+    "name": "europe_italy_sud",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_sud.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_italy_sud.json",
+    "bounds": [
+      13.00131,
+      37.8015199,
+      20.00054,
+      42.91363
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      16.500925,
+      40.3575749,
+      6
+    ]
+  },
+  {
+    "name": "europe_kosovo",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_kosovo.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_kosovo.json",
+    "bounds": [
+      20.01357,
+      41.854079,
+      21.79327,
+      43.277534
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      20.90342,
+      42.5658065,
+      6
+    ]
+  },
+  {
+    "name": "europe_latvia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_latvia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_latvia.json",
+    "bounds": [
+      19.73348,
+      55.66109,
+      28.25501,
+      58.0946999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      23.994245,
+      56.8778949,
+      6
+    ]
+  },
+  {
+    "name": "europe_liechtenstein",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_liechtenstein.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_liechtenstein.json",
+    "bounds": [
+      9.471078,
+      47.04774,
+      9.636217,
+      47.2712799
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      9.5536475,
+      47.1595099,
+      6
+    ]
+  },
+  {
+    "name": "europe_lithuania",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_lithuania.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_lithuania.json",
+    "bounds": [
+      20.618591,
+      53.8922059,
+      26.83873,
+      56.45329
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      23.7286605,
+      55.1727479,
+      6
+    ]
+  },
+  {
+    "name": "europe_luxembourg",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_luxembourg.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_luxembourg.json",
+    "bounds": [
+      5.733033,
+      49.4455299,
+      6.532249,
+      50.1849599
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      6.132641,
+      49.8152449,
+      6
+    ]
+  },
+  {
+    "name": "europe_macedonia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_macedonia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_macedonia.json",
+    "bounds": [
+      20.44671,
+      40.8475899,
+      23.04012,
+      42.3796899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      21.743415,
+      41.6136399,
+      6
+    ]
+  },
+  {
+    "name": "europe_malta",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_malta.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_malta.json",
+    "bounds": [
+      13.815377,
+      35.5198499,
+      14.856099,
+      36.3329579
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      14.335738,
+      35.9264039,
+      6
+    ]
+  },
+  {
+    "name": "europe_moldova",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_moldova.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_moldova.json",
+    "bounds": [
+      26.61232,
+      45.461636,
+      30.192489,
+      48.4939709
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      28.4024045,
+      46.9778034,
+      6
+    ]
+  },
+  {
+    "name": "europe_monaco",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_monaco.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_monaco.json",
+    "bounds": [
+      7.408583,
+      43.4838169,
+      7.595671,
+      43.7529299
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      7.502127,
+      43.6183734,
+      6
+    ]
+  },
+  {
+    "name": "europe_montenegro",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_montenegro.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_montenegro.json",
+    "bounds": [
+      18.17282,
+      41.6162099,
+      20.358827,
+      43.5621689
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      19.2658235,
+      42.5891894,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_drenthe",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_drenthe.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_drenthe.json",
+    "bounds": [
+      6.1185919,
+      52.582309,
+      7.405064,
+      53.2051299
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      6.7618279,
+      52.8937194,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_flevoland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_flevoland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_flevoland.json",
+    "bounds": [
+      5.0595929,
+      52.24826,
+      6.018276,
+      52.8451599
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      5.5389344,
+      52.5467099,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_friesland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_friesland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_friesland.json",
+    "bounds": [
+      4.597294,
+      52.76362,
+      6.428358,
+      53.680892
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      5.512826,
+      53.222256,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_gelderland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_gelderland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_gelderland.json",
+    "bounds": [
+      4.992647,
+      51.7323099,
+      7.065818,
+      52.52322
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      6.0292325,
+      52.1277649,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_groningen",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_groningen.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_groningen.json",
+    "bounds": [
+      6.166463,
+      52.8372129,
+      7.450069,
+      53.659729
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      6.808266,
+      53.2484709,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_limburg",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_limburg.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_limburg.json",
+    "bounds": [
+      5.165618,
+      50.603516,
+      6.379776,
+      51.77992
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      5.772697,
+      51.191718,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_noord-brabant",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_noord-brabant.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_noord-brabant.json",
+    "bounds": [
+      4.189152,
+      51.0444479,
+      6.049354,
+      51.8318099
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      5.119253,
+      51.4381289,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_noord-holland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_noord-holland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_noord-holland.json",
+    "bounds": [
+      3.896906,
+      52.1649699,
+      5.3784789,
+      53.289446
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      4.6376924,
+      52.7272079,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_overijssel",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_overijssel.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_overijssel.json",
+    "bounds": [
+      5.7767929,
+      52.074443,
+      7.179848,
+      52.85539
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      6.4783204,
+      52.4649165,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_utrecht",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_utrecht.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_utrecht.json",
+    "bounds": [
+      4.790849,
+      51.85615,
+      5.62829,
+      52.3049399
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      5.2095695,
+      52.0805449,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_zeeland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_zeeland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_zeeland.json",
+    "bounds": [
+      3.233941,
+      51.1249359,
+      4.286084,
+      51.870134
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      3.7600125,
+      51.4975349,
+      6
+    ]
+  },
+  {
+    "name": "europe_netherlands_zuid-holland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_zuid-holland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_netherlands_zuid-holland.json",
+    "bounds": [
+      3.345328,
+      51.6425199,
+      5.032393,
+      52.476112
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      4.1888605,
+      52.0593159,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_dolnoslaskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_dolnoslaskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_dolnoslaskie.json",
+    "bounds": [
+      14.66788,
+      50.02009,
+      17.80584,
+      51.8141699
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      16.23686,
+      50.9171299,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_kujawsko-pomorskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_kujawsko-pomorskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_kujawsko-pomorskie.json",
+    "bounds": [
+      17.23935,
+      52.32112,
+      19.77239,
+      53.7916999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      18.50587,
+      53.0564099,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_lodzkie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_lodzkie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_lodzkie.json",
+    "bounds": [
+      18.06227,
+      50.83091,
+      20.6691,
+      52.4062399
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      19.365685,
+      51.6185749,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_lubelskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_lubelskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_lubelskie.json",
+    "bounds": [
+      21.60285,
+      49.6804599,
+      24.72833,
+      52.30035
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      23.16559,
+      50.9904049,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_lubuskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_lubuskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_lubuskie.json",
+    "bounds": [
+      14.26576,
+      51.3486499,
+      16.42999,
+      53.12806
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      15.347875,
+      52.2383549,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_malopolskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_malopolskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_malopolskie.json",
+    "bounds": [
+      18.87522,
+      49.0283499,
+      21.43328,
+      50.5322099
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      20.15425,
+      49.7802799,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_mazowieckie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_mazowieckie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_mazowieckie.json",
+    "bounds": [
+      19.23355,
+      50.98451,
+      23.15637,
+      53.5115999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      21.19496,
+      52.2480549,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_opolskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_opolskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_opolskie.json",
+    "bounds": [
+      16.9014999,
+      49.6510099,
+      18.70219,
+      51.2014
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      17.8018449,
+      50.4262049,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_podkarpackie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_podkarpackie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_podkarpackie.json",
+    "bounds": [
+      21.1343299,
+      48.83846,
+      23.5536,
+      50.8259099
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      22.3439649,
+      49.8321849,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_podlaskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_podlaskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_podlaskie.json",
+    "bounds": [
+      21.58465,
+      52.2711199,
+      24.31467,
+      55.0864599
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      22.94966,
+      53.6787899,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_pomorskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_pomorskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_pomorskie.json",
+    "bounds": [
+      16.68672,
+      53.4806,
+      19.66069,
+      55.08543
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      18.173705,
+      54.283015,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_slaskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_slaskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_slaskie.json",
+    "bounds": [
+      18.02213,
+      49.1626499,
+      19.98542,
+      51.1128999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      19.003775,
+      50.1377749,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_swietokrzyskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_swietokrzyskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_swietokrzyskie.json",
+    "bounds": [
+      19.69901,
+      50.17974,
+      21.8758,
+      51.34824
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      20.787405,
+      50.76399,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_warminsko-mazurskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_warminsko-mazurskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_warminsko-mazurskie.json",
+    "bounds": [
+      19.11666,
+      53.1257499,
+      22.82058,
+      55.0663999
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      20.96862,
+      54.0960749,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_wielkopolskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_wielkopolskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_wielkopolskie.json",
+    "bounds": [
+      15.76036,
+      51.0840299,
+      19.12931,
+      53.68105
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      17.444835,
+      52.3825399,
+      6
+    ]
+  },
+  {
+    "name": "europe_poland_zachodniopomorskie",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_zachodniopomorskie.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_poland_zachodniopomorskie.json",
+    "bounds": [
+      13.25892,
+      52.61742,
+      16.98847,
+      55.0976699
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      15.123695,
+      53.8575449,
+      6
+    ]
+  },
+  {
+    "name": "europe_portugal",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_portugal.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_portugal.json",
+    "bounds": [
+      -33.616492,
+      29.2514479,
+      0,
+      42.1639
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -16.808246,
+      35.7076739,
+      6
+    ]
+  },
+  {
+    "name": "europe_romania",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_romania.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_romania.json",
+    "bounds": [
+      20.24181,
+      43.6124659,
+      30.27896,
+      48.269483
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      25.260385,
+      45.9409744,
+      6
+    ]
+  },
+  {
+    "name": "europe_russia_central-fed-district",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_central-fed-district.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_central-fed-district.json",
+    "bounds": [
+      29.26809,
+      48.79774,
+      47.6702299,
+      59.6533
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      38.4691599,
+      54.22552,
+      6
+    ]
+  },
+  {
+    "name": "europe_russia_crimean-fed-district",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_crimean-fed-district.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_crimean-fed-district.json",
+    "bounds": [
+      31.32914,
+      43.8491899,
+      36.6835499,
+      46.57522
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      34.0063449,
+      45.2122049,
+      6
+    ]
+  },
+  {
+    "name": "europe_russia_north-caucasus-fed-district",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_north-caucasus-fed-district.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_north-caucasus-fed-district.json",
+    "bounds": [
+      40.67265,
+      40.2596599,
+      50.80178,
+      46.2391399
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      45.737215,
+      43.2493999,
+      6
+    ]
+  },
+  {
+    "name": "europe_russia_siberian-fed-district",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_siberian-fed-district.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_siberian-fed-district.json",
+    "bounds": [
+      69.86399,
+      36.83112,
+      147.7133,
+      81.88747
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -105.9597198,
+      59.359295,
+      6
+    ]
+  },
+  {
+    "name": "europe_russia_south-fed-district",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_south-fed-district.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_south-fed-district.json",
+    "bounds": [
+      36.52315,
+      42.62031,
+      51.16607,
+      51.2554
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      43.84461,
+      46.937855,
+      6
+    ]
+  },
+  {
+    "name": "europe_russia_ural-fed-district",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_ural-fed-district.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_ural-fed-district.json",
+    "bounds": [
+      57.04259,
+      51.29853,
+      86.0952,
+      75.011
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      71.568895,
+      63.154765,
+      6
+    ]
+  },
+  {
+    "name": "europe_russia_volga-fed-district",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_volga-fed-district.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_russia_volga-fed-district.json",
+    "bounds": [
+      41.72107,
+      46.2775399,
+      64.31028,
+      61.7197099
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      53.015675,
+      53.9986249,
+      6
+    ]
+  },
+  {
+    "name": "europe_serbia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_serbia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_serbia.json",
+    "bounds": [
+      18.808937,
+      42.2297889,
+      23.010349,
+      46.1920719
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      20.909643,
+      44.2109304,
+      6
+    ]
+  },
+  {
+    "name": "europe_slovakia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_slovakia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_slovakia.json",
+    "bounds": [
+      16.830711,
+      47.72646,
+      22.57051,
+      49.6186
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      19.7006105,
+      48.67253,
+      6
+    ]
+  },
+  {
+    "name": "europe_slovenia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_slovenia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_slovenia.json",
+    "bounds": [
+      13.305086,
+      45.420805,
+      16.600342,
+      46.879555
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      14.952714,
+      46.15018,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_andalucia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_andalucia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_andalucia.json",
+    "bounds": [
+      -7.553788,
+      35.7063819,
+      0,
+      38.7334649
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -3.776894,
+      37.2199234,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_aragon",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_aragon.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_aragon.json",
+    "bounds": [
+      -2.17907,
+      39.838332,
+      0.772562,
+      42.9267659
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -0.703254,
+      41.3825489,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_asturias",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_asturias.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_asturias.json",
+    "bounds": [
+      -7.196046,
+      42.878858,
+      0,
+      44.033309
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -3.598023,
+      43.4560835,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_cantabria",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_cantabria.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_cantabria.json",
+    "bounds": [
+      -4.861622,
+      42.7545749,
+      0,
+      43.8919569
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -2.430811,
+      43.3232659,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_castilla-la-mancha",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_castilla-la-mancha.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_castilla-la-mancha.json",
+    "bounds": [
+      -5.41111,
+      38.020103,
+      0,
+      41.3322249
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -2.705555,
+      39.6761639,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_castilla-y-leon",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_castilla-y-leon.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_castilla-y-leon.json",
+    "bounds": [
+      -7.080517,
+      40.0804359,
+      0,
+      43.2409509
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -3.5402585,
+      41.6606934,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_cataluna",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_cataluna.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_cataluna.json",
+    "bounds": [
+      0.156383,
+      40.2124489,
+      4.174794,
+      42.9242539
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      2.1655885,
+      41.5683514,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_ceuta",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_ceuta.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_ceuta.json",
+    "bounds": [
+      -5.392227,
+      35.866378,
+      0,
+      35.958695
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -2.6961135,
+      35.9125365,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_extremadura",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_extremadura.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_extremadura.json",
+    "bounds": [
+      -7.642366,
+      37.938512,
+      0,
+      40.4891289
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -3.821183,
+      39.2138204,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_galicia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_galicia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_galicia.json",
+    "bounds": [
+      -10.360118,
+      41.767217,
+      0,
+      44.3081349
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -5.180059,
+      43.0376759,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_islas-baleares",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_islas-baleares.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_islas-baleares.json",
+    "bounds": [
+      0.615229,
+      38.056747,
+      4.938349,
+      40.7097959
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      2.776789,
+      39.3832714,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_la-rioja",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_la-rioja.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_la-rioja.json",
+    "bounds": [
+      -3.140202,
+      41.9140309,
+      0,
+      42.646208
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -1.570101,
+      42.2801194,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_madrid",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_madrid.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_madrid.json",
+    "bounds": [
+      -4.589539,
+      39.881157,
+      0,
+      41.16864
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -2.2947695,
+      40.5248985,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_melilla",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_melilla.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_melilla.json",
+    "bounds": [
+      -2.980213,
+      35.26195,
+      0,
+      35.3261899
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -1.4901065,
+      35.2940699,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_murcia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_murcia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_murcia.json",
+    "bounds": [
+      -2.351246,
+      37.1121469,
+      0,
+      38.760241
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -1.175623,
+      37.9361939,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_navarra",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_navarra.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_navarra.json",
+    "bounds": [
+      -2.502308,
+      41.90611,
+      0,
+      43.372115
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -1.251154,
+      42.6391125,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_pais-vasco",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_pais-vasco.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_pais-vasco.json",
+    "bounds": [
+      -3.454342,
+      42.469185,
+      0,
+      43.7472909
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -1.727171,
+      43.1082379,
+      6
+    ]
+  },
+  {
+    "name": "europe_spain_valencia",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_valencia.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_spain_valencia.json",
+    "bounds": [
+      -1.531649,
+      37.84341,
+      1.686396,
+      40.7932789
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      0.0773735,
+      39.3183444,
+      6
+    ]
+  },
+  {
+    "name": "europe_sweden",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_sweden.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_sweden.json",
+    "bounds": [
+      10.54138,
+      55.02652,
+      24.22472,
+      69.06643
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      17.38305,
+      62.046475,
+      6
+    ]
+  },
+  {
+    "name": "europe_switzerland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_switzerland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_switzerland.json",
+    "bounds": [
+      5.954418,
+      45.816418,
+      10.49584,
+      47.81126
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      8.225129,
+      46.813839,
+      6
+    ]
+  },
+  {
+    "name": "europe_turkey",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_turkey.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_turkey.json",
+    "bounds": [
+      25.523985,
+      35.717,
+      44.859923,
+      43.074814
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      35.191954,
+      39.395907,
+      6
+    ]
+  },
+  {
+    "name": "europe_ukraine",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_ukraine.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_ukraine.json",
+    "bounds": [
+      22.132644,
+      44.008624,
+      40.238113,
+      52.3864969
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      31.1853785,
+      48.1975604,
+      6
+    ]
+  },
+  {
+    "name": "europe_united-kingdom_bermuda",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_bermuda.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_bermuda.json",
+    "bounds": [
+      -65.2005039,
+      32.0215838,
+      0,
+      32.6232409
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -32.6002519,
+      32.3224123,
+      6
+    ]
+  },
+  {
+    "name": "europe_united-kingdom_england",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_england.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_england.json",
+    "bounds": [
+      -7.101192,
+      49.57808,
+      2.249944,
+      56.06997
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -2.425624,
+      52.824025,
+      6
+    ]
+  },
+  {
+    "name": "europe_united-kingdom_falklands",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_falklands.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_falklands.json",
+    "bounds": [
+      -62.201418,
+      -53.406045,
+      0,
+      0
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -31.100709,
+      -26.7030225,
+      6
+    ]
+  },
+  {
+    "name": "europe_united-kingdom_scotland",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_scotland.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_scotland.json",
+    "bounds": [
+      -14.861554,
+      54.54001,
+      0.731931,
+      61.35131
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -7.0648115,
+      57.94566,
+      6
+    ]
+  },
+  {
+    "name": "europe_united-kingdom_wales",
+    "pmtiles": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_wales.pmtiles",
+    "metadata": "https://travelog-pmtiles-575766771522-ap-south-1-an.s3.ap-south-1.amazonaws.com/tiles/europe_united-kingdom_wales.json",
+    "bounds": [
+      -6.183241,
+      51.0399699,
+      0,
+      53.76632
+    ],
+    "minZoom": 0,
+    "maxZoom": 12,
+    "center": [
+      -3.0916205,
+      52.4031449,
+      6
+    ]
+  }
+]
