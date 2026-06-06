@@ -171,6 +171,42 @@ describe("map catalog storage", () => {
     const { hasValidMapCatalog } = require("../mapCatalog") as typeof import("../mapCatalog");
     expect(hasValidMapCatalog()).toBe(true);
   });
+
+  it("ensureMapCatalogLoaded clears legacy pmtilesConfig.v1", () => {
+    store.set("pmtilesConfig.v1", JSON.stringify({ pmtilesPath: "file:///old.pmtiles" }));
+    const { ensureMapCatalogLoaded } = require("../mapCatalog") as typeof import("../mapCatalog");
+
+    ensureMapCatalogLoaded();
+
+    expect(store.has("pmtilesConfig.v1")).toBe(false);
+    expect(mockRemove).toHaveBeenCalledWith("pmtilesConfig.v1");
+  });
+
+  it("reloadBundledMapCatalog clears cache and reloads from bundle", () => {
+    const {
+      reloadBundledMapCatalog,
+      setMapCatalog,
+      BUNDLED_CATALOG_REVISION,
+    } = require("../mapCatalog") as typeof import("../mapCatalog");
+
+    setMapCatalog({
+      entries: [
+        {
+          name: "cached-region",
+          pmtiles: "https://example.com/cached-region.pmtiles",
+          bounds: [1, 2, 3, 4],
+          minZoom: 0,
+          maxZoom: 10,
+        },
+      ],
+      bundledRevision: BUNDLED_CATALOG_REVISION,
+      loadedAt: 1,
+    });
+
+    const reloaded = reloadBundledMapCatalog();
+    expect(reloaded?.entries.some((entry) => entry.name === "cached-region")).toBe(false);
+    expect(reloaded?.entries.length).toBeGreaterThan(1);
+  });
 });
 
 describe("getMapCatalogStatusLine", () => {

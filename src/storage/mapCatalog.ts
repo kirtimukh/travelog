@@ -5,6 +5,7 @@ import type { Bounds, CatalogEntry } from "../map/catalog";
 import { getAppStorage } from "./mmkv";
 
 const MAP_CATALOG_KEY = "mapCatalog.v1";
+const LEGACY_PMTILES_CONFIG_KEY = "pmtilesConfig.v1";
 export const BUNDLED_CATALOG_REVISION = 1;
 
 export type MapCatalogState = {
@@ -138,7 +139,18 @@ export function clearMapCatalog(): void {
   getAppStorage().remove(MAP_CATALOG_KEY);
 }
 
+function migrateLegacyPmtilesStorage(): void {
+  getAppStorage().remove(LEGACY_PMTILES_CONFIG_KEY);
+}
+
+export function reloadBundledMapCatalog(): MapCatalogState | null {
+  clearMapCatalog();
+  return ensureMapCatalogLoaded();
+}
+
 export function ensureMapCatalogLoaded(): MapCatalogState | null {
+  migrateLegacyPmtilesStorage();
+
   const cached = getMapCatalog();
   if (cached && cached.bundledRevision === BUNDLED_CATALOG_REVISION) {
     return cached;
