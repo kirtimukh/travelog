@@ -8,7 +8,7 @@ import type {
   NoteType,
 } from "../../../db/schema";
 
-/** Same cap as export ([feat_import.md](../../../../feat_import.md) §3). */
+/** Same cap as export (docs/app/feat-import.md §3). */
 export const IMPORT_MAX_BYTES = EXPORT_MAX_BYTES;
 
 export type FileSizeProbe = (uri: string) => Promise<{ exists: boolean; size: number }>;

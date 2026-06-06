@@ -31,7 +31,7 @@ type FeedVoiceAudio = {
 };
 
 /**
- * One shared native player for the feed (voice_note_brd.md §4.3.1).
+ * One shared native player for the feed (docs/app/voice-note-brd.md §4.3.1).
  * Inactive rows show current as 0:00 (not the last active row's position).
  */
 function VoiceNoteFeedRowPlayer({
@@ -289,7 +289,7 @@ type Props = {
 
 /**
  * Chronological notes/media feed with one shared voice player.
- * Legacy voice rows may have `audio_duration` null (migration strategy A); total uses stored value or live duration when active. Lazy DB backfill deferred (voice_note_brd.md §3.3). Validate on device (BRD §6 D).
+ * Legacy voice rows may have `audio_duration` null (migration strategy A); total uses stored value or live duration when active. Lazy DB backfill deferred (docs/app/voice-note-brd.md §3.3). Validate on device (BRD §6 D).
  */
 export function JourneyNotesFeed({
   notes,

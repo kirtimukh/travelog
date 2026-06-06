@@ -85,7 +85,7 @@ export type VoiceRecordingFinalizeResult = {
 };
 
 /**
- * Converts recorder-reported milliseconds to persisted whole seconds (voice_note_brd.md §5).
+ * Converts recorder-reported milliseconds to persisted whole seconds (docs/app/voice-note-brd.md §5).
  * Clips shorter than ~500ms round to 1s minimum.
  */
 export function secondsFromRecordingMillis(durationMillis: number): number {

@@ -21,7 +21,7 @@ type Props = {
 
 /**
  * Preview playback for a pending voice file before DB save (dedicated player; session already
- * switched to playback mode after finalize per voice_note_brd.md).
+ * switched to playback mode after finalize per docs/app/voice-note-brd.md).
  */
 export function VoiceNoteDraftPlayback({
   uri,
