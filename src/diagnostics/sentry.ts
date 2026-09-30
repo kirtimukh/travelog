@@ -33,7 +33,7 @@ Sentry.init({
   // Default breadcrumbs cover fetch, XHR, console, and navigation automatically.
   // Additional AppState breadcrumbs are registered below.
 
-  debug: __DEV__,
+  debug: false,
   // Disable in dev to avoid noise; flip to true to test the Sentry pipeline
   // against a dev build.
   enabled: !__DEV__,

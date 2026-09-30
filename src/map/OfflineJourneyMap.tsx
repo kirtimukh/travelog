@@ -24,13 +24,16 @@ type Props = {
 
 const DEFAULT_CENTER: [number, number] = [91.750605, 26.129195];
 const FIT_PADDING = { top: 28, right: 28, bottom: 28, left: 28 };
-const MIN_ZOOM = 2;
+const MIN_ZOOM = 6;
 const MAX_ZOOM = 22;
 const ZOOM_STEP = 1;
-const INITIAL_ZOOM = 12;
+const AUTO_CENTER_ZOOM = 13;
+const INITIAL_ZOOM = AUTO_CENTER_ZOOM;
 const ZOOM_ANIM_MS = 180;
 /** Ignore userInteraction on region events shortly after programmatic route fits. */
 const PROGRAMMATIC_FIT_SUPPRESS_MS = 550;
+
+type FollowMode = "autoCenter" | "fitBounds";
 
 function toLineFeature(points: LocationPointRow[]) {
   return {
@@ -132,23 +135,25 @@ export function OfflineJourneyMap({
   const mapReadyRef = useRef(false);
   const ignoreUserViewportUntilRef = useRef(0);
   const userInteractionRef = useRef(false);
+  /** Set by recenter before inline applyFollowCamera; effect skips one run to avoid double animation. */
+  const skipNextFollowEffectRef = useRef(false);
   const [currentZoom, setCurrentZoom] = useState(INITIAL_ZOOM);
-  /** When true, new points (live or replay path) trigger auto fit. Cleared on user pan/zoom; restored by recenter. */
+  /** When true, new points (live or replay) re-apply the active follow mode. Cleared on user pan/zoom or +/- buttons; restored by recenter. */
   const [autoFollowRoute, setAutoFollowRoute] = useState(true);
+  /** autoCenter: red marker @ zoom 13. fitBounds: full route when points.length >= 2. Toggled by recenter while following. */
+  const [followMode, setFollowMode] = useState<FollowMode>("autoCenter");
+
+  const markUserMapInteraction = useCallback(() => {
+    userInteractionRef.current = true;
+    setAutoFollowRoute(false);
+  }, []);
 
   const initialCenter = useMemo((): [number, number] => {
-    if (points.length >= 1) {
-      const p = points[points.length - 1]!;
-      return [p.lng, p.lat];
-    }
-    if (markerHead !== undefined && markerHead !== null) {
-      return [markerHead.lng, markerHead.lat];
-    }
-    if (fallbackLngLat) {
-      return [fallbackLngLat.lng, fallbackLngLat.lat];
+    if (resolvedMarkerPoint) {
+      return [resolvedMarkerPoint.lng, resolvedMarkerPoint.lat];
     }
     return DEFAULT_CENTER;
-  }, [points, markerHead, fallbackLngLat]);
+  }, [resolvedMarkerPoint]);
 
   const scheduleViewportUpdate = useCallback(
     (bounds: LngLatBounds, zoom: number) => {
@@ -165,53 +170,41 @@ export function OfflineJourneyMap({
     });
   }, [scheduleViewportUpdate]);
 
-  const fitCameraToRoute = useCallback(() => {
-    if (!mapReadyRef.current) {
-      return;
-    }
-    const cam = cameraRef.current;
-    if (!cam) {
-      return;
-    }
-    ignoreUserViewportUntilRef.current = Date.now() + PROGRAMMATIC_FIT_SUPPRESS_MS;
-    try {
-      if (points.length >= 2) {
-        const bounds = boundsFromPoints(points);
-        if (bounds) {
-          cam.fitBounds(bounds, {
-            padding: FIT_PADDING,
-            duration: 420,
+  const applyFollowCamera = useCallback(
+    (mode: FollowMode = followMode) => {
+      if (!mapReadyRef.current) {
+        return;
+      }
+      const cam = cameraRef.current;
+      if (!cam) {
+        return;
+      }
+      ignoreUserViewportUntilRef.current =
+        Date.now() + PROGRAMMATIC_FIT_SUPPRESS_MS;
+      try {
+        if (mode === "fitBounds" && points.length >= 2) {
+          const bounds = boundsFromPoints(points);
+          if (bounds) {
+            cam.fitBounds(bounds, {
+              padding: FIT_PADDING,
+              duration: 420,
+            });
+          }
+          return;
+        }
+        if (resolvedMarkerPoint) {
+          cam.easeTo({
+            center: [resolvedMarkerPoint.lng, resolvedMarkerPoint.lat],
+            zoom: AUTO_CENTER_ZOOM,
+            duration: 320,
           });
         }
-        return;
+      } catch {
+        // Camera not attached yet
       }
-      if (points.length === 1) {
-        cam.easeTo({
-          center: [points[0].lng, points[0].lat],
-          zoom: 14,
-          duration: 320,
-        });
-        return;
-      }
-      if (markerHead !== undefined && markerHead !== null) {
-        cam.easeTo({
-          center: [markerHead.lng, markerHead.lat],
-          zoom: 14,
-          duration: 320,
-        });
-        return;
-      }
-      if (fallbackLngLat) {
-        cam.easeTo({
-          center: [fallbackLngLat.lng, fallbackLngLat.lat],
-          zoom: 14,
-          duration: 320,
-        });
-      }
-    } catch {
-      // Camera not attached yet
-    }
-  }, [points, markerHead, fallbackLngLat]);
+    },
+    [followMode, points, resolvedMarkerPoint],
+  );
 
   const syncZoomFromMap = useCallback(() => {
     void mapRef.current?.getZoom().then((z) => {
@@ -222,13 +215,15 @@ export function OfflineJourneyMap({
   }, []);
 
   useEffect(() => {
-    if (!autoFollowRoute) {
+    if (skipNextFollowEffectRef.current) {
+      skipNextFollowEffectRef.current = false;
       return;
     }
-    if (!userInteractionRef.current) {
-      fitCameraToRoute();
+    if (!autoFollowRoute || userInteractionRef.current) {
+      return;
     }
-  }, [autoFollowRoute, fitCameraToRoute]);
+    applyFollowCamera();
+  }, [autoFollowRoute, followMode, points, resolvedMarkerPoint, applyFollowCamera]);
 
   const onRegionDidChange = useCallback(
     (event: NativeSyntheticEvent<ViewStateChangeEvent>) => {
@@ -264,13 +259,14 @@ export function OfflineJourneyMap({
       if (Math.abs(next - z) < 1e-6) {
         return;
       }
+      markUserMapInteraction();
       try {
         cam.zoomTo(next, { duration: ZOOM_ANIM_MS });
       } catch {
         // Camera not attached yet
       }
     });
-  }, []);
+  }, [markUserMapInteraction]);
 
   const canZoomIn = currentZoom < MAX_ZOOM - 1e-3;
   const canZoomOut = currentZoom > MIN_ZOOM + 1e-3;
@@ -290,7 +286,7 @@ export function OfflineJourneyMap({
           mapReadyRef.current = true;
           syncViewportFromMap();
           if (autoFollowRoute && !userInteractionRef.current) {
-            fitCameraToRoute();
+            applyFollowCamera();
             syncZoomFromMap();
           }
         }}
@@ -298,7 +294,7 @@ export function OfflineJourneyMap({
           onStyleDidFinishLoading();
           mapReadyRef.current = true;
           if (autoFollowRoute && !userInteractionRef.current) {
-            fitCameraToRoute();
+            applyFollowCamera();
             syncZoomFromMap();
           }
         }}
@@ -391,11 +387,20 @@ export function OfflineJourneyMap({
           }
           onPress={() => {
             const wasFollowing = autoFollowRoute;
-            setAutoFollowRoute(true);
+            const nextMode: FollowMode = wasFollowing
+              ? followMode === "autoCenter"
+                ? "fitBounds"
+                : "autoCenter"
+              : followMode;
             if (wasFollowing) {
-              fitCameraToRoute();
-              syncZoomFromMap();
+              setFollowMode(nextMode);
+            } else {
+              userInteractionRef.current = false;
             }
+            skipNextFollowEffectRef.current = true;
+            setAutoFollowRoute(true);
+            applyFollowCamera(nextMode);
+            syncZoomFromMap();
           }}
         >
           <Text className="text-lg text-neutral-800" importantForAccessibility="no">

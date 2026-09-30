@@ -37,9 +37,7 @@ export function activeRegions(
   const z = Math.floor(zoom);
   return catalog.filter(
     (entry) =>
-      boundsIntersect(viewport, entry.bounds) &&
-      z >= entry.minZoom &&
-      z <= entry.maxZoom,
+      boundsIntersect(viewport, entry.bounds) && z >= entry.minZoom,
   );
 }
 
@@ -171,6 +169,7 @@ export function buildStyle(entries: CatalogEntry[]): StyleSpecification {
     sources[sourceId] = {
       type: "vector",
       url: `pmtiles://${entry.pmtiles}`,
+      maxzoom: entry.maxZoom,
     };
     layers.push(...basemapLayers(sourceId));
   }

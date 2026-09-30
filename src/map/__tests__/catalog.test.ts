@@ -63,10 +63,18 @@ describe("activeRegions", () => {
     ]);
   });
 
-  it("excludes entries outside zoom range", () => {
+  it("excludes entries below minZoom", () => {
     const viewport: Bounds = [0, 0, 5, 5];
     expect(activeRegions(catalog, viewport, 9).map((r) => r.name)).toEqual([
       "inside",
+    ]);
+  });
+
+  it("keeps entries above maxZoom for overzooming", () => {
+    const viewport: Bounds = [0, 0, 5, 5];
+    expect(activeRegions(catalog, viewport, 14).map((r) => r.name)).toEqual([
+      "inside",
+      "zoom-limited",
     ]);
   });
 
@@ -184,6 +192,7 @@ describe("buildStyle", () => {
     expect(style.sources?.["pmtiles-india-ne"]).toEqual({
       type: "vector",
       url: "pmtiles://https://example.com/india-ne.pmtiles",
+      maxzoom: 14,
     });
     expect(style.layers).toHaveLength(6);
   });

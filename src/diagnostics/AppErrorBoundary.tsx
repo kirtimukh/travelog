@@ -27,12 +27,14 @@ export class AppErrorBoundary extends Component<Props, State> {
       route: getLastRoute(),
     });
 
-    Sentry.captureException(error, {
-      contexts: {
-        react: { componentStack: info.componentStack ?? "" },
-      },
-      extra: { route: getLastRoute() },
-    });
+    if (!__DEV__) {
+      Sentry.captureException(error, {
+        contexts: {
+          react: { componentStack: info.componentStack ?? "" },
+        },
+        extra: { route: getLastRoute() },
+      });
+    }
   }
 
   render(): ReactNode {
